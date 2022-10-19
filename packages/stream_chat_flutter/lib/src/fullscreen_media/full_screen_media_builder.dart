@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:stream_chat_flutter/src/fullscreen_media/fsm_stub.dart'
-    if (dart.library.io) 'full_screen_media_desktop.dart' as desktop_fsm;
+// import 'package:stream_chat_flutter/src/fullscreen_media/fsm_stub.dart'
+//     if (dart.library.io) 'full_screen_media_desktop.dart' as desktop_fsm;
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template fsmBuilder}
@@ -62,15 +62,16 @@ class StreamFullScreenMediaBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (!kIsWeb && isDesktopVideoPlayerSupported) {
-      return desktop_fsm.getFsm(
-        mediaAttachmentPackages: mediaAttachmentPackages,
-        startIndex: startIndex,
-        userName: userName,
-        autoplayVideos: autoplayVideos,
-        onShowMessage: onShowMessage,
-        onReplyMessage: onReplyMessage,
-        attachmentActionsModalBuilder: attachmentActionsModalBuilder,
-      );
+      return const SizedBox.shrink();
+      // return desktop_fsm.getFsm(
+      //   mediaAttachmentPackages: mediaAttachmentPackages,
+      //   startIndex: startIndex,
+      //   userName: userName,
+      //   autoplayVideos: autoplayVideos,
+      //   onShowMessage: onShowMessage,
+      //   onReplyMessage: onReplyMessage,
+      //   attachmentActionsModalBuilder: attachmentActionsModalBuilder,
+      // );
     }
 
     return StreamFullScreenMedia(
