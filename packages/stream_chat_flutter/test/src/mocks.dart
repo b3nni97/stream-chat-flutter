@@ -52,7 +52,7 @@ class MockOwnUser extends Mock implements OwnUser {}
 
 class MockAttachment extends Mock implements Attachment {}
 
-class MockVlcManagerDesktop extends Mock implements VlcManagerDesktop {}
+// class MockVlcManagerDesktop extends Mock implements VlcManagerDesktop {}
 
 class MockStreamMemberListController extends Mock
     implements StreamMemberListController {
