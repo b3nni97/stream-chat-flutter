@@ -549,6 +549,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                   itemScrollController: _scrollController,
                   reverse: widget.reverse,
                   itemCount: itemCount,
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
                   findChildIndexCallback: (Key key) {
                     final indexedKey = key as IndexedKey;
                     final valueKey = indexedKey.key as ValueKey<String>?;

@@ -222,13 +222,19 @@ class StreamMessageReactionsModal extends StatelessWidget {
                   alignment:
                       reverse ? Alignment.centerRight : Alignment.centerLeft,
                   child: StreamReactionBubble(
+                    ownId: currentUser.id,
                     reactions: [reaction],
                     flipTail: !reverse,
                     borderColor:
                         messageTheme.reactionsBorderColor ?? Colors.transparent,
+                    ownReactionColor:
+                        chatThemeData.ownMessageTheme.messageBackgroundColor ??
+                            Colors.transparent,
+                    otherReactionColor: chatThemeData
+                            .otherMessageTheme.messageBackgroundColor ??
+                        Colors.transparent,
                     backgroundColor: messageTheme.reactionsBackgroundColor ??
                         Colors.transparent,
-                    maskColor: chatThemeData.colorTheme.barsBg,
                     tailCirclesSpacing: 1,
                     highlightOwnReactions: false,
                   ),

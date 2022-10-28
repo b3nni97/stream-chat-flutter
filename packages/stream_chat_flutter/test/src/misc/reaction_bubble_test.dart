@@ -32,9 +32,14 @@ void main() {
                   user: User(id: 'test'),
                 ),
               ],
+              ownId: clientState.currentUser!.id,
+              ownReactionColor: theme.ownMessageTheme.messageBackgroundColor ??
+                  Colors.transparent,
+              otherReactionColor:
+                  theme.otherMessageTheme.messageBackgroundColor ??
+                      Colors.transparent,
               borderColor: theme.ownMessageTheme.reactionsBorderColor!,
               backgroundColor: theme.ownMessageTheme.reactionsBackgroundColor!,
-              maskColor: theme.ownMessageTheme.reactionsMaskColor!,
             ),
           ),
         ),
@@ -69,9 +74,14 @@ void main() {
                   user: User(id: 'test'),
                 ),
               ],
+              ownId: clientState.currentUser!.id,
+              ownReactionColor: theme.ownMessageTheme.messageBackgroundColor ??
+                  Colors.transparent,
+              otherReactionColor:
+                  theme.otherMessageTheme.messageBackgroundColor ??
+                      Colors.transparent,
               borderColor: theme.ownMessageTheme.reactionsBorderColor!,
               backgroundColor: theme.ownMessageTheme.reactionsBackgroundColor!,
-              maskColor: theme.ownMessageTheme.reactionsMaskColor!,
             ),
           ),
         ),
@@ -114,9 +124,14 @@ void main() {
                   user: User(id: 'test'),
                 ),
               ],
+              ownId: clientState.currentUser!.id,
+              ownReactionColor: theme.ownMessageTheme.messageBackgroundColor ??
+                  Colors.transparent,
+              otherReactionColor:
+                  theme.otherMessageTheme.messageBackgroundColor ??
+                      Colors.transparent,
               borderColor: theme.ownMessageTheme.reactionsBorderColor!,
               backgroundColor: theme.ownMessageTheme.reactionsBackgroundColor!,
-              maskColor: theme.ownMessageTheme.reactionsMaskColor!,
             ),
           ),
         ),
@@ -159,9 +174,14 @@ void main() {
                   user: User(id: 'test'),
                 ),
               ],
+              ownId: clientState.currentUser!.id,
+              ownReactionColor: theme.ownMessageTheme.messageBackgroundColor ??
+                  Colors.transparent,
+              otherReactionColor:
+                  theme.otherMessageTheme.messageBackgroundColor ??
+                      Colors.transparent,
               borderColor: theme.ownMessageTheme.reactionsBorderColor!,
               backgroundColor: theme.ownMessageTheme.reactionsBackgroundColor!,
-              maskColor: theme.ownMessageTheme.reactionsMaskColor!,
             ),
           ),
         ),
@@ -181,11 +201,13 @@ void main() {
       when(() => client.state).thenReturn(clientState);
       when(() => clientState.currentUser).thenReturn(OwnUser(id: 'user-id'));
 
+      final theme = StreamChatThemeData.fromTheme(themeData);
+
       await tester.pumpWidgetBuilder(
         StreamChat(
           client: client,
           connectivityStream: Stream.value(ConnectivityResult.mobile),
-          streamChatThemeData: StreamChatThemeData.fromTheme(themeData),
+          streamChatThemeData: theme,
           child: SizedBox(
             child: StreamReactionBubble(
               reactions: [
@@ -202,9 +224,14 @@ void main() {
                   user: User(id: 'test'),
                 ),
               ],
+              ownId: clientState.currentUser!.id,
+              ownReactionColor: theme.ownMessageTheme.messageBackgroundColor ??
+                  Colors.transparent,
+              otherReactionColor:
+                  theme.otherMessageTheme.messageBackgroundColor ??
+                      Colors.transparent,
               borderColor: Colors.red,
               backgroundColor: Colors.blue,
-              maskColor: Colors.green,
               reverse: true,
               flipTail: true,
               tailCirclesSpacing: 4,

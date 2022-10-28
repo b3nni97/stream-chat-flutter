@@ -49,6 +49,8 @@ class ReactionIndicator extends StatelessWidget {
     final reactionsList = reactionsMap.values.toList()
       ..sort((a, b) => a.user!.id == ownId ? 1 : -1);
 
+    final chatThemeData = StreamChatTheme.of(context);
+
     return Transform(
       transform: Matrix4.translationValues(
         reverse ? 12 : -12,
@@ -66,14 +68,19 @@ class ReactionIndicator extends StatelessWidget {
                   onTap: onTap,
                   child: StreamReactionBubble(
                     key: ValueKey('${message.id}.reactions'),
+                    ownId: ownId,
                     reverse: reverse,
                     flipTail: reverse,
-                    backgroundColor: messageTheme.reactionsBackgroundColor ??
+                    ownReactionColor:
+                        chatThemeData.ownMessageTheme.messageBackgroundColor ??
+                            Colors.transparent,
+                    otherReactionColor: chatThemeData
+                            .otherMessageTheme.messageBackgroundColor ??
+                        Colors.transparent,
+                    backgroundColor: messageTheme.messageBackgroundColor ??
                         Colors.transparent,
                     borderColor:
                         messageTheme.reactionsBorderColor ?? Colors.transparent,
-                    maskColor:
-                        messageTheme.reactionsMaskColor ?? Colors.transparent,
                     reactions: reactionsList,
                   ),
                 )

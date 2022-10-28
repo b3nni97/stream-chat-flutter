@@ -39,6 +39,7 @@ class StreamChat extends StatefulWidget {
     this.onBackgroundEventReceived,
     this.backgroundKeepAlive = const Duration(minutes: 1),
     this.connectivityStream,
+    this.overrideMaterialTheme = true,
   });
 
   /// Client to do chat operations with
@@ -66,6 +67,9 @@ class StreamChat extends StatefulWidget {
   /// Visible for testing
   @visibleForTesting
   final Stream<ConnectivityResult>? connectivityStream;
+
+  /// Wether we should add a MaterialTheme to the tree or not
+  final bool overrideMaterialTheme;
 
   @override
   StreamChatState createState() => StreamChatState();
@@ -116,30 +120,36 @@ class StreamChatState extends State<StreamChat> {
             builder: (context) {
               final materialTheme = Theme.of(context);
               final streamTheme = StreamChatTheme.of(context);
-              return Theme(
-                data: materialTheme.copyWith(
-                  primaryIconTheme: streamTheme.primaryIconTheme,
-                  colorScheme: materialTheme.colorScheme.copyWith(
-                    secondary: streamTheme.colorTheme.accentPrimary,
-                  ),
-                ),
-                child: StreamChatCore(
-                  client: client,
-                  onBackgroundEventReceived: widget.onBackgroundEventReceived,
-                  backgroundKeepAlive: widget.backgroundKeepAlive,
-                  connectivityStream: widget.connectivityStream,
-                  child: Builder(
-                    builder: (context) {
-                      StreamChatClient.additionalHeaders = {
-                        'X-Stream-Client':
-                            '${StreamChatClient.defaultUserAgent}-'
-                                'ui-${StreamChatClient.packageVersion}',
-                      };
-                      return widget.child ?? const Offstage();
-                    },
-                  ),
+
+              Widget content = StreamChatCore(
+                client: client,
+                onBackgroundEventReceived: widget.onBackgroundEventReceived,
+                backgroundKeepAlive: widget.backgroundKeepAlive,
+                connectivityStream: widget.connectivityStream,
+                child: Builder(
+                  builder: (context) {
+                    StreamChatClient.additionalHeaders = {
+                      'X-Stream-Client': '${StreamChatClient.defaultUserAgent}-'
+                          'ui-${StreamChatClient.packageVersion}',
+                    };
+                    return widget.child ?? const Offstage();
+                  },
                 ),
               );
+
+              if (widget.overrideMaterialTheme) {
+                content = Theme(
+                  data: materialTheme.copyWith(
+                    primaryIconTheme: streamTheme.primaryIconTheme,
+                    colorScheme: materialTheme.colorScheme.copyWith(
+                      secondary: streamTheme.colorTheme.accentPrimary,
+                    ),
+                  ),
+                  child: content,
+                );
+              }
+
+              return content;
             },
           ),
         ),

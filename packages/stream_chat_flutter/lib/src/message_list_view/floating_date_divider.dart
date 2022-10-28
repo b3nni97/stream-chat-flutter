@@ -39,7 +39,7 @@ class FloatingDateDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      top: 20,
+      top: 12,
       left: 0,
       right: 0,
       child: BetterStreamBuilder<Iterable<ItemPosition>>(

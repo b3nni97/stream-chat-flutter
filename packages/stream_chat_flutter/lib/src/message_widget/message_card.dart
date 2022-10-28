@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter/src/message_widget/text_bubble/text_bubble_container.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template messageCard}
@@ -129,64 +130,92 @@ class _MessageCardState extends State<MessageCard> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 0,
+    final isRoundMessage = _isRadiusRound(
+      widget.borderRadiusGeometry?.resolve(TextDirection.ltr) ??
+          BorderRadius.zero,
+    );
+
+    Widget content = ConstrainedBox(
+      constraints: BoxConstraints(
+        maxWidth: widthLimit ?? double.infinity,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (widget.hasQuotedMessage)
+            QuotedMessage(
+              reverse: widget.reverse,
+              message: widget.message,
+              hasNonUrlAttachments: widget.hasNonUrlAttachments,
+              onQuotedMessageTap: widget.onQuotedMessageTap,
+            ),
+          if (widget.hasNonUrlAttachments)
+            ParseAttachments(
+              key: attachmentsKey,
+              message: widget.message,
+              attachmentBuilders: widget.attachmentBuilders,
+              attachmentPadding: widget.attachmentPadding,
+            ),
+          if (!widget.isGiphy)
+            ConstrainedBox(
+              constraints: BoxConstraints.loose(const Size.fromWidth(500)),
+              child: TextBubble(
+                messageTheme: widget.messageTheme,
+                message: widget.message,
+                textPadding: widget.textPadding,
+                textBuilder: widget.textBuilder,
+                isOnlyEmoji: widget.isOnlyEmoji,
+                hasQuotedMessage: widget.hasQuotedMessage,
+                hasUrlAttachments: widget.hasUrlAttachments,
+                onLinkTap: widget.onLinkTap,
+                onMentionTap: widget.onMentionTap,
+              ),
+            ),
+          if (widget.hasUrlAttachments && !widget.hasQuotedMessage)
+            _buildUrlAttachment(),
+        ],
+      ),
+    );
+
+    if (!isRoundMessage) {
+      content = TextBubbleContainer(
+        backgroundColor: _getBackgroundColor() ?? Colors.transparent,
+        reverse: widget.reverse,
+        child: Container(
+          margin: EdgeInsets.only(
+            left: widget.reverse ? 0 : 6,
+            right: widget.reverse ? 6 : 0,
+          ),
+          child: content,
+        ),
+      );
+    } else {
+      content = Container(
+        margin: EdgeInsets.only(
+          left: widget.reverse ? 0 : 6,
+          right: widget.reverse ? 6 : 0,
+        ),
+        decoration: BoxDecoration(
+          borderRadius: widget.borderRadiusGeometry,
+          color: _getBackgroundColor(),
+        ),
+        child: content,
+      );
+    }
+
+    return Container(
       margin: EdgeInsets.symmetric(
         horizontal: (widget.isFailedState ? 15.0 : 0.0) +
             (widget.showUserAvatar == DisplayWidget.gone ? 0 : 4.0),
       ),
-      shape: widget.shape ??
-          RoundedRectangleBorder(
-            side: widget.borderSide ??
-                BorderSide(
-                  color: widget.messageTheme.messageBorderColor ?? Colors.grey,
-                ),
-            borderRadius: widget.borderRadiusGeometry ?? BorderRadius.zero,
-          ),
-      color: _getBackgroundColor(),
-      child: ConstrainedBox(
-        constraints: BoxConstraints(
-          maxWidth: widthLimit ?? double.infinity,
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            if (widget.hasQuotedMessage)
-              QuotedMessage(
-                reverse: widget.reverse,
-                message: widget.message,
-                hasNonUrlAttachments: widget.hasNonUrlAttachments,
-                onQuotedMessageTap: widget.onQuotedMessageTap,
-              ),
-            if (widget.hasNonUrlAttachments)
-              ParseAttachments(
-                key: attachmentsKey,
-                message: widget.message,
-                attachmentBuilders: widget.attachmentBuilders,
-                attachmentPadding: widget.attachmentPadding,
-              ),
-            if (!widget.isGiphy)
-              ConstrainedBox(
-                constraints: BoxConstraints.loose(const Size.fromWidth(500)),
-                child: TextBubble(
-                  messageTheme: widget.messageTheme,
-                  message: widget.message,
-                  textPadding: widget.textPadding,
-                  textBuilder: widget.textBuilder,
-                  isOnlyEmoji: widget.isOnlyEmoji,
-                  hasQuotedMessage: widget.hasQuotedMessage,
-                  hasUrlAttachments: widget.hasUrlAttachments,
-                  onLinkTap: widget.onLinkTap,
-                  onMentionTap: widget.onMentionTap,
-                ),
-              ),
-            if (widget.hasUrlAttachments && !widget.hasQuotedMessage)
-              _buildUrlAttachment(),
-          ],
-        ),
-      ),
+      child: content,
     );
+  }
+
+  bool _isRadiusRound(BorderRadius radius) {
+    return radius.topLeft == radius.topRight &&
+        radius.bottomLeft == radius.bottomRight;
   }
 
   Widget _buildUrlAttachment() {

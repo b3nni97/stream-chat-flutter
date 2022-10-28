@@ -3,7 +3,7 @@ analyzer:
     - dart_code_metrics
   exclude:
     - packages/*/lib/**/*.g.dart
-    - packages/*/lib/scrollable_positioned_list/**
+    # - packages/*/lib/scrollable_positioned_list/**
     - packages/*/lib/**/*.freezed.dart
 
 linter:

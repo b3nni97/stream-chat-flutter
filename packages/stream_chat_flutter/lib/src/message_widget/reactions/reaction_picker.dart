@@ -54,8 +54,8 @@ class _StreamReactionPickerState extends State<StreamReactionPicker>
       clipBehavior: Clip.hardEdge,
       child: Padding(
         padding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 8,
+          horizontal: 8,
+          vertical: 4,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,16 +76,21 @@ class _StreamReactionPickerState extends State<StreamReactionPicker>
                   24,
                 );
 
-                return ConstrainedBox(
+                return Container(
                   constraints: const BoxConstraints.tightFor(
-                    height: 24,
-                    width: 24,
+                    height: 44,
+                    width: 44,
+                  ),
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: ownReactionIndex != -1
+                        ? (chatThemeData
+                                .ownMessageTheme.messageBackgroundColor ??
+                            Colors.transparent)
+                        : null,
                   ),
                   child: RawMaterialButton(
                     elevation: 0,
-                    shape: ContinuousRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                    ),
                     constraints: const BoxConstraints.tightFor(
                       height: 24,
                       width: 24,
@@ -116,7 +121,7 @@ class _StreamReactionPickerState extends State<StreamReactionPicker>
               })
               .insertBetween(
                 const SizedBox(
-                  width: 16,
+                  width: 8,
                 ),
               )
               .toList(),

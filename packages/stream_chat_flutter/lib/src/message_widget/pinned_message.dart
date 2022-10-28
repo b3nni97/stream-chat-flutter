@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -27,8 +28,10 @@ class PinnedMessage extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          StreamSvgIcon.pin(
+          Icon(
+            CupertinoIcons.pin_fill,
             size: 16,
+            color: StreamChatTheme.of(context).colorTheme.textLowEmphasis,
           ),
           const SizedBox(
             width: 4,

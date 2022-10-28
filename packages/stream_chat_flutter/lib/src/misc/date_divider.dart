@@ -39,7 +39,7 @@ class StreamDateDivider extends StatelessWidget {
     final chatThemeData = StreamChatTheme.of(context);
     return Center(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 1),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 2),
         decoration: BoxDecoration(
           color: chatThemeData.colorTheme.overlayDark,
           borderRadius: BorderRadius.circular(8),

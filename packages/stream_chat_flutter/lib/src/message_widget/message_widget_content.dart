@@ -34,6 +34,7 @@ class MessageWidgetContent extends StatelessWidget {
     required this.attachmentPadding,
     required this.textPadding,
     required this.showReactionPickerIndicator,
+    required this.reactionPickerIndicatorKey,
     required this.translateUserAvatar,
     required this.bottomRowPadding,
     required this.showInChannel,
@@ -144,6 +145,9 @@ class MessageWidgetContent extends StatelessWidget {
 
   /// {@macro showReactionPickerIndicator}
   final bool showReactionPickerIndicator;
+
+  /// Provide a GlobalKey for the reaction picker indicator to get its location
+  final GlobalKey reactionPickerIndicatorKey;
 
   /// {@macro translateUserAvatar}
   final bool translateUserAvatar;
@@ -351,15 +355,17 @@ class MessageWidgetContent extends StatelessWidget {
                               ),
                               if (showReactionPickerIndicator)
                                 Positioned(
-                                  right: reverse ? null : 4,
-                                  left: reverse ? 4 : null,
-                                  top: -8,
+                                  right: reverse ? null : -6,
+                                  left: reverse ? -6 : null,
+                                  top: 6,
                                   child: CustomPaint(
-                                    painter: ReactionBubblePainter(
+                                    key: reactionPickerIndicatorKey,
+                                    painter: ReactionBubbleDetailPainter(
                                       streamChatTheme.colorTheme.barsBg,
                                       Colors.transparent,
                                       Colors.transparent,
                                       tailCirclesSpace: 1,
+                                      flipTail: reverse,
                                     ),
                                   ),
                                 ),

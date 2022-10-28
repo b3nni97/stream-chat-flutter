@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:stream_chat_flutter/src/message_widget/text_bubble/text_bubble_container.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template streamDeletedMessage}
@@ -32,29 +33,25 @@ class StreamDeletedMessage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chatThemeData = StreamChatTheme.of(context);
-    return Material(
-      color: messageTheme.messageBackgroundColor,
-      shape: shape ??
-          RoundedRectangleBorder(
-            borderRadius: borderRadiusGeometry ?? BorderRadius.zero,
-            side: borderSide ??
-                BorderSide(
-                  color: Theme.of(context).brightness == Brightness.dark
-                      ? chatThemeData.colorTheme.barsBg.withAlpha(24)
-                      : chatThemeData.colorTheme.textHighEmphasis.withAlpha(24),
-                ),
-          ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(
-          vertical: 8,
-          horizontal: 16,
+    return TextBubbleContainer(
+      backgroundColor: messageTheme.messageBackgroundColor ?? Colors.black,
+      reverse: reverse,
+      child: Container(
+        margin: EdgeInsets.only(
+          left: reverse ? 0 : 6,
+          right: reverse ? 6 : 0,
         ),
-        child: Text(
-          context.translations.messageDeletedLabel,
-          style: messageTheme.messageTextStyle?.copyWith(
-            fontStyle: FontStyle.italic,
-            color: messageTheme.createdAtStyle?.color,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            vertical: 8,
+            horizontal: 16,
+          ),
+          child: Text(
+            context.translations.messageDeletedLabel,
+            style: messageTheme.messageTextStyle?.copyWith(
+              fontStyle: FontStyle.italic,
+              color: messageTheme.createdAtStyle?.color,
+            ),
           ),
         ),
       ),

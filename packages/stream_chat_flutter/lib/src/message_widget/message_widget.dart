@@ -1,7 +1,14 @@
+import 'dart:async';
+
 import 'package:contextmenu/contextmenu.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide ButtonStyle;
 import 'package:flutter/services.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:night_vibes_context_menu/night_vibes_context_menu.dart';
+import 'package:night_vibes_context_menu/night_vibes_context_menu_action.dart';
+import 'package:night_vibes_context_menu/night_vibes_context_menu_controller.dart';
+import 'package:stages/widgets/animation/routes/context_menu.dart';
 import 'package:stream_chat_flutter/conditional_parent_builder/conditional_parent_builder.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/platform_widget_builder.dart';
 import 'package:stream_chat_flutter/src/context_menu_items/context_menu_reaction_picker.dart';
@@ -54,6 +61,8 @@ class StreamMessageWidget extends StatefulWidget {
     this.onMentionTap,
     this.onMessageTap,
     this.showReactionPickerIndicator = false,
+    this.reactionPickerIndicatorKey,
+    this.reactionsKey,
     this.showUserAvatar = DisplayWidget.show,
     this.showSendingIndicator = true,
     this.showThreadReplyIndicator = false,
@@ -95,6 +104,9 @@ class StreamMessageWidget extends StatefulWidget {
     this.imageAttachmentThumbnailSize = const Size(400, 400),
     this.imageAttachmentThumbnailResizeType = 'clip',
     this.imageAttachmentThumbnailCropType = 'center',
+    this.hideBottomRow = false,
+    this.enableContextMenu = true,
+    this.contextMenuController,
   }) : attachmentBuilders = {
           'image': (context, message, attachments) {
             final border = RoundedRectangleBorder(
@@ -417,6 +429,12 @@ class StreamMessageWidget extends StatefulWidget {
   /// {@endtemplate}
   final bool showReactionPickerIndicator;
 
+  /// Provide a GlobalKey for the reaction picker indicator to get its location
+  final GlobalKey? reactionPickerIndicatorKey;
+
+  /// Provide a GlobalKey for the reaction picker
+  final GlobalKey? reactionsKey;
+
   /// {@template onShowMessage}
   /// Callback when show message is tapped
   /// {@endtemplate}
@@ -520,6 +538,15 @@ class StreamMessageWidget extends StatefulWidget {
   final String /*center|top|bottom|left|right*/
       imageAttachmentThumbnailCropType;
 
+  /// Forcefully hide the bottom row which normally shows timestamp and sending indicator
+  final bool hideBottomRow;
+
+  /// Enable / Disable context menu
+  final bool enableContextMenu;
+
+  /// Provide context menu controller
+  final NightVibesContextMenuController? contextMenuController;
+
   /// {@template copyWith}
   /// Creates a copy of [StreamMessageWidget] with specified attributes
   /// overridden.
@@ -556,6 +583,8 @@ class StreamMessageWidget extends StatefulWidget {
     void Function(User)? onUserAvatarTap,
     void Function(String)? onLinkTap,
     bool? showReactionPickerIndicator,
+    GlobalKey? reactionPickerIndicatorKey,
+    GlobalKey? reactionsKey,
     List<Read>? readList,
     ShowMessageCallback? onShowMessage,
     bool? showUsername,
@@ -579,6 +608,9 @@ class StreamMessageWidget extends StatefulWidget {
     Size? imageAttachmentThumbnailSize,
     String? imageAttachmentThumbnailResizeType,
     String? imageAttachmentThumbnailCropType,
+    bool? hideBottomRow,
+    bool? enableContextMenu,
+    NightVibesContextMenuController? contextMenuController,
   }) {
     return StreamMessageWidget(
       key: key ?? this.key,
@@ -617,6 +649,9 @@ class StreamMessageWidget extends StatefulWidget {
       onLinkTap: onLinkTap ?? this.onLinkTap,
       showReactionPickerIndicator:
           showReactionPickerIndicator ?? this.showReactionPickerIndicator,
+      reactionPickerIndicatorKey:
+          reactionPickerIndicatorKey ?? this.reactionPickerIndicatorKey,
+      reactionsKey: reactionsKey ?? this.reactionsKey,
       onShowMessage: onShowMessage ?? this.onShowMessage,
       showUsername: showUsername ?? this.showUsername,
       showTimestamp: showTimestamp ?? this.showTimestamp,
@@ -644,6 +679,10 @@ class StreamMessageWidget extends StatefulWidget {
           this.imageAttachmentThumbnailResizeType,
       imageAttachmentThumbnailCropType: imageAttachmentThumbnailCropType ??
           this.imageAttachmentThumbnailCropType,
+      hideBottomRow: hideBottomRow ?? this.hideBottomRow,
+      enableContextMenu: enableContextMenu ?? this.enableContextMenu,
+      contextMenuController:
+          contextMenuController ?? this.contextMenuController,
     );
   }
 
@@ -719,12 +758,13 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
   /// * [StreamMessageWidget.message.isDeleted]
   /// {@endtemplate}
   bool get showBottomRow =>
-      showThreadReplyIndicator ||
-      showUsername ||
-      showTimeStamp ||
-      showInChannel ||
-      showSendingIndicator ||
-      isDeleted;
+      !widget.hideBottomRow &&
+      (showThreadReplyIndicator ||
+          showUsername ||
+          showTimeStamp ||
+          showInChannel ||
+          showSendingIndicator ||
+          isDeleted);
 
   /// {@template isPinned}
   /// Whether [StreamMessageWidget.message] is pinned or not.
@@ -774,6 +814,21 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
   late StreamChatThemeData _streamChatTheme;
   late StreamChatState _streamChat;
 
+  late final GlobalKey reactionsKey;
+  final GlobalKey contextMessageKey = GlobalKey();
+  late final GlobalKey reactionPickerIndicatorKey;
+
+  final GlobalKey contextOverlayKey = GlobalKey();
+
+  @override
+  void initState() {
+    reactionsKey = widget.reactionsKey ?? GlobalKey();
+    reactionPickerIndicatorKey =
+        widget.reactionPickerIndicatorKey ?? GlobalKey();
+
+    super.initState();
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -787,97 +842,274 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
     final avatarWidth =
         widget.messageTheme.avatarTheme?.constraints.maxWidth ?? 40;
     final bottomRowPadding =
-        widget.showUserAvatar != DisplayWidget.gone ? avatarWidth + 8.5 : 0.5;
+        widget.showUserAvatar != DisplayWidget.gone ? avatarWidth + 14.0 : 6.0;
 
     final showReactions = shouldShowReactions;
 
-    return ConditionalParentBuilder(
-      builder: (context, child) {
-        if (!widget.message.isDeleted) {
-          return ContextMenuArea(
-            verticalPadding: 0,
-            builder: (context) => _buildContextMenu(),
-            child: child,
-          );
-        } else {
-          return child;
-        }
-      },
-      child: Material(
-        type: MaterialType.transparency,
-        child: AnimatedContainer(
-          duration: const Duration(seconds: 1),
-          color: widget.message.pinned && widget.showPinHighlight
-              ? _streamChatTheme.colorTheme.highlight
-              : _streamChatTheme.colorTheme.barsBg.withOpacity(0),
-          child: Portal(
+    final channel = StreamChannel.of(context).channel;
+
+    final content = Padding(
+      padding: widget.padding ?? const EdgeInsets.all(8),
+      child: FractionallySizedBox(
+        alignment:
+            widget.reverse ? Alignment.centerRight : Alignment.centerLeft,
+        widthFactor: 0.78,
+        child: MessageWidgetContent(
+          streamChatTheme: _streamChatTheme,
+          showUsername: showUsername,
+          showTimeStamp: showTimeStamp,
+          showThreadReplyIndicator: showThreadReplyIndicator,
+          showSendingIndicator: showSendingIndicator,
+          showInChannel: showInChannel,
+          isGiphy: isGiphy,
+          isOnlyEmoji: isOnlyEmoji,
+          hasUrlAttachments: hasUrlAttachments,
+          messageTheme: widget.messageTheme,
+          reverse: widget.reverse,
+          message: widget.message,
+          hasNonUrlAttachments: hasNonUrlAttachments,
+          shouldShowReactions: shouldShowReactions,
+          hasQuotedMessage: hasQuotedMessage,
+          textPadding: widget.textPadding,
+          attachmentBuilders: widget.attachmentBuilders,
+          attachmentPadding: widget.attachmentPadding,
+          avatarWidth: avatarWidth,
+          bottomRowPadding: bottomRowPadding,
+          isFailedState: isFailedState,
+          isPinned: isPinned,
+          messageWidget: widget,
+          showBottomRow: showBottomRow,
+          showPinHighlight: widget.showPinHighlight,
+          reactionPickerIndicatorKey: reactionPickerIndicatorKey,
+          showReactionPickerIndicator: widget.showReactionPickerIndicator,
+          showReactions: showReactions,
+          showUserAvatar: widget.showUserAvatar,
+          streamChat: _streamChat,
+          translateUserAvatar: widget.translateUserAvatar,
+          deletedBottomRowBuilder: widget.deletedBottomRowBuilder,
+          onThreadTap: widget.onThreadTap,
+          shape: widget.shape,
+          borderSide: widget.borderSide,
+          borderRadiusGeometry: widget.borderRadiusGeometry,
+          textBuilder: widget.textBuilder,
+          onLinkTap: widget.onLinkTap,
+          onMentionTap: widget.onMentionTap,
+          onQuotedMessageTap: widget.onQuotedMessageTap,
+          bottomRowBuilder: widget.bottomRowBuilder,
+          onUserAvatarTap: widget.onUserAvatarTap,
+          userAvatarBuilder: widget.userAvatarBuilder,
+          usernameBuilder: widget.usernameBuilder,
+        ),
+      ),
+    );
+
+    return Material(
+      type: MaterialType.transparency,
+      child: AnimatedContainer(
+        duration: const Duration(seconds: 1),
+        color: widget.message.pinned && widget.showPinHighlight
+            ? _streamChatTheme.colorTheme.highlight
+            : _streamChatTheme.colorTheme.barsBg.withOpacity(0),
+        child: Portal(
+          child: StreamChannel(
+            channel: channel,
             child: PlatformWidgetBuilder(
               mobile: (context, child) {
-                return InkWell(
-                  onTap: () => widget.onMessageTap!(widget.message),
-                  onLongPress: widget.message.isDeleted && !isFailedState
-                      ? null
-                      : () => onLongPress(context),
-                  child: child,
-                );
+                if (widget.enableContextMenu) {
+                  final hasAttachment = widget.message.attachments.isNotEmpty;
+
+                  child = NightVibesContextMenu(
+                    actions: _buildContextMenu(),
+                    alignChild: false,
+                    childCrossAxisAlignment: CrossAxisAlignment.stretch,
+                    childFlex: hasAttachment
+                        ? (widget.message.attachments.length > 1 ? 3 : 2)
+                        : 1,
+                    contextMenuController: widget.contextMenuController,
+                    child: child!,
+                    decoyBuilder: (context, child) {
+                      return StreamChannel(
+                        channel: channel,
+                        child: IgnorePointer(child: child!),
+                      );
+                    },
+                    previewBuilder: (context, animation, child) {
+                      final curveAnimation = CurvedAnimation(
+                        parent: animation,
+                        curve: const Cubic(0.15, 0.52, 0.27, 1.05),
+                        reverseCurve: Curves.easeInCubic,
+                      );
+
+                      final reactionPickerAnimation = CurvedAnimation(
+                        parent: animation,
+                        curve: const Interval(
+                          0.5,
+                          1,
+                          curve: Cubic(0.15, 0.52, 0.27, 1.05),
+                        ),
+                        reverseCurve: const Interval(
+                          0.5,
+                          1,
+                          curve: Curves.easeInCubic,
+                        ),
+                      );
+
+                      final alignAnimation = AlignmentTween(
+                        begin: widget.reverse
+                            ? Alignment.bottomRight
+                            : Alignment.bottomLeft,
+                        end: Alignment.bottomCenter,
+                      ).animate(curveAnimation);
+
+                      final scaleAnimation = Tween<double>(begin: 1, end: 1.05)
+                          .animate(curveAnimation);
+
+                      final topPaddingAnimation =
+                          Tween<double>(begin: 0, end: 72).animate(
+                        curveAnimation,
+                      );
+
+                      final hasReaction =
+                          (widget.message.latestReactions?.length ?? 0) > 0;
+                      final isPinned = widget.message.pinned;
+
+                      EdgeInsetsGeometry margin = EdgeInsets.zero;
+
+                      if (showBottomRow) {
+                        margin = margin.add(const EdgeInsets.only(bottom: 18));
+                      }
+
+                      if (isPinned && hasReaction) {
+                        margin = margin.add(const EdgeInsets.only(bottom: 8));
+                      } else if (isPinned) {
+                        margin = margin.add(const EdgeInsets.only(bottom: 10));
+                      }
+
+                      final pickerPosition =
+                          _getReactionsPickerIndicatorPosition();
+
+                      final messageContent = IgnorePointer(
+                        child: Container(
+                          margin: margin,
+                          child: widget.copyWith(
+                            key: contextMessageKey,
+                            // message: widget.message.copyWith(
+                            //   text: (widget.message.text?.length ?? 0) > 200
+                            //       ? '${widget.message.text!.substring(0, 200)}...'
+                            //       : widget.message.text,
+                            // ),
+                            showReactions: false,
+                            hideBottomRow: true,
+
+                            reactionPickerIndicatorKey:
+                                reactionPickerIndicatorKey,
+                            reactionsKey: reactionsKey,
+                            showReactionPickerIndicator:
+                                widget.message.status ==
+                                    MessageSendingStatus.sent,
+                            showPinHighlight: false,
+                            enableContextMenu: false,
+                          ),
+                        ),
+                      );
+
+                      return Container(
+                        key: contextOverlayKey,
+                        child: StreamChannel(
+                          channel: channel,
+                          child: Stack(
+                            children: [
+                              Positioned.fill(
+                                top: topPaddingAnimation.value,
+                                child: Align(
+                                  alignment: alignAnimation.value,
+                                  child: Transform.scale(
+                                    scale: scaleAnimation.value,
+                                    child: SingleChildScrollView(
+                                      clipBehavior: Clip.none,
+                                      physics:
+                                          const NeverScrollableScrollPhysics(),
+                                      child: messageContent,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              Positioned.fill(
+                                child: LayoutBuilder(
+                                  builder: (context, constraints) {
+                                    final reactionPicker = FadeTransition(
+                                      opacity: reactionPickerAnimation,
+                                      child: ScaleTransition(
+                                        alignment: alignAnimation.value,
+                                        scale: reactionPickerAnimation,
+                                        child: StreamReactionPicker(
+                                          key: reactionsKey,
+                                          message: widget.message,
+                                        ),
+                                      ),
+                                    );
+
+                                    final reactionsPickerSize =
+                                        _getSize(reactionsKey);
+
+                                    const paddingHorizontal = 24.0;
+                                    final maxWidth = constraints.maxWidth -
+                                        paddingHorizontal;
+                                    const minWidth = paddingHorizontal;
+
+                                    final maxLeftPaddingToFit =
+                                        (reactionsPickerSize.width == 0
+                                                ? minWidth
+                                                : (maxWidth -
+                                                    reactionsPickerSize.width))
+                                            .clamp(minWidth, maxWidth);
+
+                                    final reactionsIndicatorWithOffset =
+                                        pickerPosition.dx - 42;
+
+                                    var leftOffset = maxLeftPaddingToFit;
+
+                                    if (maxLeftPaddingToFit >
+                                        reactionsIndicatorWithOffset) {
+                                      leftOffset =
+                                          reactionsIndicatorWithOffset.clamp(
+                                        minWidth,
+                                        maxWidth,
+                                      );
+                                    }
+
+                                    return Align(
+                                      alignment: Alignment.bottomLeft,
+                                      child: Container(
+                                        padding: EdgeInsets.only(
+                                          left: leftOffset,
+                                          bottom: (constraints.maxHeight -
+                                                  pickerPosition.dy +
+                                                  14)
+                                              .clamp(
+                                            0,
+                                            constraints.maxHeight,
+                                          ),
+                                        ),
+                                        child: reactionPicker,
+                                      ),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    },
+                  );
+                }
+
+                return child;
               },
               desktop: (_, child) => MouseRegion(child: child),
               web: (_, child) => MouseRegion(child: child),
-              child: Padding(
-                padding: widget.padding ?? const EdgeInsets.all(8),
-                child: FractionallySizedBox(
-                  alignment: widget.reverse
-                      ? Alignment.centerRight
-                      : Alignment.centerLeft,
-                  widthFactor: 0.78,
-                  child: MessageWidgetContent(
-                    streamChatTheme: _streamChatTheme,
-                    showUsername: showUsername,
-                    showTimeStamp: showTimeStamp,
-                    showThreadReplyIndicator: showThreadReplyIndicator,
-                    showSendingIndicator: showSendingIndicator,
-                    showInChannel: showInChannel,
-                    isGiphy: isGiphy,
-                    isOnlyEmoji: isOnlyEmoji,
-                    hasUrlAttachments: hasUrlAttachments,
-                    messageTheme: widget.messageTheme,
-                    reverse: widget.reverse,
-                    message: widget.message,
-                    hasNonUrlAttachments: hasNonUrlAttachments,
-                    shouldShowReactions: shouldShowReactions,
-                    hasQuotedMessage: hasQuotedMessage,
-                    textPadding: widget.textPadding,
-                    attachmentBuilders: widget.attachmentBuilders,
-                    attachmentPadding: widget.attachmentPadding,
-                    avatarWidth: avatarWidth,
-                    bottomRowPadding: bottomRowPadding,
-                    isFailedState: isFailedState,
-                    isPinned: isPinned,
-                    messageWidget: widget,
-                    showBottomRow: showBottomRow,
-                    showPinHighlight: widget.showPinHighlight,
-                    showReactionPickerIndicator:
-                        widget.showReactionPickerIndicator,
-                    showReactions: showReactions,
-                    showUserAvatar: widget.showUserAvatar,
-                    streamChat: _streamChat,
-                    translateUserAvatar: widget.translateUserAvatar,
-                    deletedBottomRowBuilder: widget.deletedBottomRowBuilder,
-                    onThreadTap: widget.onThreadTap,
-                    shape: widget.shape,
-                    borderSide: widget.borderSide,
-                    borderRadiusGeometry: widget.borderRadiusGeometry,
-                    textBuilder: widget.textBuilder,
-                    onLinkTap: widget.onLinkTap,
-                    onMentionTap: widget.onMentionTap,
-                    onQuotedMessageTap: widget.onQuotedMessageTap,
-                    bottomRowBuilder: widget.bottomRowBuilder,
-                    onUserAvatarTap: widget.onUserAvatarTap,
-                    userAvatarBuilder: widget.userAvatarBuilder,
-                    usernameBuilder: widget.usernameBuilder,
-                  ),
-                ),
-              ),
+              child: content,
             ),
           ),
         ),
@@ -885,51 +1117,92 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
     );
   }
 
+  Offset _getReactionsPickerIndicatorPosition() {
+    if (reactionPickerIndicatorKey.currentContext == null) {
+      return Offset.zero;
+    }
+
+    if (contextOverlayKey.currentContext == null) {
+      return Offset.zero;
+    }
+
+    final box = reactionPickerIndicatorKey.currentContext?.findRenderObject()
+        as RenderBox?;
+
+    final relativeBox =
+        contextOverlayKey.currentContext?.findRenderObject() as RenderBox?;
+
+    final position = box?.localToGlobal(Offset.zero, ancestor: relativeBox);
+
+    return position ?? Offset.zero;
+  }
+
+// Given a GlobalKey, return the Rect of the corresponding RenderBox's
+// paintBounds in global coordinates.
+  Size _getSize(GlobalKey globalKey) {
+    if (globalKey.currentContext == null) {
+      return Size.zero;
+    }
+    final renderBoxContainer =
+        globalKey.currentContext!.findRenderObject()! as RenderBox;
+
+    return renderBoxContainer.size;
+  }
+
   List<Widget> _buildContextMenu() {
     final channel = StreamChannel.of(context).channel;
 
     return [
-      StreamChatContextMenuItem(
-        child: StreamChannel(
-          channel: channel,
-          child: ContextMenuReactionPicker(
-            message: widget.message,
-          ),
-        ),
-      ),
       if (shouldShowReplyAction) ...[
-        StreamChatContextMenuItem(
-          leading: StreamSvgIcon.reply(),
-          title: Text(context.translations.replyLabel),
-          onClick: () {
+        NightVibesContextMenuAction(
+          // leading: StreamSvgIcon.reply(),
+          trailingIcon: CupertinoIcons.arrowshape_turn_up_left_fill,
+          child: Text(
+            context.translations.replyLabel,
+            maxLines: 1,
+            softWrap: false,
+            style: const TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          // title: Text(context.translations.replyLabel),
+          onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
             widget.onReplyTap!(widget.message);
           },
         ),
       ],
       if (shouldShowThreadReplyAction)
-        StreamChatContextMenuItem(
-          leading: StreamSvgIcon.thread(),
-          title: Text(context.translations.threadReplyLabel),
-          onClick: () {
+        NightVibesContextMenuAction(
+          trailingIcon: CupertinoIcons.text_alignleft,
+          // leading: StreamSvgIcon.thread(),
+          child: Text(
+            context.translations.threadReplyLabel,
+            maxLines: 1,
+            softWrap: false,
+            style: const TextStyle(
+              fontSize: 14,
+            ),
+          ),
+          onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
             widget.onThreadTap!(widget.message);
           },
         ),
-      if (shouldShowCopyAction)
-        StreamChatContextMenuItem(
-          leading: StreamSvgIcon.copy(),
-          title: Text(context.translations.copyMessageLabel),
-          onClick: () {
-            Navigator.of(context, rootNavigator: true).pop();
-            Clipboard.setData(ClipboardData(text: widget.message.text));
-          },
-        ),
       if (shouldShowEditAction) ...[
-        StreamChatContextMenuItem(
-          leading: StreamSvgIcon.edit(color: Colors.grey),
-          title: Text(context.translations.editMessageLabel),
-          onClick: () {
+        NightVibesContextMenuAction(
+          trailingIcon: CupertinoIcons.pencil,
+          // leading: StreamSvgIcon.edit(color: Colors.grey),
+          // title: Text(context.translations.editMessageLabel),
+          child: Text(
+            context.translations.editMessageLabel,
+            maxLines: 1,
+            softWrap: false,
+            style: const TextStyle(
+              fontSize: 16,
+            ),
+          ),
+          onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
             showModalBottomSheet(
               context: context,
@@ -952,18 +1225,47 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           },
         ),
       ],
-      if (widget.showPinButton)
-        StreamChatContextMenuItem(
-          leading: StreamSvgIcon.pin(
-            color: Colors.grey,
-            size: 24,
+      if (shouldShowCopyAction)
+        NightVibesContextMenuAction(
+          trailingIcon: CupertinoIcons.doc_on_clipboard_fill,
+          // leading: StreamSvgIcon.copy(),
+          // title: Text(context.translations.copyMessageLabel),
+          child: Text(
+            context.translations.copyMessageLabel,
+            maxLines: 1,
+            softWrap: false,
+            style: const TextStyle(
+              fontSize: 16,
+            ),
           ),
-          title: Text(
+          onPressed: () {
+            Navigator.of(context, rootNavigator: true).pop();
+            Clipboard.setData(ClipboardData(text: widget.message.text));
+          },
+        ),
+      if (widget.showPinButton)
+        NightVibesContextMenuAction(
+          trailingIcon: CupertinoIcons.pin_fill,
+          // leading: StreamSvgIcon.pin(
+          //   color: Colors.grey,
+          //   size: 24,
+          // ),
+          // title: Text(
+          //   context.translations.togglePinUnpinText(
+          //     pinned: widget.message.pinned,
+          //   ),
+          // ),
+          child: Text(
             context.translations.togglePinUnpinText(
               pinned: widget.message.pinned,
             ),
+            maxLines: 1,
+            softWrap: false,
+            style: const TextStyle(
+              fontSize: 16,
+            ),
           ),
-          onClick: () async {
+          onPressed: () async {
             Navigator.of(context, rootNavigator: true).pop();
             try {
               if (!widget.message.pinned) {
@@ -977,15 +1279,27 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           },
         ),
       if (shouldShowResendAction)
-        StreamChatContextMenuItem(
-          leading: StreamSvgIcon.iconSendMessage(),
-          title: Text(
+        NightVibesContextMenuAction(
+          trailingIcon: CupertinoIcons.arrow_clockwise_circle_fill,
+          // leading: StreamSvgIcon.iconSendMessage(),
+          // title: Text(
+          //   context.translations.toggleResendOrResendEditedMessage(
+          //     isUpdateFailed:
+          //         widget.message.status == MessageSendingStatus.failed,
+          //   ),
+          // ),
+          child: Text(
             context.translations.toggleResendOrResendEditedMessage(
               isUpdateFailed:
                   widget.message.status == MessageSendingStatus.failed,
             ),
+            maxLines: 1,
+            softWrap: false,
+            style: const TextStyle(
+              fontSize: 16,
+            ),
           ),
-          onClick: () {
+          onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
             final isUpdateFailed =
                 widget.message.status == MessageSendingStatus.failed_update;
@@ -998,13 +1312,23 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           },
         ),
       if (shouldShowDeleteAction)
-        StreamChatContextMenuItem(
-          leading: StreamSvgIcon.delete(color: Colors.red),
-          title: Text(
+        NightVibesContextMenuAction(
+          isDestructiveAction: true,
+          trailingIcon: CupertinoIcons.delete_solid,
+          // leading: StreamSvgIcon.delete(color: Colors.red),
+          // title: Text(
+          //   context.translations.deleteMessageLabel,
+          //   style: const TextStyle(color: Colors.red),
+          // ),
+          child: Text(
             context.translations.deleteMessageLabel,
-            style: const TextStyle(color: Colors.red),
+            maxLines: 1,
+            softWrap: false,
+            style: const TextStyle(
+              fontSize: 16,
+            ),
           ),
-          onClick: () async {
+          onPressed: () async {
             Navigator.of(context, rootNavigator: true).pop();
             final deleted = await showDialog(
               context: context,
@@ -1025,6 +1349,146 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             }
           },
         ),
+    ];
+    return [
+      Material(
+        child: StreamChatContextMenuItem(
+          child: StreamChannel(
+            channel: channel,
+            child: ContextMenuReactionPicker(
+              message: widget.message,
+            ),
+          ),
+        ),
+      ),
+      // if (shouldShowReplyAction) ...[
+      //   StreamChatContextMenuItem(
+      //     leading: StreamSvgIcon.reply(),
+      //     title: Text(context.translations.replyLabel),
+      //     onClick: () {
+      //       Navigator.of(context, rootNavigator: true).pop();
+      //       widget.onReplyTap!(widget.message);
+      //     },
+      //   ),
+      // ],
+      // if (shouldShowThreadReplyAction)
+      //   StreamChatContextMenuItem(
+      //     leading: StreamSvgIcon.thread(),
+      //     title: Text(context.translations.threadReplyLabel),
+      //     onClick: () {
+      //       Navigator.of(context, rootNavigator: true).pop();
+      //       widget.onThreadTap!(widget.message);
+      //     },
+      //   ),
+      // if (shouldShowCopyAction)
+      //   StreamChatContextMenuItem(
+      //     leading: StreamSvgIcon.copy(),
+      //     title: Text(context.translations.copyMessageLabel),
+      //     onClick: () {
+      //       Navigator.of(context, rootNavigator: true).pop();
+      //       Clipboard.setData(ClipboardData(text: widget.message.text));
+      //     },
+      //   ),
+      // if (shouldShowEditAction) ...[
+      //   StreamChatContextMenuItem(
+      //     leading: StreamSvgIcon.edit(color: Colors.grey),
+      //     title: Text(context.translations.editMessageLabel),
+      //     onClick: () {
+      //       Navigator.of(context, rootNavigator: true).pop();
+      //       showModalBottomSheet(
+      //         context: context,
+      //         elevation: 2,
+      //         clipBehavior: Clip.hardEdge,
+      //         isScrollControlled: true,
+      //         backgroundColor:
+      //             StreamMessageInputTheme.of(context).inputBackgroundColor,
+      //         shape: const RoundedRectangleBorder(
+      //           borderRadius: BorderRadius.only(
+      //             topLeft: Radius.circular(16),
+      //             topRight: Radius.circular(16),
+      //           ),
+      //         ),
+      //         builder: (_) => EditMessageSheet(
+      //           message: widget.message,
+      //           channel: StreamChannel.of(context).channel,
+      //         ),
+      //       );
+      //     },
+      //   ),
+      // ],
+      // if (widget.showPinButton)
+      //   StreamChatContextMenuItem(
+      //     leading: StreamSvgIcon.pin(
+      //       color: Colors.grey,
+      //       size: 24,
+      //     ),
+      //     title: Text(
+      //       context.translations.togglePinUnpinText(
+      //         pinned: widget.message.pinned,
+      //       ),
+      //     ),
+      //     onClick: () async {
+      //       Navigator.of(context, rootNavigator: true).pop();
+      //       try {
+      //         if (!widget.message.pinned) {
+      //           await channel.pinMessage(widget.message);
+      //         } else {
+      //           await channel.unpinMessage(widget.message);
+      //         }
+      //       } catch (e) {
+      //         throw Exception(e);
+      //       }
+      //     },
+      //   ),
+      // if (shouldShowResendAction)
+      //   StreamChatContextMenuItem(
+      //     leading: StreamSvgIcon.iconSendMessage(),
+      //     title: Text(
+      //       context.translations.toggleResendOrResendEditedMessage(
+      //         isUpdateFailed:
+      //             widget.message.status == MessageSendingStatus.failed,
+      //       ),
+      //     ),
+      //     onClick: () {
+      //       Navigator.of(context, rootNavigator: true).pop();
+      //       final isUpdateFailed =
+      //           widget.message.status == MessageSendingStatus.failed_update;
+      //       final channel = StreamChannel.of(context).channel;
+      //       if (isUpdateFailed) {
+      //         channel.updateMessage(widget.message);
+      //       } else {
+      //         channel.sendMessage(widget.message);
+      //       }
+      //     },
+      //   ),
+      // if (shouldShowDeleteAction)
+      //   StreamChatContextMenuItem(
+      //     leading: StreamSvgIcon.delete(color: Colors.red),
+      //     title: Text(
+      //       context.translations.deleteMessageLabel,
+      //       style: const TextStyle(color: Colors.red),
+      //     ),
+      //     onClick: () async {
+      //       Navigator.of(context, rootNavigator: true).pop();
+      //       final deleted = await showDialog(
+      //         context: context,
+      //         barrierDismissible: false,
+      //         builder: (_) => const DeleteMessageDialog(),
+      //       );
+      //       if (deleted) {
+      //         try {
+      //           await StreamChannel.of(context)
+      //               .channel
+      //               .deleteMessage(widget.message);
+      //         } catch (e) {
+      //           showDialog(
+      //             context: context,
+      //             builder: (_) => const MessageDialog(),
+      //           );
+      //         }
+      //       }
+      //     },
+      //   ),
     ];
   }
 

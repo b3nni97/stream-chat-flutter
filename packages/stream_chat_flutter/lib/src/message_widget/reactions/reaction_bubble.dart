@@ -11,15 +11,20 @@ class StreamReactionBubble extends StatelessWidget {
   /// {@macro streamReactionBubble}
   const StreamReactionBubble({
     super.key,
+    required this.ownId,
     required this.reactions,
     required this.borderColor,
     required this.backgroundColor,
-    required this.maskColor,
+    required this.ownReactionColor,
+    required this.otherReactionColor,
     this.reverse = false,
     this.flipTail = false,
     this.highlightOwnReactions = true,
     this.tailCirclesSpacing = 0,
   });
+
+  /// The id of the current user.
+  final String ownId;
 
   /// Reactions to show
   final List<Reaction> reactions;
@@ -29,9 +34,6 @@ class StreamReactionBubble extends StatelessWidget {
 
   /// Background color of bubble
   final Color backgroundColor;
-
-  /// Mask color
-  final Color maskColor;
 
   /// Reverse for other side
   final bool reverse;
@@ -45,70 +47,92 @@ class StreamReactionBubble extends StatelessWidget {
   /// Spacing for tail circles
   final double tailCirclesSpacing;
 
+  final Color ownReactionColor;
+
+  final Color otherReactionColor;
+
   @override
   Widget build(BuildContext context) {
     final reactionIcons = StreamChatConfiguration.of(context).reactionIcons;
     final totalReactions = reactions.length;
     final offset =
         totalReactions > 1 ? 16.0.mirrorConditionally(flipTail) : 2.0;
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Transform.translate(
-          offset: Offset(-offset, 0),
-          child: Container(
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              color: maskColor,
-              borderRadius: const BorderRadius.all(Radius.circular(16)),
-            ),
+
+    final firstReaction = reactions.first;
+
+    final backgroundColor = totalReactions > 1
+        ? otherReactionColor
+        : (firstReaction.user!.id == ownId
+            ? ownReactionColor
+            : otherReactionColor);
+
+    return SizedBox(
+      height: 34,
+      child: Stack(
+        alignment: Alignment.center,
+        clipBehavior: Clip.none,
+        children: [
+          Transform.translate(
+            offset: Offset(-0, 0),
             child: Container(
-              padding: EdgeInsets.symmetric(
-                vertical: 4,
-                horizontal: totalReactions > 1 ? 4.0 : 0,
-              ),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: borderColor,
+              // height: 32,
+              // padding: const EdgeInsets.all(2),
+              // decoration: BoxDecoration(
+              //   color: maskColor,
+              //   borderRadius: const BorderRadius.all(Radius.circular(16)),
+              // ),
+              child: Container(
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: borderColor,
+                  ),
+                  color: backgroundColor,
+                  borderRadius: const BorderRadius.all(Radius.circular(99)),
                 ),
-                color: backgroundColor,
-                borderRadius: const BorderRadius.all(Radius.circular(14)),
-              ),
-              child: LayoutBuilder(
-                builder: (context, constraints) => Flex(
-                  direction: Axis.horizontal,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (constraints.maxWidth < double.infinity)
-                      ...reactions
-                          .take((constraints.maxWidth) ~/ 24)
-                          .map((reaction) => _buildReaction(
-                                reactionIcons,
-                                reaction,
-                                context,
-                              ))
-                          .toList(),
-                    if (constraints.maxWidth == double.infinity)
-                      ...reactions
-                          .map((reaction) => _buildReaction(
-                                reactionIcons,
-                                reaction,
-                                context,
-                              ))
-                          .toList(),
-                  ],
+                child: LayoutBuilder(
+                  builder: (context, constraints) => Flex(
+                    direction: Axis.horizontal,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      if (constraints.maxWidth < double.infinity)
+                        ...reactions
+                            .take((constraints.maxWidth) ~/ 24)
+                            .map((reaction) => _buildReaction(
+                                  reactionIcons,
+                                  reaction,
+                                  context,
+                                ))
+                            .toList(),
+                      if (constraints.maxWidth == double.infinity)
+                        ...reactions
+                            .map((reaction) => _buildReaction(
+                                  reactionIcons,
+                                  reaction,
+                                  context,
+                                ))
+                            .toList(),
+                    ],
+                  ),
                 ),
               ),
             ),
           ),
-        ),
-        Positioned(
-          bottom: 2,
-          left: reverse ? null : 13,
-          right: reverse ? 13 : null,
-          child: _buildReactionsTail(context),
-        ),
-      ],
+          Positioned(
+            bottom: -2,
+            // left: -2,
+            left: reverse ? 0 : null,
+            right: reverse ? null : 0,
+            child: _buildReactionsTail(backgroundColor, context),
+          ),
+          // Positioned(
+          //   bottom: 2,
+          //   left: reverse ? null : 13,
+          //   right: reverse ? 13 : null,
+          //   child: _buildReactionsTail(context),
+          // ),
+        ],
+      ),
     );
   }
 
@@ -123,35 +147,40 @@ class StreamReactionBubble extends StatelessWidget {
 
     final chatThemeData = StreamChatTheme.of(context);
     final userId = StreamChat.of(context).currentUser?.id;
-    return Padding(
-      padding: const EdgeInsets.symmetric(
-        horizontal: 4,
+    return Container(
+      padding: const EdgeInsets.all(4),
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color:
+            reaction.user?.id == userId ? ownReactionColor : otherReactionColor,
       ),
-      child: reactionIcon != null
-          ? ConstrainedBox(
-              constraints: BoxConstraints.tight(const Size.square(16)),
-              child: reactionIcon.builder(
-                context,
-                !highlightOwnReactions || reaction.user?.id == userId,
-                16,
+      child: Center(
+        child: reactionIcon != null
+            ? ConstrainedBox(
+                constraints: BoxConstraints.tight(const Size.square(20)),
+                child: reactionIcon.builder(
+                  context,
+                  !highlightOwnReactions || reaction.user?.id == userId,
+                  20,
+                ),
+              )
+            : Icon(
+                Icons.help_outline_rounded,
+                size: 20,
+                color: (!highlightOwnReactions || reaction.user?.id == userId)
+                    ? chatThemeData.colorTheme.accentPrimary
+                    : chatThemeData.colorTheme.textHighEmphasis
+                        .withOpacity(0.5),
               ),
-            )
-          : Icon(
-              Icons.help_outline_rounded,
-              size: 16,
-              color: (!highlightOwnReactions || reaction.user?.id == userId)
-                  ? chatThemeData.colorTheme.accentPrimary
-                  : chatThemeData.colorTheme.textHighEmphasis.withOpacity(0.5),
-            ),
+      ),
     );
   }
 
-  Widget _buildReactionsTail(BuildContext context) {
+  Widget _buildReactionsTail(Color color, BuildContext context) {
     final tail = CustomPaint(
       painter: ReactionBubblePainter(
-        backgroundColor,
+        color,
         borderColor,
-        maskColor,
         tailCirclesSpace: tailCirclesSpacing,
         flipTail: !flipTail,
         numberOfReactions: reactions.length,
@@ -162,9 +191,9 @@ class StreamReactionBubble extends StatelessWidget {
 }
 
 /// Painter widget for a reaction bubble
-class ReactionBubblePainter extends CustomPainter {
-  /// Constructor for creating a [ReactionBubblePainter]
-  ReactionBubblePainter(
+class ReactionBubbleDetailPainter extends CustomPainter {
+  /// Constructor for creating a [ReactionBubbleDetailPainter]
+  ReactionBubbleDetailPainter(
     this.color,
     this.borderColor,
     this.maskColor, {
@@ -193,86 +222,82 @@ class ReactionBubblePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    _drawOvalMask(size, canvas);
+    _drawLittleOval(size, canvas);
 
-    _drawMask(size, canvas);
-
-    _drawOval(size, canvas);
-
-    _drawOvalBorder(size, canvas);
-
-    _drawArc(size, canvas);
-
-    _drawBorder(size, canvas);
+    _drawBigOval(size, canvas);
   }
 
-  void _drawOvalMask(Size size, Canvas canvas) {
+  void _drawLittleOval(Size size, Canvas canvas) {
     final paint = Paint()
-      ..color = maskColor
+      ..color = color
       ..style = PaintingStyle.fill;
 
     final path = Path()
       ..addOval(
-        Rect.fromCircle(
-          center: const Offset(4, 3).mirrorConditionally(flipTail) +
-              Offset(tailCirclesSpace, tailCirclesSpace)
-                  .mirrorConditionally(flipTail),
-          radius: 4,
-        ),
+        Rect.fromCenter(center: Offset.zero, width: 8, height: 7),
       );
     canvas.drawPath(path, paint);
   }
 
-  void _drawOvalBorder(Size size, Canvas canvas) {
+  void _drawBigOval(Size size, Canvas canvas) {
     final paint = Paint()
-      ..color = borderColor
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
+      ..color = color
+      ..style = PaintingStyle.fill;
+
+    final offset = const Offset(-8, -12).mirrorConditionally(flipTail);
 
     final path = Path()
       ..addOval(
-        Rect.fromCircle(
-          center: const Offset(4, 3).mirrorConditionally(flipTail) +
-              Offset(tailCirclesSpace, tailCirclesSpace)
-                  .mirrorConditionally(flipTail),
-          radius: 2,
-        ),
+        Rect.fromCenter(center: offset, width: 14, height: 13),
       );
     canvas.drawPath(path, paint);
   }
 
-  void _drawOval(Size size, Canvas canvas) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = 1;
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
 
-    final path = Path()
-      ..addOval(Rect.fromCircle(
-        center: const Offset(4, 3).mirrorConditionally(flipTail) +
-            Offset(tailCirclesSpace, tailCirclesSpace)
-                .mirrorConditionally(flipTail),
-        radius: 2,
-      ));
-    canvas.drawPath(path, paint);
+/// Painter widget for a reaction bubble
+class ReactionBubblePainter extends CustomPainter {
+  /// Constructor for creating a [ReactionBubblePainter]
+  ReactionBubblePainter(
+    this.color,
+    this.borderColor, {
+    this.tailCirclesSpace = 0,
+    this.flipTail = false,
+    this.numberOfReactions = 0,
+  });
+
+  /// Color of bubble
+  final Color color;
+
+  /// Border color of bubble
+  final Color borderColor;
+
+  /// Tail circle space
+  final double tailCirclesSpace;
+
+  /// Flip tail
+  final bool flipTail;
+
+  /// Number of reactions on the page
+  final int numberOfReactions;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    _drawLittleCircle(size, canvas);
+
+    _drawArc(size, canvas);
   }
 
-  void _drawBorder(Size size, Canvas canvas) {
+  void _drawLittleCircle(Size size, Canvas canvas) {
     final paint = Paint()
-      ..color = borderColor
-      ..strokeWidth = 1
-      ..style = PaintingStyle.stroke;
+      ..color = color
+      ..style = PaintingStyle.fill;
 
-    const dy = -2.2;
-    final startAngle = flipTail ? -0.1 : 1.1;
-    final sweepAngle = flipTail ? -1.2 : (numberOfReactions > 1 ? 1.2 : 0.9);
     final path = Path()
-      ..addArc(
-        Rect.fromCircle(
-          center: const Offset(1, dy).mirrorConditionally(flipTail),
-          radius: 4,
-        ),
-        -pi * startAngle,
-        -pi / sweepAngle,
+      ..addOval(
+        Rect.fromCenter(center: Offset.zero, width: 5, height: 5),
       );
     canvas.drawPath(path, paint);
   }
@@ -282,44 +307,21 @@ class ReactionBubblePainter extends CustomPainter {
       ..color = color
       ..strokeWidth = 1;
 
-    const dy = -2.2;
-    final startAngle = flipTail ? -0.0 : 1.0;
-    final sweepAngle = flipTail ? -1.3 : 1.3;
+    final offset = const Offset(6, -7).mirrorConditionally(flipTail);
+
+    final startAngle = !flipTail ? -0.1 : 1.1;
+    final sweepAngle = !flipTail ? -1.3 : 1.3;
     final path = Path()
       ..addArc(
-        Rect.fromCircle(
-          center: const Offset(1, dy).mirrorConditionally(flipTail),
-          radius: 4,
-        ),
+        Rect.fromCenter(center: offset, width: 10, height: 10),
         -pi * startAngle,
         -pi * sweepAngle,
       );
     canvas.drawPath(path, paint);
   }
 
-  void _drawMask(Size size, Canvas canvas) {
-    final paint = Paint()
-      ..color = maskColor
-      ..strokeWidth = 1
-      ..style = PaintingStyle.fill;
-
-    const dy = -2.2;
-    final startAngle = flipTail ? -0.1 : 1.1;
-    final sweepAngle = flipTail ? -1.2 : 1.2;
-    final path = Path()
-      ..addArc(
-        Rect.fromCircle(
-          center: const Offset(1, dy).mirrorConditionally(flipTail),
-          radius: 6,
-        ),
-        -pi * startAngle,
-        -pi / sweepAngle,
-      );
-    canvas.drawPath(path, paint);
-  }
-
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => true;
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
 /// Extension on [Offset]
