@@ -326,6 +326,7 @@ class MessageWidgetContent extends StatelessWidget {
                                           borderSide: borderSide,
                                           shape: shape,
                                           messageTheme: messageTheme,
+                                          reverse: reverse,
                                         ),
                                       )
                                     : MessageCard(

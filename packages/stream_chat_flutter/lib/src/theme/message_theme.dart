@@ -11,6 +11,7 @@ class StreamMessageThemeData with Diagnosticable {
   const StreamMessageThemeData({
     this.repliesStyle,
     this.messageTextStyle,
+    this.messageDeletedTextStyle,
     this.messageAuthorStyle,
     this.messageLinksStyle,
     this.messageBackgroundColor,
@@ -25,6 +26,9 @@ class StreamMessageThemeData with Diagnosticable {
 
   /// Text style for message text
   final TextStyle? messageTextStyle;
+
+  /// Text style for message text
+  final TextStyle? messageDeletedTextStyle;
 
   /// Text style for message author
   final TextStyle? messageAuthorStyle;
@@ -62,6 +66,7 @@ class StreamMessageThemeData with Diagnosticable {
   /// Copy with a theme
   StreamMessageThemeData copyWith({
     TextStyle? messageTextStyle,
+    TextStyle? messageDeletedTextStyle,
     TextStyle? messageAuthorStyle,
     TextStyle? messageLinksStyle,
     TextStyle? createdAtStyle,
@@ -76,6 +81,8 @@ class StreamMessageThemeData with Diagnosticable {
   }) {
     return StreamMessageThemeData(
       messageTextStyle: messageTextStyle ?? this.messageTextStyle,
+      messageDeletedTextStyle:
+          messageDeletedTextStyle ?? this.messageDeletedTextStyle,
       messageAuthorStyle: messageAuthorStyle ?? this.messageAuthorStyle,
       messageLinksStyle: messageLinksStyle ?? this.messageLinksStyle,
       createdAtStyle: createdAtStyle ?? this.createdAtStyle,
@@ -104,6 +111,8 @@ class StreamMessageThemeData with Diagnosticable {
       createdAtStyle: TextStyle.lerp(a.createdAtStyle, b.createdAtStyle, t),
       messageAuthorStyle:
           TextStyle.lerp(a.messageAuthorStyle, b.messageAuthorStyle, t),
+      messageDeletedTextStyle: TextStyle.lerp(
+          a.messageDeletedTextStyle, b.messageDeletedTextStyle, t),
       messageBackgroundColor:
           Color.lerp(a.messageBackgroundColor, b.messageBackgroundColor, t),
       messageBorderColor:
@@ -133,6 +142,9 @@ class StreamMessageThemeData with Diagnosticable {
     return copyWith(
       messageTextStyle: messageTextStyle?.merge(other.messageTextStyle) ??
           other.messageTextStyle,
+      messageDeletedTextStyle:
+          messageDeletedTextStyle?.merge(other.messageDeletedTextStyle) ??
+              other.messageDeletedTextStyle,
       messageAuthorStyle: messageAuthorStyle?.merge(other.messageAuthorStyle) ??
           other.messageAuthorStyle,
       messageLinksStyle: messageLinksStyle?.merge(other.messageLinksStyle) ??
@@ -157,6 +169,7 @@ class StreamMessageThemeData with Diagnosticable {
       other is StreamMessageThemeData &&
           runtimeType == other.runtimeType &&
           messageTextStyle == other.messageTextStyle &&
+          messageDeletedTextStyle == other.messageDeletedTextStyle &&
           messageAuthorStyle == other.messageAuthorStyle &&
           messageLinksStyle == other.messageLinksStyle &&
           createdAtStyle == other.createdAtStyle &&
@@ -172,6 +185,7 @@ class StreamMessageThemeData with Diagnosticable {
   @override
   int get hashCode =>
       messageTextStyle.hashCode ^
+      messageDeletedTextStyle.hashCode ^
       messageAuthorStyle.hashCode ^
       messageLinksStyle.hashCode ^
       createdAtStyle.hashCode ^
@@ -189,6 +203,8 @@ class StreamMessageThemeData with Diagnosticable {
     super.debugFillProperties(properties);
     properties
       ..add(DiagnosticsProperty('messageTextStyle', messageTextStyle))
+      ..add(DiagnosticsProperty(
+          'messageDeletedTextStyle', messageDeletedTextStyle))
       ..add(DiagnosticsProperty('messageAuthorStyle', messageAuthorStyle))
       ..add(DiagnosticsProperty('messageLinksStyle', messageLinksStyle))
       ..add(DiagnosticsProperty('createdAtStyle', createdAtStyle))
