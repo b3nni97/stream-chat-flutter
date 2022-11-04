@@ -67,8 +67,8 @@ class StreamMessageInputThemeData with Diagnosticable {
     this.inputBackgroundColor,
     this.inputTextStyle,
     this.inputDecoration,
-    this.activeBorderGradient,
-    this.idleBorderGradient,
+    this.activeBorderColor,
+    this.idleBorderColor,
     this.borderRadius,
     this.expandButtonColor,
     this.linkHighlightColor,
@@ -107,11 +107,11 @@ class StreamMessageInputThemeData with Diagnosticable {
   /// InputDecoration of [MessageInput]
   final InputDecoration? inputDecoration;
 
-  /// Border gradient when the [MessageInput] is not focused
-  final Gradient? idleBorderGradient;
+  /// Border Color when the [MessageInput] is not focused
+  final Color? idleBorderColor;
 
-  /// Border gradient when the [MessageInput] is focused
-  final Gradient? activeBorderGradient;
+  /// Border Color when the [MessageInput] is focused
+  final Color? activeBorderColor;
 
   /// Border radius of [MessageInput]
   final BorderRadius? borderRadius;
@@ -138,8 +138,8 @@ class StreamMessageInputThemeData with Diagnosticable {
     Color? expandButtonColor,
     TextStyle? inputTextStyle,
     InputDecoration? inputDecoration,
-    Gradient? activeBorderGradient,
-    Gradient? idleBorderGradient,
+    Color? activeBorderGradient,
+    Color? idleBorderGradient,
     BorderRadius? borderRadius,
     bool? enableSafeArea,
     double? elevation,
@@ -157,8 +157,8 @@ class StreamMessageInputThemeData with Diagnosticable {
       inputTextStyle: inputTextStyle ?? this.inputTextStyle,
       sendButtonIdleColor: sendButtonIdleColor ?? this.sendButtonIdleColor,
       inputDecoration: inputDecoration ?? this.inputDecoration,
-      activeBorderGradient: activeBorderGradient ?? this.activeBorderGradient,
-      idleBorderGradient: idleBorderGradient ?? this.idleBorderGradient,
+      activeBorderColor: activeBorderGradient ?? this.activeBorderColor,
+      idleBorderColor: idleBorderGradient ?? this.idleBorderColor,
       borderRadius: borderRadius ?? this.borderRadius,
       enableSafeArea: enableSafeArea ?? this.enableSafeArea,
       elevation: elevation ?? this.elevation,
@@ -177,13 +177,13 @@ class StreamMessageInputThemeData with Diagnosticable {
           Color.lerp(a.actionButtonColor, b.actionButtonColor, t),
       actionButtonIdleColor:
           Color.lerp(a.actionButtonIdleColor, b.actionButtonIdleColor, t),
-      activeBorderGradient:
-          Gradient.lerp(a.activeBorderGradient, b.activeBorderGradient, t),
+      activeBorderColor:
+          Color.lerp(a.activeBorderColor, b.activeBorderColor, t),
       borderRadius: BorderRadius.lerp(a.borderRadius, b.borderRadius, t),
       expandButtonColor:
           Color.lerp(a.expandButtonColor, b.expandButtonColor, t),
-      idleBorderGradient:
-          Gradient.lerp(a.idleBorderGradient, b.idleBorderGradient, t),
+      idleBorderColor:
+          Color.lerp(a.idleBorderColor, b.idleBorderColor, t),
       inputBackgroundColor:
           Color.lerp(a.inputBackgroundColor, b.inputBackgroundColor, t),
       inputTextStyle: TextStyle.lerp(a.inputTextStyle, b.inputTextStyle, t),
@@ -212,8 +212,8 @@ class StreamMessageInputThemeData with Diagnosticable {
           inputTextStyle?.merge(other.inputTextStyle) ?? other.inputTextStyle,
       inputDecoration: inputDecoration?.merge(other.inputDecoration) ??
           other.inputDecoration,
-      activeBorderGradient: other.activeBorderGradient,
-      idleBorderGradient: other.idleBorderGradient,
+      activeBorderGradient: other.activeBorderColor,
+      idleBorderGradient: other.idleBorderColor,
       borderRadius: other.borderRadius,
       expandButtonColor: other.expandButtonColor,
       linkHighlightColor: other.linkHighlightColor,
@@ -237,8 +237,8 @@ class StreamMessageInputThemeData with Diagnosticable {
           inputBackgroundColor == other.inputBackgroundColor &&
           inputTextStyle == other.inputTextStyle &&
           inputDecoration == other.inputDecoration &&
-          idleBorderGradient == other.idleBorderGradient &&
-          activeBorderGradient == other.activeBorderGradient &&
+          idleBorderColor == other.idleBorderColor &&
+          activeBorderColor == other.activeBorderColor &&
           borderRadius == other.borderRadius &&
           linkHighlightColor == other.linkHighlightColor &&
           enableSafeArea == other.enableSafeArea &&
@@ -256,8 +256,8 @@ class StreamMessageInputThemeData with Diagnosticable {
       inputBackgroundColor.hashCode ^
       inputTextStyle.hashCode ^
       inputDecoration.hashCode ^
-      idleBorderGradient.hashCode ^
-      activeBorderGradient.hashCode ^
+      idleBorderColor.hashCode ^
+      activeBorderColor.hashCode ^
       borderRadius.hashCode ^
       linkHighlightColor.hashCode ^
       elevation.hashCode ^
@@ -276,8 +276,8 @@ class StreamMessageInputThemeData with Diagnosticable {
       ..add(ColorProperty('sendButtonIdleColor', sendButtonIdleColor))
       ..add(DiagnosticsProperty('inputTextStyle', inputTextStyle))
       ..add(DiagnosticsProperty('inputDecoration', inputDecoration))
-      ..add(DiagnosticsProperty('activeBorderGradient', activeBorderGradient))
-      ..add(DiagnosticsProperty('idleBorderGradient', idleBorderGradient))
+      ..add(DiagnosticsProperty('activeBorderGradient', activeBorderColor))
+      ..add(DiagnosticsProperty('idleBorderGradient', idleBorderColor))
       ..add(DiagnosticsProperty('borderRadius', borderRadius))
       ..add(ColorProperty('expandButtonColor', expandButtonColor))
       ..add(ColorProperty('linkHighlightColor', linkHighlightColor))

@@ -49,20 +49,8 @@ final _messageInputThemeControl = StreamMessageInputThemeData(
   sendButtonIdleColor: StreamColorTheme.light().disabled,
   inputBackgroundColor: StreamColorTheme.light().barsBg,
   inputTextStyle: StreamTextTheme.light().body,
-  idleBorderGradient: LinearGradient(
-    stops: const [0.0, 1.0],
-    colors: [
-      StreamColorTheme.light().disabled,
-      StreamColorTheme.light().disabled,
-    ],
-  ),
-  activeBorderGradient: LinearGradient(
-    stops: const [0.0, 1.0],
-    colors: [
-      StreamColorTheme.light().disabled,
-      StreamColorTheme.light().disabled,
-    ],
-  ),
+  idleBorderColor: StreamColorTheme.light().disabled,
+  activeBorderColor: StreamColorTheme.light().disabled,
 );
 
 final _messageInputThemeControlMidLerp = StreamMessageInputThemeData(
@@ -79,20 +67,8 @@ final _messageInputThemeControlMidLerp = StreamMessageInputThemeData(
     fontSize: 14,
     fontWeight: FontWeight.w500,
   ),
-  idleBorderGradient: const LinearGradient(
-    stops: [0.0, 1.0],
-    colors: [
-      Color(0xff848585),
-      Color(0xff848585),
-    ],
-  ),
-  activeBorderGradient: const LinearGradient(
-    stops: [0.0, 1.0],
-    colors: [
-      Color(0xff848585),
-      Color(0xff848585),
-    ],
-  ),
+  idleBorderColor: Color(0xff848585),
+  activeBorderColor: Color(0xff848585),
 );
 
 final _messageInputThemeControlDark = StreamMessageInputThemeData(
@@ -105,18 +81,6 @@ final _messageInputThemeControlDark = StreamMessageInputThemeData(
   sendButtonIdleColor: StreamColorTheme.dark().disabled,
   inputBackgroundColor: StreamColorTheme.dark().barsBg,
   inputTextStyle: StreamTextTheme.dark().body,
-  idleBorderGradient: LinearGradient(
-    stops: const [0.0, 1.0],
-    colors: [
-      StreamColorTheme.dark().disabled,
-      StreamColorTheme.dark().disabled,
-    ],
-  ),
-  activeBorderGradient: LinearGradient(
-    stops: const [0.0, 1.0],
-    colors: [
-      StreamColorTheme.dark().disabled,
-      StreamColorTheme.dark().disabled,
-    ],
-  ),
+  idleBorderColor: StreamColorTheme.dark().disabled,
+  activeBorderColor: StreamColorTheme.dark().disabled,
 );

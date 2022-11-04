@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -17,15 +18,17 @@ class StreamVisibleFootnote extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        StreamSvgIcon.eye(
-          color: chatThemeData.colorTheme.textLowEmphasis,
+        Icon(
+          CupertinoIcons.eye_fill,
+          color: chatThemeData.ownMessageTheme.messageDeletedTextStyle!.color,
           size: 16,
         ),
         const SizedBox(width: 8),
         Text(
           context.translations.onlyVisibleToYouText,
-          style: chatThemeData.textTheme.footnote
-              .copyWith(color: chatThemeData.colorTheme.textLowEmphasis),
+          style: chatThemeData.textTheme.footnote.copyWith(
+            color: chatThemeData.ownMessageTheme.messageDeletedTextStyle!.color,
+          ),
         ),
       ],
     );

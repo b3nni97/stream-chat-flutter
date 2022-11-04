@@ -236,18 +236,8 @@ class StreamChatThemeData {
         inputBackgroundColor: colorTheme.barsBg,
         inputTextStyle: textTheme.body,
         linkHighlightColor: colorTheme.accentPrimary,
-        idleBorderGradient: LinearGradient(
-          colors: [
-            colorTheme.disabled,
-            colorTheme.disabled,
-          ],
-        ),
-        activeBorderGradient: LinearGradient(
-          colors: [
-            colorTheme.disabled,
-            colorTheme.disabled,
-          ],
-        ),
+        idleBorderColor: colorTheme.disabled,
+        activeBorderColor: colorTheme.disabled,
       ),
       galleryHeaderTheme: StreamGalleryHeaderThemeData(
         closeButtonColor: colorTheme.textHighEmphasis,

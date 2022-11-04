@@ -728,9 +728,9 @@ class StreamMessageInputState extends State<StreamMessageInput>
           margin: margin,
           decoration: BoxDecoration(
             borderRadius: _messageInputTheme.borderRadius,
-            gradient: _effectiveFocusNode.hasFocus
-                ? _messageInputTheme.activeBorderGradient
-                : _messageInputTheme.idleBorderGradient,
+            color: _effectiveFocusNode.hasFocus
+                ? _messageInputTheme.activeBorderColor
+                : _messageInputTheme.idleBorderColor,
             border: _draggingBorder,
           ),
           child: Padding(

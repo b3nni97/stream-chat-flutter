@@ -252,7 +252,7 @@ class _MessageCardState extends State<MessageCard> {
     }
 
     if (widget.isGiphy) {
-      return Colors.transparent;
+      return widget.messageTheme.messageBackgroundColor;
     }
 
     return widget.messageTheme.messageBackgroundColor;
