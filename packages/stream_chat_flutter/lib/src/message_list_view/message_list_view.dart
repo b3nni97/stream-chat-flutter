@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
 import 'package:stream_chat_flutter/scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -117,6 +118,7 @@ class StreamMessageListView extends StatefulWidget {
     this.paginationLoadingIndicatorBuilder,
     this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.onDrag,
     this.spacingWidgetBuilder = _defaultSpacingWidgetBuilder,
+    this.scrollToBottomWidget,
   });
 
   /// [ScrollViewKeyboardDismissBehavior] the defines how this [PositionedList] will
@@ -266,6 +268,9 @@ class StreamMessageListView extends StatefulWidget {
 
   /// {@macro spacingWidgetBuilder}
   final SpacingWidgetBuilder spacingWidgetBuilder;
+
+  /// Replace the scroll to bottom indicator with a custom widget
+  final Widget? scrollToBottomWidget;
 
   static Widget _defaultSpacingWidgetBuilder(
     BuildContext context,
@@ -954,35 +959,53 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
           child: Stack(
             clipBehavior: Clip.none,
             children: [
-              FloatingActionButton(
-                backgroundColor: _streamTheme.colorTheme.barsBg,
-                onPressed: () async {
-                  if (unreadCount > 0) {
-                    streamChannel!.channel.markRead();
-                  }
-                  if (!_upToDate) {
-                    _bottomPaginationActive = false;
-                    initialAlignment = 0;
-                    initialIndex = 0;
-                    await streamChannel!.reloadChannel();
+              Positioned.fill(
+                child: widget.scrollToBottomWidget ??
+                    CupertinoButton(
+                      minSize: 0,
+                      padding: EdgeInsets.zero,
+                      onPressed: () async {
+                        if (unreadCount > 0) {
+                          streamChannel!.channel.markRead();
+                        }
+                        if (!_upToDate) {
+                          _bottomPaginationActive = false;
+                          initialAlignment = 0;
+                          initialIndex = 0;
+                          await streamChannel!.reloadChannel();
 
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
-                      _scrollController!.jumpTo(index: 0);
-                    });
-                  } else {
-                    _showScrollToBottom.value = false;
-                    _scrollController!.jumpTo(
-                      index: 0,
-                    );
-                  }
-                },
-                child: widget.reverse
-                    ? StreamSvgIcon.down(
-                        color: _streamTheme.colorTheme.textHighEmphasis,
-                      )
-                    : StreamSvgIcon.up(
-                        color: _streamTheme.colorTheme.textHighEmphasis,
-                      ),
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _scrollController!.jumpTo(index: 0);
+                          });
+                        } else {
+                          _showScrollToBottom.value = false;
+                          _scrollController!.jumpTo(
+                            index: 0,
+                          );
+                        }
+                      },
+                      child: widget.scrollToBottomWidget ??
+                          Container(
+                            decoration: BoxDecoration(
+                              color: _streamTheme.colorTheme.barsBg,
+                              shape: BoxShape.circle,
+                            ),
+                            padding: const EdgeInsets.all(4),
+                            child: widget.reverse
+                                ? Icon(
+                                    CupertinoIcons.chevron_down,
+                                    color: _streamTheme
+                                        .colorTheme.textHighEmphasis,
+                                    size: 24,
+                                  )
+                                : Icon(
+                                    CupertinoIcons.chevron_up,
+                                    color: _streamTheme
+                                        .colorTheme.textHighEmphasis,
+                                    size: 24,
+                                  ),
+                          ),
+                    ),
               ),
               if (showUnreadCount)
                 Positioned(
