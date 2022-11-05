@@ -954,58 +954,55 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         return Positioned(
           bottom: 8,
           right: 8,
-          width: 40,
-          height: 40,
+          width: 44,
+          height: 44,
           child: Stack(
             clipBehavior: Clip.none,
             children: [
               Positioned.fill(
-                child: widget.scrollToBottomWidget ??
-                    CupertinoButton(
-                      minSize: 0,
-                      padding: EdgeInsets.zero,
-                      onPressed: () async {
-                        if (unreadCount > 0) {
-                          streamChannel!.channel.markRead();
-                        }
-                        if (!_upToDate) {
-                          _bottomPaginationActive = false;
-                          initialAlignment = 0;
-                          initialIndex = 0;
-                          await streamChannel!.reloadChannel();
+                child: CupertinoButton(
+                  minSize: 0,
+                  padding: EdgeInsets.zero,
+                  onPressed: () async {
+                    if (unreadCount > 0) {
+                      streamChannel!.channel.markRead();
+                    }
+                    if (!_upToDate) {
+                      _bottomPaginationActive = false;
+                      initialAlignment = 0;
+                      initialIndex = 0;
+                      await streamChannel!.reloadChannel();
 
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            _scrollController!.jumpTo(index: 0);
-                          });
-                        } else {
-                          _showScrollToBottom.value = false;
-                          _scrollController!.jumpTo(
-                            index: 0,
-                          );
-                        }
-                      },
-                      child: widget.scrollToBottomWidget ??
-                          Container(
-                            decoration: BoxDecoration(
-                              color: _streamTheme.colorTheme.barsBg,
-                              shape: BoxShape.circle,
-                            ),
-                            padding: const EdgeInsets.all(4),
-                            child: widget.reverse
-                                ? Icon(
-                                    CupertinoIcons.chevron_down,
-                                    color: _streamTheme
-                                        .colorTheme.textHighEmphasis,
-                                    size: 24,
-                                  )
-                                : Icon(
-                                    CupertinoIcons.chevron_up,
-                                    color: _streamTheme
-                                        .colorTheme.textHighEmphasis,
-                                    size: 24,
-                                  ),
-                          ),
-                    ),
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        _scrollController!.jumpTo(index: 0);
+                      });
+                    } else {
+                      _showScrollToBottom.value = false;
+                      _scrollController!.jumpTo(
+                        index: 0,
+                      );
+                    }
+                  },
+                  child: widget.scrollToBottomWidget ??
+                      Container(
+                        decoration: BoxDecoration(
+                          color: _streamTheme.colorTheme.barsBg,
+                          shape: BoxShape.circle,
+                        ),
+                        padding: const EdgeInsets.all(4),
+                        child: widget.reverse
+                            ? Icon(
+                                CupertinoIcons.chevron_down,
+                                color: _streamTheme.colorTheme.textHighEmphasis,
+                                size: 24,
+                              )
+                            : Icon(
+                                CupertinoIcons.chevron_up,
+                                color: _streamTheme.colorTheme.textHighEmphasis,
+                                size: 24,
+                              ),
+                      ),
+                ),
               ),
               if (showUnreadCount)
                 Positioned(
