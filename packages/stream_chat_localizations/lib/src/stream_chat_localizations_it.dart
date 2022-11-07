@@ -360,6 +360,9 @@ Il file è troppo grande per essere caricato. Il limite è di $limitInMB MB.''';
   String get youText => 'te';
 
   @override
+  String get editedText => 'Modificato';
+
+  @override
   String galleryPaginationText({
     required int currentPage,
     required int totalPages,

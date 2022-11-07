@@ -357,7 +357,8 @@ void main() {
             child: SizedBox(
               child: MessageActionsModal(
                 messageWidget: const Text('test'),
-                editMessageInputBuilder: (context, m) => const Text('test'),
+                editMessageInputBuilder: (context, m, onFinished) =>
+                    const Text('test'),
                 message: Message(
                   text: 'test',
                   user: User(

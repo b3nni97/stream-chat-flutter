@@ -358,6 +358,9 @@ class StreamChatLocalizationsEs extends GlobalStreamChatLocalizations {
   String get youText => 'Usted';
 
   @override
+  String get editedText => 'Editado';
+
+  @override
   String galleryPaginationText({
     required int currentPage,
     required int totalPages,

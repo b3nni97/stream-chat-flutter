@@ -145,6 +145,13 @@ class BottomRow extends StatelessWidget {
             style: messageTheme.createdAtStyle,
           ),
         ),
+      if (showTimeStamp && message.createdAt != message.updatedAt)
+        WidgetSpan(
+          child: Text(
+            context.translations.editedText,
+            style: messageTheme.createdAtStyle,
+          ),
+        ),
       if (showSendingIndicator)
         WidgetSpan(
           child: SendingIndicatorWrapper(
@@ -159,7 +166,7 @@ class BottomRow extends StatelessWidget {
 
     final showThreadTail = !(hasUrlAttachments || isGiphy || isOnlyEmoji) &&
         (showThreadReplyIndicator || showInChannel);
-   
+
     final threadIndicatorWidgets = <WidgetSpan>[
       if (showThreadTail)
         WidgetSpan(

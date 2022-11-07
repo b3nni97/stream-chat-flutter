@@ -64,7 +64,11 @@ typedef PlaceholderUserImage = Widget Function(BuildContext, User);
 /// A widget builder for building a pre-populated [MessageInput] for use in
 /// editing messages.
 /// {@endtemplate}
-typedef EditMessageInputBuilder = Widget Function(BuildContext, Message);
+typedef EditMessageInputBuilder = Widget Function(
+  BuildContext,
+  Message,
+  VoidCallback onFinished,
+);
 
 /// {@template channelListHeaderTitleBuilder}
 // ignore: deprecated_member_use_from_same_package

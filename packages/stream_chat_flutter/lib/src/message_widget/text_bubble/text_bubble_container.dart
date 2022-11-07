@@ -1,5 +1,6 @@
 // ignore_for_file: public_member_api_docs
 
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 
 // ignore: public_member_api_docs
@@ -9,18 +10,21 @@ class TextBubbleContainer extends StatelessWidget {
     required this.child,
     required this.backgroundColor,
     required this.reverse,
+    this.borderColor,
     super.key,
   });
 
   final Widget child;
   final Color backgroundColor;
   final bool reverse;
+  final Color? borderColor;
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: TextBubblePainter(
         color: backgroundColor,
+        borderColor: borderColor,
         alignment: reverse ? Alignment.topRight : Alignment.topLeft,
       ),
       child: child,
@@ -36,6 +40,7 @@ class TextBubblePainter extends CustomPainter {
   TextBubblePainter({
     required this.color,
     required this.alignment,
+    this.borderColor,
     this.radius = 15,
     this.nipSize = 6,
   });
@@ -45,6 +50,7 @@ class TextBubblePainter extends CustomPainter {
 
   final double radius;
   final double nipSize;
+  final Color? borderColor;
 
   // final double radius = 10.0;
 
@@ -126,6 +132,15 @@ class TextBubblePainter extends CustomPainter {
           ..color = color
           ..style = PaintingStyle.fill,
       );
+
+    if (borderColor != null) {
+      final borderPaint = Paint()
+        ..color = borderColor!
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 2;
+
+      canvas.drawPath(path, borderPaint);
+    }
   }
 
   @override

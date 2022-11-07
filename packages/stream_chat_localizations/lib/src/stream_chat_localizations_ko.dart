@@ -336,6 +336,9 @@ class StreamChatLocalizationsKo extends GlobalStreamChatLocalizations {
   String get youText => '당신';
 
   @override
+  String get editedText => '수정됨';
+
+  @override
   String galleryPaginationText({
     required int currentPage,
     required int totalPages,

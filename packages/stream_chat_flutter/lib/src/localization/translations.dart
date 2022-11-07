@@ -317,6 +317,9 @@ abstract class Translations {
   /// The text shown for "You"
   String get youText;
 
+  /// The text shown for "Edited"
+  String get editedText;
+
   /// Gallery footer pagination text
   String galleryPaginationText({
     required int currentPage,
@@ -711,6 +714,9 @@ class DefaultTranslations implements Translations {
 
   @override
   String get youText => 'You';
+
+  @override
+  String get editedText => 'Edited';
 
   @override
   String galleryPaginationText({

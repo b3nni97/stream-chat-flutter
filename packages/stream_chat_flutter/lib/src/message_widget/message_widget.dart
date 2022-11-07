@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:animated_size_and_fade/animated_size_and_fade.dart';
 import 'package:contextmenu/contextmenu.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide ButtonStyle;
@@ -297,7 +298,7 @@ class StreamMessageWidget extends StatefulWidget {
   /// {@template editMessageInputBuilder}
   /// Widget builder for edit message layout
   /// {@endtemplate}
-  final Widget Function(BuildContext, Message)? editMessageInputBuilder;
+  final EditMessageInputBuilder? editMessageInputBuilder;
 
   /// {@template textBuilder}
   /// Widget builder for building text
@@ -556,7 +557,7 @@ class StreamMessageWidget extends StatefulWidget {
     void Function(User)? onMentionTap,
     void Function(Message)? onThreadTap,
     void Function(Message)? onReplyTap,
-    Widget Function(BuildContext, Message)? editMessageInputBuilder,
+    EditMessageInputBuilder? editMessageInputBuilder,
     Widget Function(BuildContext, Message)? textBuilder,
     Widget Function(BuildContext, Message)? usernameBuilder,
     Widget Function(BuildContext, Message)? bottomRowBuilder,
@@ -811,6 +812,8 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
   @override
   bool get wantKeepAlive => widget.message.attachments.isNotEmpty;
 
+  bool editMessage = false;
+
   late StreamChatThemeData _streamChatTheme;
   late StreamChatState _streamChat;
 
@@ -847,6 +850,18 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
     final showReactions = shouldShowReactions;
 
     final channel = StreamChannel.of(context).channel;
+
+    if (editMessage &&
+        shouldShowEditMessage &&
+        widget.editMessageInputBuilder != null) {
+      return widget.editMessageInputBuilder!(context, widget.message, () {
+        if (mounted) {
+          setState(() {
+            editMessage = false;
+          });
+        }
+      });
+    }
 
     final content = Padding(
       padding: widget.padding ?? const EdgeInsets.all(8),
@@ -961,8 +976,9 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                         end: Alignment.bottomCenter,
                       ).animate(curveAnimation);
 
-                      final scaleAnimation = Tween<double>(begin: 1, end: 1.05)
-                          .animate(curveAnimation);
+                      final scaleAnimation =
+                          Tween<double>(begin: 1, end: 1.05)
+                              .animate(curveAnimation);
 
                       final topPaddingAnimation =
                           Tween<double>(begin: 0, end: 72).animate(
@@ -976,13 +992,15 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                       EdgeInsetsGeometry margin = EdgeInsets.zero;
 
                       if (showBottomRow) {
-                        margin = margin.add(const EdgeInsets.only(bottom: 18));
+                        margin =
+                            margin.add(const EdgeInsets.only(bottom: 18));
                       }
 
                       if (isPinned && hasReaction) {
                         margin = margin.add(const EdgeInsets.only(bottom: 8));
                       } else if (isPinned) {
-                        margin = margin.add(const EdgeInsets.only(bottom: 10));
+                        margin =
+                            margin.add(const EdgeInsets.only(bottom: 10));
                       }
 
                       final pickerPosition =
@@ -1061,7 +1079,8 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                                         (reactionsPickerSize.width == 0
                                                 ? minWidth
                                                 : (maxWidth -
-                                                    reactionsPickerSize.width))
+                                                    reactionsPickerSize
+                                                        .width))
                                             .clamp(minWidth, maxWidth);
 
                                     final reactionsIndicatorWithOffset =
@@ -1204,24 +1223,33 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           ),
           onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
-            showModalBottomSheet(
-              context: context,
-              elevation: 2,
-              clipBehavior: Clip.hardEdge,
-              isScrollControlled: true,
-              backgroundColor:
-                  StreamMessageInputTheme.of(context).inputBackgroundColor,
-              shape: const RoundedRectangleBorder(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(16),
-                  topRight: Radius.circular(16),
-                ),
-              ),
-              builder: (_) => EditMessageSheet(
-                message: widget.message,
-                channel: StreamChannel.of(context).channel,
-              ),
-            );
+
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted) {
+                setState(() {
+                  editMessage = true;
+                });
+              }
+            });
+
+            // showModalBottomSheet(
+            //   context: context,
+            //   elevation: 2,
+            //   clipBehavior: Clip.hardEdge,
+            //   isScrollControlled: true,
+            //   backgroundColor:
+            //       StreamMessageInputTheme.of(context).inputBackgroundColor,
+            //   shape: const RoundedRectangleBorder(
+            //     borderRadius: BorderRadius.only(
+            //       topLeft: Radius.circular(16),
+            //       topRight: Radius.circular(16),
+            //     ),
+            //   ),
+            //   builder: (_) => EditMessageSheet(
+            //     message: widget.message,
+            //     channel: StreamChannel.of(context).channel,
+            //   ),
+            // );
           },
         ),
       ],

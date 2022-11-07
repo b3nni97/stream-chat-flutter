@@ -75,7 +75,7 @@ class _EditMessageSheetState extends State<EditMessageSheet> {
                 ),
               ),
               if (widget.editMessageInputBuilder != null)
-                widget.editMessageInputBuilder!(context, widget.message)
+                widget.editMessageInputBuilder!(context, widget.message, () {})
               else
                 StreamMessageInput(
                   messageInputController: controller,

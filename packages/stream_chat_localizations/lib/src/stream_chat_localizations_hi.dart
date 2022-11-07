@@ -351,6 +351,9 @@ class StreamChatLocalizationsHi extends GlobalStreamChatLocalizations {
   String get youText => 'आप';
 
   @override
+  String get editedText => 'प्रसंस्कृत';
+
+  @override
   String galleryPaginationText({
     required int currentPage,
     required int totalPages,

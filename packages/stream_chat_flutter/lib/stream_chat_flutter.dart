@@ -57,6 +57,7 @@ export 'src/message_widget/message_text.dart';
 export 'src/message_widget/message_widget.dart';
 export 'src/message_widget/reactions/reaction_picker.dart';
 export 'src/message_widget/text_bubble.dart';
+export 'src/message_widget/text_bubble/text_bubble_container.dart';
 export 'src/misc/back_button.dart';
 export 'src/misc/connection_status_builder.dart';
 export 'src/misc/date_divider.dart';
