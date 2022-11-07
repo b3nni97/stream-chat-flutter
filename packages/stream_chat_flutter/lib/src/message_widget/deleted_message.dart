@@ -50,6 +50,7 @@ class StreamDeletedMessage extends StatelessWidget {
             context.translations.messageDeletedLabel,
             style: messageTheme.messageDeletedTextStyle?.copyWith(
               fontStyle: FontStyle.italic,
+              fontSize: 14,
             ),
           ),
         ),
