@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:animated_size_and_fade/animated_size_and_fade.dart';
 import 'package:contextmenu/contextmenu.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide ButtonStyle;
 import 'package:flutter/services.dart';
@@ -9,7 +10,9 @@ import 'package:flutter_portal/flutter_portal.dart';
 import 'package:night_vibes_context_menu/night_vibes_context_menu.dart';
 import 'package:night_vibes_context_menu/night_vibes_context_menu_action.dart';
 import 'package:night_vibes_context_menu/night_vibes_context_menu_controller.dart';
+import 'package:stages/generated/locale_keys.g.dart';
 import 'package:stages/widgets/animation/routes/context_menu.dart';
+import 'package:stages/widgets/notification/local_notifications.dart';
 import 'package:stream_chat_flutter/conditional_parent_builder/conditional_parent_builder.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/platform_widget_builder.dart';
 import 'package:stream_chat_flutter/src/context_menu_items/context_menu_reaction_picker.dart';
@@ -976,9 +979,8 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                         end: Alignment.bottomCenter,
                       ).animate(curveAnimation);
 
-                      final scaleAnimation =
-                          Tween<double>(begin: 1, end: 1.05)
-                              .animate(curveAnimation);
+                      final scaleAnimation = Tween<double>(begin: 1, end: 1.05)
+                          .animate(curveAnimation);
 
                       final topPaddingAnimation =
                           Tween<double>(begin: 0, end: 72).animate(
@@ -992,15 +994,13 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                       EdgeInsetsGeometry margin = EdgeInsets.zero;
 
                       if (showBottomRow) {
-                        margin =
-                            margin.add(const EdgeInsets.only(bottom: 18));
+                        margin = margin.add(const EdgeInsets.only(bottom: 18));
                       }
 
                       if (isPinned && hasReaction) {
                         margin = margin.add(const EdgeInsets.only(bottom: 8));
                       } else if (isPinned) {
-                        margin =
-                            margin.add(const EdgeInsets.only(bottom: 10));
+                        margin = margin.add(const EdgeInsets.only(bottom: 10));
                       }
 
                       final pickerPosition =
@@ -1079,8 +1079,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                                         (reactionsPickerSize.width == 0
                                                 ? minWidth
                                                 : (maxWidth -
-                                                    reactionsPickerSize
-                                                        .width))
+                                                    reactionsPickerSize.width))
                                             .clamp(minWidth, maxWidth);
 
                                     final reactionsIndicatorWithOffset =
@@ -1358,20 +1357,23 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           ),
           onPressed: () async {
             Navigator.of(context, rootNavigator: true).pop();
-            final deleted = await showDialog(
+
+            final deleted = await showCupertinoModalPopup(
               context: context,
-              barrierDismissible: false,
-              builder: (_) => const DeleteMessageDialog(),
+              builder: (context) {
+                return const DeleteMessageDialog();
+              },
             );
+
             if (deleted) {
               try {
                 await StreamChannel.of(context)
                     .channel
                     .deleteMessage(widget.message);
               } catch (e) {
-                showDialog(
-                  context: context,
-                  builder: (_) => const MessageDialog(),
+                NightVibesNotification.error(
+                  context.translations.deleteMessageLabel,
+                  LocaleKeys.Something_went_wrong.tr(),
                 );
               }
             }

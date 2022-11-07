@@ -201,7 +201,7 @@ Il file è troppo grande per essere caricato. Il limite è di $limitInMB MB.''';
 
   @override
   String get deleteMessageQuestion =>
-      'Sei sicuro di voler definitivamente cancellare questo\nmessaggio?';
+      'Sei sicuro di voler definitivamente cancellare questo messaggio?';
 
   @override
   String get operationCouldNotBeCompletedText =>

@@ -198,7 +198,7 @@ class StreamChatLocalizationsFr extends GlobalStreamChatLocalizations {
 
   @override
   String get deleteMessageQuestion =>
-      'Êtes-vous sûr de vouloir supprimer définitivement ce\nmessage ?';
+      'Êtes-vous sûr de vouloir supprimer définitivement ce message ?';
 
   @override
   String get operationCouldNotBeCompletedText =>

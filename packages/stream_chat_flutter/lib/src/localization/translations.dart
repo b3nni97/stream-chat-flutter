@@ -557,7 +557,7 @@ class DefaultTranslations implements Translations {
 
   @override
   String get deleteMessageQuestion =>
-      'Are you sure you want to permanently delete this\nmessage?';
+      'Are you sure you want to permanently delete this message?';
 
   @override
   String get operationCouldNotBeCompletedText =>

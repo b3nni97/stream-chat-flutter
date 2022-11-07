@@ -192,7 +192,7 @@ class StreamChatLocalizationsPt extends GlobalStreamChatLocalizations {
 
   @override
   String get deleteMessageQuestion =>
-      'Você tem certeza que deseja apagar essa\nmensagem permanentemente?';
+      'Você tem certeza que deseja apagar essa mensagem permanentemente?';
 
   @override
   String get operationCouldNotBeCompletedText =>

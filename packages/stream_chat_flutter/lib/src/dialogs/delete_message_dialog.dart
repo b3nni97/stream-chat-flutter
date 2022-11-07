@@ -1,4 +1,6 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:stages/theme/night_vibes_theme/night_vibes_theme.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
 /// {@template deleteMessageDialog}
@@ -14,6 +16,42 @@ class DeleteMessageDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final streamTheme = StreamChatTheme.of(context);
+
+    return CupertinoActionSheet(
+      title: Text(
+        context.translations.deleteMessageLabel,
+        style: TextStyle(
+          color: NightVibesTheme.of(context).red,
+          fontSize: 18,
+        ),
+      ),
+      message: Text(
+        context.translations.deleteMessageQuestion,
+        style: TextStyle(
+          color: NightVibesTheme.of(context).red,
+        ),
+      ),
+      actions: [
+        CupertinoActionSheetAction(
+          isDestructiveAction: true,
+          child: Text(
+            context.translations.deleteLabel,
+          ),
+          onPressed: () => Navigator.of(context).pop(true),
+        ),
+        CupertinoActionSheetAction(
+          isDefaultAction: true,
+          child: Text(
+            context.translations.cancelLabel,
+            style: TextStyle(
+              color: streamTheme.colorTheme.accentPrimary,
+            ),
+          ),
+          onPressed: () => Navigator.of(context).pop(false),
+        ),
+      ],
+    );
+
     return AlertDialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(16),
