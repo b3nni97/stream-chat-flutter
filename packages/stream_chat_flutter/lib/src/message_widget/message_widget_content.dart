@@ -57,6 +57,7 @@ class MessageWidgetContent extends StatelessWidget {
     this.deletedBottomRowBuilder,
     this.userAvatarBuilder,
     this.usernameBuilder,
+    this.onReactionPressed,
   });
 
   /// {@macro reverse}
@@ -191,6 +192,9 @@ class MessageWidgetContent extends StatelessWidget {
   /// {@macro usernameBuilder}
   final Widget Function(BuildContext, Message)? usernameBuilder;
 
+  /// Callback when the reaction indicator is pressed
+  final VoidCallback? onReactionPressed;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -280,9 +284,9 @@ class MessageWidgetContent extends StatelessWidget {
                                   ownId: streamChat.currentUser!.id,
                                   reverse: reverse,
                                   shouldShowReactions: shouldShowReactions,
-                                  onTap: () => _showMessageReactionsModal(
-                                    context,
-                                  ),
+                                  onTap: () {
+                                    onReactionPressed?.call();
+                                  },
                                 )
                               : null,
                           anchor: Aligned(

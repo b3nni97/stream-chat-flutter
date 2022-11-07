@@ -917,6 +917,9 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           onUserAvatarTap: widget.onUserAvatarTap,
           userAvatarBuilder: widget.userAvatarBuilder,
           usernameBuilder: widget.usernameBuilder,
+          onReactionPressed: (){
+            widget.contextMenuController?.openContextMenu();
+          },
         ),
       ),
     );

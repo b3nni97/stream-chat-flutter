@@ -78,8 +78,8 @@ class _StreamReactionPickerState extends State<StreamReactionPicker>
 
                 return Container(
                   constraints: const BoxConstraints.tightFor(
-                    height: 44,
-                    width: 44,
+                    height: 40,
+                    width: 40,
                   ),
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
