@@ -145,7 +145,7 @@ class BottomRow extends StatelessWidget {
             style: messageTheme.createdAtStyle,
           ),
         ),
-      if (showTimeStamp && message.createdAt != message.updatedAt)
+      if (showTimeStamp && message.extraData['MessageEdited'] == true)
         WidgetSpan(
           child: Text(
             context.translations.editedText,
