@@ -13,6 +13,7 @@ class StreamColorTheme {
     this.inputBg = const Color(0xfff2f2f2),
     this.appBg = const Color(0xfffcfcfc),
     this.barsBg = const Color(0xffffffff),
+    this.textDateDivider = const Color(0xffffffff),
     this.linkBg = const Color(0xffe9f2ff),
     this.accentPrimary = const Color(0xff005FFF),
     this.accentError = const Color(0xffFF3842),
@@ -65,6 +66,7 @@ class StreamColorTheme {
     this.inputBg = const Color(0xff13151b),
     this.appBg = const Color(0xff070A0D),
     this.barsBg = const Color(0xff101418),
+    this.textDateDivider = const Color(0xff101418),
     this.linkBg = const Color(0xff00193D),
     this.accentPrimary = const Color(0xff005FFF),
     this.accentError = const Color(0xffFF3742),
@@ -132,6 +134,9 @@ class StreamColorTheme {
   final Color barsBg;
 
   ///
+  final Color textDateDivider;
+
+  ///
   final Color linkBg;
 
   ///
@@ -180,6 +185,7 @@ class StreamColorTheme {
     Color? inputBg,
     Color? appBg,
     Color? barsBg,
+    Color? textDateDivider,
     Color? linkBg,
     Color? accentPrimary,
     Color? accentError,
@@ -202,6 +208,7 @@ class StreamColorTheme {
             inputBg: inputBg ?? this.inputBg,
             appBg: appBg ?? this.appBg,
             barsBg: barsBg ?? this.barsBg,
+            textDateDivider: textDateDivider ?? this.textDateDivider,
             linkBg: linkBg ?? this.linkBg,
             accentPrimary: accentPrimary ?? this.accentPrimary,
             accentError: accentError ?? this.accentError,
@@ -223,6 +230,7 @@ class StreamColorTheme {
             inputBg: inputBg ?? this.inputBg,
             appBg: appBg ?? this.appBg,
             barsBg: barsBg ?? this.barsBg,
+            textDateDivider: textDateDivider ?? this.textDateDivider,
             linkBg: linkBg ?? this.linkBg,
             accentPrimary: accentPrimary ?? this.accentPrimary,
             accentError: accentError ?? this.accentError,
@@ -249,6 +257,7 @@ class StreamColorTheme {
       inputBg: other.inputBg,
       appBg: other.appBg,
       barsBg: other.barsBg,
+      textDateDivider: other.textDateDivider,
       linkBg: other.linkBg,
       accentPrimary: other.accentPrimary,
       accentError: other.accentError,

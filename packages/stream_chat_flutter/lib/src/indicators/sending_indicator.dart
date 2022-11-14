@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -39,8 +40,9 @@ class StreamSendingIndicator extends StatelessWidget {
     if (message.status == MessageSendingStatus.sending ||
         message.status == MessageSendingStatus.updating) {
       return Icon(
-        Icons.access_time,
+        CupertinoIcons.time_solid,
         size: size,
+        color: StreamChatTheme.of(context).colorTheme.textLowEmphasis,
       );
     }
     return const SizedBox();
