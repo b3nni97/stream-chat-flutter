@@ -432,7 +432,9 @@ class StreamChannelState extends State<StreamChannel> {
               message = 'Check your connection and retry';
             }
           }
-          return Center(child: Text(message));
+          return const Center(
+            child: Text('Something went wrong, please try again later.'),
+          );
         }
 
         final dataLoaded = snapshot.data?.every((it) => it) == true;

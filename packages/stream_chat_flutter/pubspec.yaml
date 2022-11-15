@@ -47,7 +47,8 @@ dependencies:
   shimmer: ^2.0.0
   stages:
     path: ../../../../stages
-  stream_chat_flutter_core: ^5.0.0
+  stream_chat_flutter_core: 
+    path: ../stream_chat_flutter_core
   synchronized: ^3.0.0
   thumblr: ^0.0.4
   url_launcher: ^6.1.0
