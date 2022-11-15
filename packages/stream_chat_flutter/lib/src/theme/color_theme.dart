@@ -13,6 +13,7 @@ class StreamColorTheme {
     this.inputBg = const Color(0xfff2f2f2),
     this.appBg = const Color(0xfffcfcfc),
     this.barsBg = const Color(0xffffffff),
+    this.reactionPickerBg = const Color(0xffffffff),
     this.textDateDivider = const Color(0xffffffff),
     this.linkBg = const Color(0xffe9f2ff),
     this.accentPrimary = const Color(0xff005FFF),
@@ -66,6 +67,7 @@ class StreamColorTheme {
     this.inputBg = const Color(0xff13151b),
     this.appBg = const Color(0xff070A0D),
     this.barsBg = const Color(0xff101418),
+    this.reactionPickerBg = const Color(0xff101418),
     this.textDateDivider = const Color(0xff101418),
     this.linkBg = const Color(0xff00193D),
     this.accentPrimary = const Color(0xff005FFF),
@@ -134,6 +136,9 @@ class StreamColorTheme {
   final Color barsBg;
 
   ///
+  final Color reactionPickerBg;
+
+  ///
   final Color textDateDivider;
 
   ///
@@ -185,6 +190,7 @@ class StreamColorTheme {
     Color? inputBg,
     Color? appBg,
     Color? barsBg,
+    Color? reactionPickerBg,
     Color? textDateDivider,
     Color? linkBg,
     Color? accentPrimary,
@@ -208,6 +214,7 @@ class StreamColorTheme {
             inputBg: inputBg ?? this.inputBg,
             appBg: appBg ?? this.appBg,
             barsBg: barsBg ?? this.barsBg,
+            reactionPickerBg: reactionPickerBg ?? this.reactionPickerBg,
             textDateDivider: textDateDivider ?? this.textDateDivider,
             linkBg: linkBg ?? this.linkBg,
             accentPrimary: accentPrimary ?? this.accentPrimary,
@@ -230,6 +237,7 @@ class StreamColorTheme {
             inputBg: inputBg ?? this.inputBg,
             appBg: appBg ?? this.appBg,
             barsBg: barsBg ?? this.barsBg,
+            reactionPickerBg: reactionPickerBg ?? this.reactionPickerBg,
             textDateDivider: textDateDivider ?? this.textDateDivider,
             linkBg: linkBg ?? this.linkBg,
             accentPrimary: accentPrimary ?? this.accentPrimary,
@@ -257,6 +265,7 @@ class StreamColorTheme {
       inputBg: other.inputBg,
       appBg: other.appBg,
       barsBg: other.barsBg,
+      reactionPickerBg: other.reactionPickerBg,
       textDateDivider: other.textDateDivider,
       linkBg: other.linkBg,
       accentPrimary: other.accentPrimary,

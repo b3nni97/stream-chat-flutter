@@ -111,6 +111,7 @@ class StreamMessageWidget extends StatefulWidget {
     this.hideBottomRow = false,
     this.enableContextMenu = true,
     this.contextMenuController,
+    this.profileAssetBuilder,
   }) : attachmentBuilders = {
           'image': (context, message, attachments) {
             final border = RoundedRectangleBorder(
@@ -551,6 +552,10 @@ class StreamMessageWidget extends StatefulWidget {
   /// Provide context menu controller
   final NightVibesContextMenuController? contextMenuController;
 
+  /// When the channel is a group we show the profile assets of the user if this
+  /// is set
+  final Widget Function(BuildContext, Message)? profileAssetBuilder;
+
   /// {@template copyWith}
   /// Creates a copy of [StreamMessageWidget] with specified attributes
   /// overridden.
@@ -615,6 +620,7 @@ class StreamMessageWidget extends StatefulWidget {
     bool? hideBottomRow,
     bool? enableContextMenu,
     NightVibesContextMenuController? contextMenuController,
+    Widget Function(BuildContext, Message)? profileAssetBuilder,
   }) {
     return StreamMessageWidget(
       key: key ?? this.key,
@@ -687,6 +693,7 @@ class StreamMessageWidget extends StatefulWidget {
       enableContextMenu: enableContextMenu ?? this.enableContextMenu,
       contextMenuController:
           contextMenuController ?? this.contextMenuController,
+      profileAssetBuilder: profileAssetBuilder ?? this.profileAssetBuilder,
     );
   }
 
@@ -917,9 +924,11 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           onUserAvatarTap: widget.onUserAvatarTap,
           userAvatarBuilder: widget.userAvatarBuilder,
           usernameBuilder: widget.usernameBuilder,
-          onReactionPressed: (){
+          onReactionPressed: () {
             widget.contextMenuController?.openContextMenu();
           },
+          isGroup: channel.isGroup,
+          profileAssetBuilder: widget.profileAssetBuilder,
         ),
       ),
     );

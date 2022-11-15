@@ -50,7 +50,7 @@ class _StreamReactionPickerState extends State<StreamReactionPicker>
 
     final child = Material(
       borderRadius: BorderRadius.circular(24),
-      color: chatThemeData.colorTheme.barsBg,
+      color: chatThemeData.colorTheme.reactionPickerBg,
       clipBehavior: Clip.hardEdge,
       child: Padding(
         padding: const EdgeInsets.symmetric(

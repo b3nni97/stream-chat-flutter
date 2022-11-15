@@ -58,6 +58,8 @@ class MessageWidgetContent extends StatelessWidget {
     this.userAvatarBuilder,
     this.usernameBuilder,
     this.onReactionPressed,
+    this.isGroup,
+    this.profileAssetBuilder,
   });
 
   /// {@macro reverse}
@@ -195,6 +197,13 @@ class MessageWidgetContent extends StatelessWidget {
   /// Callback when the reaction indicator is pressed
   final VoidCallback? onReactionPressed;
 
+  /// Wether this message was send in a group or not
+  final bool? isGroup;
+
+  /// When the channel is a group we show the profile assets of the user if this
+  /// is set
+  final Widget Function(BuildContext, Message)? profileAssetBuilder;
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -260,20 +269,24 @@ class MessageWidgetContent extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.end,
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      if (!reverse &&
-                          showUserAvatar == DisplayWidget.show &&
-                          message.user != null) ...[
-                        UserAvatarTransform(
-                          onUserAvatarTap: onUserAvatarTap,
-                          userAvatarBuilder: userAvatarBuilder,
-                          translateUserAvatar: translateUserAvatar,
-                          messageTheme: messageTheme,
-                          message: message,
-                        ),
-                        const SizedBox(width: 4),
-                      ],
-                      if (showUserAvatar == DisplayWidget.hide)
-                        SizedBox(width: avatarWidth + 4),
+                      if (!reverse && (isGroup ?? false))
+                        profileAssetBuilder?.call(context, message) ??
+                            const SizedBox.shrink(),
+
+                      // if (!reverse &&
+                      //     showUserAvatar == DisplayWidget.show &&
+                      //     message.user != null) ...[
+                      //   UserAvatarTransform(
+                      //     onUserAvatarTap: onUserAvatarTap,
+                      //     userAvatarBuilder: userAvatarBuilder,
+                      //     translateUserAvatar: translateUserAvatar,
+                      //     messageTheme: messageTheme,
+                      //     message: message,
+                      //   ),
+                      //   const SizedBox(width: 4),
+                      // ],
+                      // if (showUserAvatar == DisplayWidget.hide)
+                      //   SizedBox(width: avatarWidth + 4),
                       Flexible(
                         child: PortalTarget(
                           visible: isMobileDevice && showReactions,
@@ -366,7 +379,7 @@ class MessageWidgetContent extends StatelessWidget {
                                   child: CustomPaint(
                                     key: reactionPickerIndicatorKey,
                                     painter: ReactionBubbleDetailPainter(
-                                      streamChatTheme.colorTheme.barsBg,
+                                      streamChatTheme.colorTheme.reactionPickerBg,
                                       Colors.transparent,
                                       Colors.transparent,
                                       tailCirclesSpace: 1,
@@ -378,18 +391,21 @@ class MessageWidgetContent extends StatelessWidget {
                           ),
                         ),
                       ),
-                      if (reverse &&
-                          showUserAvatar == DisplayWidget.show &&
-                          message.user != null) ...[
-                        UserAvatarTransform(
-                          translateUserAvatar: translateUserAvatar,
-                          messageTheme: messageTheme,
-                          message: message,
-                        ),
-                        const SizedBox(width: 4),
-                      ],
-                      if (showUserAvatar == DisplayWidget.hide)
-                        SizedBox(width: avatarWidth + 4),
+                      if (reverse && (isGroup ?? false))
+                        profileAssetBuilder?.call(context, message) ??
+                            const SizedBox.shrink(),
+                      // if (reverse &&
+                      //     showUserAvatar == DisplayWidget.show &&
+                      //     message.user != null) ...[
+                      //   UserAvatarTransform(
+                      //     translateUserAvatar: translateUserAvatar,
+                      //     messageTheme: messageTheme,
+                      //     message: message,
+                      //   ),
+                      //   const SizedBox(width: 4),
+                      // ],
+                      // if (showUserAvatar == DisplayWidget.hide)
+                      //   SizedBox(width: avatarWidth + 4),
                     ],
                   ),
                   if (isDesktopDeviceOrWeb && shouldShowReactions) ...[
