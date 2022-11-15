@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter_core/stream_chat_flutter_core.dart';
 
@@ -134,7 +135,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Text(error.message),
                         );
                       }
-                      return CircularProgressIndicator();
+                      return CupertinoActivityIndicator();
                     }
 
                     final _item = channels[index];
@@ -175,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: SizedBox(
                   height: 100,
                   width: 100,
-                  child: CircularProgressIndicator(),
+                  child: CupertinoActivityIndicator(),
                 ),
               ),
               error: (e) => Center(
@@ -266,7 +267,7 @@ class _MessageScreenState extends State<MessageScreen> {
                     child: SizedBox(
                       height: 100,
                       width: 100,
-                      child: CircularProgressIndicator(),
+                      child: CupertinoActivityIndicator(),
                     ),
                   ),
                   messageListBuilder: (

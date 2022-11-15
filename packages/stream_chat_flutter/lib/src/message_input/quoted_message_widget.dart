@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/platform_widget_builder.dart';
 import 'package:stream_chat_flutter/src/message_input/clear_input_item_button.dart';
@@ -294,7 +295,7 @@ class _ParseAttachments extends StatelessWidget {
               width: size.width,
               height: size.height,
               child: const Center(
-                child: CircularProgressIndicator(),
+                child: CupertinoActivityIndicator(),
               ),
             );
           },
@@ -385,7 +386,7 @@ class _VideoAttachmentThumbnailState extends State<_VideoAttachmentThumbnail> {
       width: 32,
       child: _controller.value.isInitialized
           ? VideoPlayer(_controller)
-          : const CircularProgressIndicator(),
+          : const CupertinoActivityIndicator(),
     );
   }
 }

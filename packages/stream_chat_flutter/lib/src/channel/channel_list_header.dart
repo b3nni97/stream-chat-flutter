@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -241,7 +242,7 @@ class _ConnectingTitleState extends StatelessWidget {
           height: 16,
           width: 16,
           child: Center(
-            child: CircularProgressIndicator(),
+            child: CupertinoActivityIndicator(),
           ),
         ),
         const SizedBox(width: 10),

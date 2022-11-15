@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:collection/collection.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:stream_chat/stream_chat.dart';
@@ -437,7 +438,7 @@ class StreamChannelState extends State<StreamChannel> {
         final dataLoaded = snapshot.data?.every((it) => it) == true;
         if (widget.showLoading && !dataLoaded) {
           return const Center(
-            child: CircularProgressIndicator(),
+            child: CupertinoActivityIndicator(),
           );
         }
         return widget.child;

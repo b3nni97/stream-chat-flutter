@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:contextmenu/contextmenu.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:photo_view/photo_view.dart';
@@ -337,7 +338,7 @@ class _FullScreenMediaState extends State<StreamFullScreenMedia> {
                   final controller = videoPackages[attachment.id]!;
                   if (!controller.initialized) {
                     return const Center(
-                      child: CircularProgressIndicator(),
+                      child: CupertinoActivityIndicator(),
                     );
                   }
                   return InkWell(

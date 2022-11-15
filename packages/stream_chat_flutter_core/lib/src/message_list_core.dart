@@ -41,7 +41,7 @@ bool Function(Message) defaultMessageFilter(String currentUserId) =>
 ///         },
 ///         loadingBuilder: (context) {
 ///           return Center(
-///             child: CircularProgressIndicator(),
+///             child: CupertinoActivityIndicator(),
 ///           );
 ///         },
 ///         messageListBuilder: (context, list) {

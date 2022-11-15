@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// A widget that shows a loading indicator when the user is near the bottom of
@@ -20,6 +21,6 @@ class StreamScrollViewLoadMoreIndicator extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
         height: height,
         width: width,
-        child: const CircularProgressIndicator.adaptive(),
+        child: const CupertinoActivityIndicator(),
       );
 }

@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat/stream_chat.dart';
 import 'package:stream_chat_persistence/stream_chat_persistence.dart';
@@ -116,7 +117,7 @@ class HomeScreen extends StatelessWidget {
               child: SizedBox(
                 width: 100,
                 height: 100,
-                child: CircularProgressIndicator(),
+                child: CupertinoActivityIndicator(),
               ),
             );
           },

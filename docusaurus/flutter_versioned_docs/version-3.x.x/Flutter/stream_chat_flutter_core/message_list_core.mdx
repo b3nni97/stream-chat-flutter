@@ -46,7 +46,7 @@ class ChannelPage extends StatelessWidget {
         },
         loadingBuilder: (context) {
           return Center(
-            child: CircularProgressIndicator(),
+            child: CupertinoActivityIndicator(),
           );
         },
         messageListBuilder: (context, list) {

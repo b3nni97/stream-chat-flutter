@@ -80,7 +80,7 @@ Widget build(BuildContext context) => Scaffold(
                           child: Text(error.message),
                         );
                     }
-                    return CircularProgressIndicator();
+                    return CupertinoActivityIndicator();
                   }
 
                   final _item = members[index];
@@ -94,7 +94,7 @@ Widget build(BuildContext context) => Scaffold(
               child: SizedBox(
                 height: 100,
                 width: 100,
-                child: CircularProgressIndicator(),
+                child: CupertinoActivityIndicator(),
               ),
             ),
             error: (e) => Center(

@@ -1,4 +1,5 @@
 import 'package:collection/collection.dart' show IterableExtension;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -143,7 +144,7 @@ class _ConnectingTitleState extends StatelessWidget {
           height: 16,
           width: 16,
           child: Center(
-            child: CircularProgressIndicator(),
+            child: CupertinoActivityIndicator(),
           ),
         ),
         const SizedBox(width: 10),

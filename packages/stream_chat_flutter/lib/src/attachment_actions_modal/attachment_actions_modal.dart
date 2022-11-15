@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -343,8 +344,8 @@ class AttachmentActionsModal extends StatelessWidget {
                                 child: Stack(
                                   fit: StackFit.expand,
                                   children: [
-                                    CircularProgressIndicator(
-                                      strokeWidth: 8,
+                                    CupertinoActivityIndicator(
+                                      radius: 8,
                                       color: theme.colorTheme.accentPrimary,
                                     ),
                                     Center(

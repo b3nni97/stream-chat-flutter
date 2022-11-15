@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -51,9 +52,8 @@ class StreamUploadProgressIndicator extends StatelessWidget {
           SizedBox(
             height: 16,
             width: 16,
-            child: CircularProgressIndicator(
-              strokeWidth: 3,
-              valueColor: AlwaysStoppedAnimation(progressIndicatorColor),
+            child: CupertinoActivityIndicator(
+              color: progressIndicatorColor,
             ),
           ),
           const SizedBox(width: 8),

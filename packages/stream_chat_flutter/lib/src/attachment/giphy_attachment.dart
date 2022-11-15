@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
 import 'package:stream_chat_flutter/src/attachment/attachment_widget.dart';
@@ -111,7 +112,7 @@ class StreamGiphyAttachment extends StreamAttachmentWidget {
                         width: constraints?.maxHeight,
                         height: constraints?.maxWidth,
                         child: const Center(
-                          child: CircularProgressIndicator(),
+                          child: CupertinoActivityIndicator(),
                         ),
                       ),
                       imageUrl: imageUrl,

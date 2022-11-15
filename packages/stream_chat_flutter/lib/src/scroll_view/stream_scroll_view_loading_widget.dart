@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 /// A widget that is displayed while the [StreamScrollView] is loading.
@@ -19,6 +20,6 @@ class StreamScrollViewLoadingWidget extends StatelessWidget {
   Widget build(BuildContext context) => SizedBox(
         height: height,
         width: width,
-        child: const CircularProgressIndicator.adaptive(),
+        child: const CupertinoActivityIndicator(),
       );
 }
