@@ -988,7 +988,16 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                         begin: widget.reverse
                             ? Alignment.bottomRight
                             : Alignment.bottomLeft,
-                        end: Alignment.bottomCenter,
+                        end: Alignment.center,
+                      ).animate(curveAnimation);
+
+                      final reactionPickerAlignAnimation = AlignmentTween(
+                        begin: widget.reverse
+                            ? Alignment.centerRight
+                            : Alignment.centerLeft,
+                        end: widget.reverse
+                            ? Alignment.centerLeft
+                            : Alignment.centerRight,
                       ).animate(curveAnimation);
 
                       final scaleAnimation = Tween<double>(begin: 1, end: 1.05)
@@ -1017,6 +1026,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
 
                       final pickerPosition =
                           _getReactionsPickerIndicatorPosition();
+                      print(widget.message.status);
 
                       final messageContent = IgnorePointer(
                         child: Container(
@@ -1070,7 +1080,9 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                                     final reactionPicker = FadeTransition(
                                       opacity: reactionPickerAnimation,
                                       child: ScaleTransition(
-                                        alignment: alignAnimation.value,
+                                        // alignment: Alignment.centerLeft,
+                                        alignment:
+                                            reactionPickerAlignAnimation.value,
                                         scale: reactionPickerAnimation,
                                         child: StreamReactionPicker(
                                           key: reactionsKey,
@@ -1107,6 +1119,8 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                                         maxWidth,
                                       );
                                     }
+
+                                    print(pickerPosition.dy);
 
                                     return Align(
                                       alignment: Alignment.bottomLeft,

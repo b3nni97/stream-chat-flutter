@@ -63,10 +63,13 @@ class StreamTypingIndicator extends StatelessWidget {
                       package: 'stream_chat_flutter',
                       height: 4,
                     ),
-                    Text(
-                      context.translations.userTypingText(users),
-                      maxLines: 1,
-                      style: style,
+                    Padding(
+                      padding: const EdgeInsets.only(left: 6),
+                      child: Text(
+                        context.translations.userTypingText(users),
+                        maxLines: 1,
+                        style: style,
+                      ),
                     ),
                   ],
                 ),
