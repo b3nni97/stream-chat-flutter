@@ -1026,7 +1026,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
 
                       final pickerPosition =
                           _getReactionsPickerIndicatorPosition();
-                      print(widget.message.status);
 
                       final messageContent = IgnorePointer(
                         child: Container(
@@ -1119,8 +1118,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                                         maxWidth,
                                       );
                                     }
-
-                                    print(pickerPosition.dy);
 
                                     return Align(
                                       alignment: Alignment.bottomLeft,
