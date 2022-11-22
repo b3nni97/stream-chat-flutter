@@ -26,15 +26,21 @@ class StreamSendingIndicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (isMessageRead) {
-      return StreamSvgIcon.checkAll(
-        size: size,
-        color: StreamChatTheme.of(context).colorTheme.accentPrimary,
+      return Transform.translate(
+        offset: const Offset(0, 1.75),
+        child: StreamSvgIcon.checkAll(
+          size: size,
+          color: StreamChatTheme.of(context).colorTheme.accentPrimary,
+        ),
       );
     }
     if (message.status == MessageSendingStatus.sent) {
-      return StreamSvgIcon.check(
-        size: size,
-        color: StreamChatTheme.of(context).colorTheme.textLowEmphasis,
+      return Transform.translate(
+        offset: const Offset(0, 1.75),
+        child: StreamSvgIcon.check(
+          size: size,
+          color: StreamChatTheme.of(context).colorTheme.textLowEmphasis,
+        ),
       );
     }
     if (message.status == MessageSendingStatus.sending ||

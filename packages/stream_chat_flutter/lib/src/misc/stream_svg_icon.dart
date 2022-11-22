@@ -256,8 +256,8 @@ class StreamSvgIcon extends StatelessWidget {
     return StreamSvgIcon(
       assetName: 'Icon_check.svg',
       color: color,
-      width: size,
-      height: size,
+      width: size! * 1.5,
+      height: size * 1.5,
     );
   }
 
@@ -266,11 +266,12 @@ class StreamSvgIcon extends StatelessWidget {
     double? size,
     Color? color,
   }) {
+    print(size);
     return StreamSvgIcon(
       assetName: 'Icon_check_all.svg',
       color: color,
-      width: size,
-      height: size,
+      width: size! * 1.5,
+      height: size * 1.5,
     );
   }
 
