@@ -266,7 +266,6 @@ class StreamSvgIcon extends StatelessWidget {
     double? size,
     Color? color,
   }) {
-    print(size);
     return StreamSvgIcon(
       assetName: 'Icon_check_all.svg',
       color: color,
