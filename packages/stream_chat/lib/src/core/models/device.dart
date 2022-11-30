@@ -9,6 +9,8 @@ class Device {
   Device({
     required this.id,
     required this.pushProvider,
+    this.disabled,
+    this.disabledReason,
   });
 
   /// Create a new instance from a json
@@ -19,6 +21,13 @@ class Device {
 
   /// The notification push provider
   final String pushProvider;
+
+  /// Wether the push notifications for this device are disabled
+  final bool? disabled;
+
+  /// The reason why the push notifications are disabled
+  final String? disabledReason;
+
 
   /// Serialize to json
   Map<String, dynamic> toJson() => _$DeviceToJson(this);
