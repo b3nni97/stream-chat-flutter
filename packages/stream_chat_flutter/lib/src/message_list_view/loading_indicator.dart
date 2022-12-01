@@ -41,12 +41,7 @@ class LoadingIndicator extends StatelessWidget {
       key: Key('LOADING-INDICATOR $direction'),
       stream: stream,
       initialData: false,
-      errorBuilder: (context, error) => ColoredBox(
-        color: streamTheme.colorTheme.accentError.withOpacity(0.2),
-        child: Center(
-          child: Text(context.translations.loadingMessagesError),
-        ),
-      ),
+      errorBuilder: (context, error) => const SizedBox.shrink(),
       builder: (context, data) {
         if (!data) return const Offstage();
         return indicatorBuilder?.call(context) ??

@@ -202,7 +202,7 @@ class MessageWidgetContent extends StatelessWidget {
 
   /// When the channel is a group we show the profile assets of the user if this
   /// is set
-  final Widget Function(BuildContext, Message)? profileAssetBuilder;
+  final Widget Function(BuildContext, Message, bool show)? profileAssetBuilder;
 
   @override
   Widget build(BuildContext context) {
@@ -270,7 +270,8 @@ class MessageWidgetContent extends StatelessWidget {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       if (!reverse && (isGroup ?? false))
-                        profileAssetBuilder?.call(context, message) ??
+                        profileAssetBuilder?.call(
+                                context, message, showBottomRow) ??
                             const SizedBox.shrink(),
 
                       // if (!reverse &&
@@ -379,7 +380,8 @@ class MessageWidgetContent extends StatelessWidget {
                                   child: CustomPaint(
                                     key: reactionPickerIndicatorKey,
                                     painter: ReactionBubbleDetailPainter(
-                                      streamChatTheme.colorTheme.reactionPickerBg,
+                                      streamChatTheme
+                                          .colorTheme.reactionPickerBg,
                                       Colors.transparent,
                                       Colors.transparent,
                                       tailCirclesSpace: 1,
@@ -392,7 +394,8 @@ class MessageWidgetContent extends StatelessWidget {
                         ),
                       ),
                       if (reverse && (isGroup ?? false))
-                        profileAssetBuilder?.call(context, message) ??
+                        profileAssetBuilder?.call(
+                                context, message, showBottomRow) ??
                             const SizedBox.shrink(),
                       // if (reverse &&
                       //     showUserAvatar == DisplayWidget.show &&

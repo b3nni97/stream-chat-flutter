@@ -15,11 +15,14 @@ class UnreadMessagesSeparator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final chatThemeData = StreamChatTheme.of(context);
+
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8),
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
       child: DecoratedBox(
         decoration: BoxDecoration(
-          gradient: StreamChatTheme.of(context).colorTheme.bgGradient,
+          borderRadius: BorderRadius.circular(20),
+          color: chatThemeData.colorTheme.overlayDark,
         ),
         child: Padding(
           padding: const EdgeInsets.all(8),
@@ -28,7 +31,9 @@ class UnreadMessagesSeparator extends StatelessWidget {
               unreadCount,
             ),
             textAlign: TextAlign.center,
-            style: StreamChannelHeaderTheme.of(context).subtitleStyle,
+            style: chatThemeData.textTheme.footnote.copyWith(
+              color: chatThemeData.colorTheme.textDateDivider,
+            ),
           ),
         ),
       ),

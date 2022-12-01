@@ -554,7 +554,7 @@ class StreamMessageWidget extends StatefulWidget {
 
   /// When the channel is a group we show the profile assets of the user if this
   /// is set
-  final Widget Function(BuildContext, Message)? profileAssetBuilder;
+  final Widget Function(BuildContext, Message, bool show)? profileAssetBuilder;
 
   /// {@template copyWith}
   /// Creates a copy of [StreamMessageWidget] with specified attributes
@@ -620,7 +620,7 @@ class StreamMessageWidget extends StatefulWidget {
     bool? hideBottomRow,
     bool? enableContextMenu,
     NightVibesContextMenuController? contextMenuController,
-    Widget Function(BuildContext, Message)? profileAssetBuilder,
+    Widget Function(BuildContext, Message, bool)? profileAssetBuilder,
   }) {
     return StreamMessageWidget(
       key: key ?? this.key,
