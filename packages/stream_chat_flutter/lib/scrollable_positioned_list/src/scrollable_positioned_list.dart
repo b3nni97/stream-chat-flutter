@@ -175,7 +175,7 @@ class ScrollablePositionedList extends StatefulWidget {
   final double? minCacheExtent;
 
   @override
-  State<StatefulWidget> createState() => _ScrollablePositionedListState();
+  State<StatefulWidget> createState() => ScrollablePositionedListState();
 }
 
 /// Controller to jump or scroll to a particular position in a
@@ -186,7 +186,7 @@ class ItemScrollController {
   /// If `false`, then [jumpTo] and [scrollTo] must not be called.
   bool get isAttached => _scrollableListState != null;
 
-  _ScrollablePositionedListState? _scrollableListState;
+  ScrollablePositionedListState? _scrollableListState;
 
   /// Immediately, without animation, reconfigure the list so that the item at
   /// [index]'s leading edge is at the given [alignment].
@@ -250,7 +250,7 @@ class ItemScrollController {
     );
   }
 
-  void _attach(_ScrollablePositionedListState scrollableListState) {
+  void _attach(ScrollablePositionedListState scrollableListState) {
     assert(
         _scrollableListState == null, '_scrollableListState needs to be null');
     _scrollableListState = scrollableListState;
@@ -260,8 +260,8 @@ class ItemScrollController {
     _scrollableListState = null;
   }
 }
-
-class _ScrollablePositionedListState extends State<ScrollablePositionedList>
+/// 
+class ScrollablePositionedListState extends State<ScrollablePositionedList>
     with TickerProviderStateMixin {
   /// Details for the primary (active) [ListView].
   _ListDisplayDetails primary = _ListDisplayDetails(const ValueKey('Ping'));

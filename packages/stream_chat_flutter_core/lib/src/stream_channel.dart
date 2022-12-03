@@ -84,6 +84,15 @@ class StreamChannelState extends State<StreamChannel> {
   bool _topPaginationEnded = false;
   bool _bottomPaginationEnded = false;
 
+  /// Wait for the UI when updating the channel. This helps to reduce the "bounce back"
+  /// when scrolling through the channel and messages get loaded on top or bottom.
+  Future Function()? _waitForUI;
+
+  /// Sets the wait for ui future.
+  set setWaitForUI(Future Function() waitForUI) {
+    _waitForUI = waitForUI;
+  }
+
   Future<void> _queryTopMessages({
     int limit = 20,
     bool preferOffline = false,
@@ -301,6 +310,7 @@ class StreamChannelState extends State<StreamChannel> {
           limit: limit,
         ),
         preferOffline: preferOffline,
+        waitForUI: _waitForUI,
       );
 
   ///
@@ -315,6 +325,7 @@ class StreamChannelState extends State<StreamChannel> {
         limit: limit,
       ),
       preferOffline: preferOffline,
+      waitForUI: _waitForUI,
     );
     if (state.messages == null ||
         state.messages!.isEmpty ||

@@ -119,6 +119,7 @@ class StreamMessageListView extends StatefulWidget {
     this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.onDrag,
     this.spacingWidgetBuilder = _defaultSpacingWidgetBuilder,
     this.scrollToBottomWidget,
+    this.scrollableKey,
   });
 
   /// [ScrollViewKeyboardDismissBehavior] the defines how this [PositionedList] will
@@ -271,6 +272,9 @@ class StreamMessageListView extends StatefulWidget {
 
   /// Replace the scroll to bottom indicator with a custom widget
   final Widget? scrollToBottomWidget;
+
+  /// Key of scrollable positioned list
+  final Key? scrollableKey;
 
   static Widget _defaultSpacingWidgetBuilder(
     BuildContext context,
@@ -542,222 +546,226 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                 onInBetweenOfPage: () {
                   _inBetweenList = true;
                 },
-                child: ScrollablePositionedList.separated(
+                child: KeyedSubtree(
                   key: (initialIndex != 0 && initialAlignment != 0)
                       ? ValueKey('$initialIndex-$initialAlignment')
                       : null,
-                  keyboardDismissBehavior: widget.keyboardDismissBehavior,
-                  itemPositionsListener: _itemPositionListener,
-                  initialScrollIndex: initialIndex,
-                  initialAlignment: initialAlignment,
-                  physics: widget.scrollPhysics,
-                  itemScrollController: _scrollController,
-                  reverse: widget.reverse,
-                  itemCount: itemCount,
-                  padding: const EdgeInsets.symmetric(horizontal: 4),
-                  findChildIndexCallback: (Key key) {
-                    final indexedKey = key as IndexedKey;
-                    final valueKey = indexedKey.key as ValueKey<String>?;
-                    if (valueKey != null) {
-                      final index = messagesIndex[valueKey.value];
-                      if (index != null) {
-                        return ((index + 2) * 2) - 1;
-                      }
-                    }
-                    return null;
-                  },
-
-                  // Item Count -> 8 (1 parent, 2 header+footer, 2 top+bottom, 3 messages)
-                  // eg:     |Type|         rev(|Index(item)|)     rev(|Index(separator)|)    |Index(item)|    |Index(separator)|
-                  //     ParentMessage  ->        7                                             (count-1)
-                  //        Separator(ThreadSeparator)          ->           6                                      (count-2)
-                  //     Header         ->        6                                             (count-2)
-                  //        Separator(Header -> 8??T -> 0||52)  ->           5                                      (count-3)
-                  //     TopLoader      ->        5                                             (count-3)
-                  //        Separator(0)                        ->           4                                      (count-4)
-                  //     Message        ->        4                                             (count-4)
-                  //        Separator(2||8)                     ->           3                                      (count-5)
-                  //     Message        ->        3                                             (count-5)
-                  //        Separator(2||8)                     ->           2                                      (count-6)
-                  //     Message        ->        2                                             (count-6)
-                  //        Separator(0)                        ->           1                                      (count-7)
-                  //     BottomLoader   ->        1                                             (count-7)
-                  //        Separator(Footer -> 8??30)          ->           0                                      (count-8)
-                  //     Footer         ->        0                                             (count-8)
-
-                  separatorBuilder: (context, i) {
-                    if (i == itemCount - 2) {
-                      if (widget.parentMessage == null) {
-                        return const Offstage();
-                      }
-
-                      if (widget.threadSeparatorBuilder != null) {
-                        return widget.threadSeparatorBuilder!
-                            .call(context, widget.parentMessage!);
-                      }
-
-                      return ThreadSeparator(
-                        parentMessage: widget.parentMessage,
-                      );
-                    }
-                    if (i == itemCount - 3) {
-                      if (widget.reverse
-                          ? widget.headerBuilder == null
-                          : widget.footerBuilder == null) {
-                        if (messages.isNotEmpty) {
-                          return _buildDateDivider(messages.last);
+                  child: ScrollablePositionedList.separated(
+                    key: widget.scrollableKey,
+                    keyboardDismissBehavior: widget.keyboardDismissBehavior,
+                    itemPositionsListener: _itemPositionListener,
+                    initialScrollIndex: initialIndex,
+                    initialAlignment: initialAlignment,
+                    physics: widget.scrollPhysics,
+                    itemScrollController: _scrollController,
+                    reverse: widget.reverse,
+                    itemCount: itemCount,
+                    padding: const EdgeInsets.symmetric(horizontal: 4),
+                    findChildIndexCallback: (Key key) {
+                      final indexedKey = key as IndexedKey;
+                      final valueKey = indexedKey.key as ValueKey<String>?;
+                      if (valueKey != null) {
+                        final index = messagesIndex[valueKey.value];
+                        if (index != null) {
+                          return ((index + 2) * 2) - 1;
                         }
-                        if (_isThreadConversation) return const Offstage();
-                        return const SizedBox(height: 52);
                       }
-                      return const SizedBox(height: 8);
-                    }
-                    if (i == 0) {
-                      if (widget.reverse
-                          ? widget.footerBuilder == null
-                          : widget.headerBuilder == null) {
-                        return const SizedBox(height: 30);
+                      return null;
+                    },
+
+                    // Item Count -> 8 (1 parent, 2 header+footer, 2 top+bottom, 3 messages)
+                    // eg:     |Type|         rev(|Index(item)|)     rev(|Index(separator)|)    |Index(item)|    |Index(separator)|
+                    //     ParentMessage  ->        7                                             (count-1)
+                    //        Separator(ThreadSeparator)          ->           6                                      (count-2)
+                    //     Header         ->        6                                             (count-2)
+                    //        Separator(Header -> 8??T -> 0||52)  ->           5                                      (count-3)
+                    //     TopLoader      ->        5                                             (count-3)
+                    //        Separator(0)                        ->           4                                      (count-4)
+                    //     Message        ->        4                                             (count-4)
+                    //        Separator(2||8)                     ->           3                                      (count-5)
+                    //     Message        ->        3                                             (count-5)
+                    //        Separator(2||8)                     ->           2                                      (count-6)
+                    //     Message        ->        2                                             (count-6)
+                    //        Separator(0)                        ->           1                                      (count-7)
+                    //     BottomLoader   ->        1                                             (count-7)
+                    //        Separator(Footer -> 8??30)          ->           0                                      (count-8)
+                    //     Footer         ->        0                                             (count-8)
+
+                    separatorBuilder: (context, i) {
+                      if (i == itemCount - 2) {
+                        if (widget.parentMessage == null) {
+                          return const Offstage();
+                        }
+
+                        if (widget.threadSeparatorBuilder != null) {
+                          return widget.threadSeparatorBuilder!
+                              .call(context, widget.parentMessage!);
+                        }
+
+                        return ThreadSeparator(
+                          parentMessage: widget.parentMessage,
+                        );
                       }
-                      return const SizedBox(height: 8);
-                    }
-
-                    if (i == 1 || i == itemCount - 4) return const Offstage();
-
-                    late final Message message, nextMessage;
-                    if (widget.reverse) {
-                      message = messages[i - 1];
-                      nextMessage = messages[i - 2];
-                    } else {
-                      message = messages[i - 2];
-                      nextMessage = messages[i - 1];
-                    }
-
-                    Widget separator;
-
-                    final isThread = message.replyCount! > 0;
-
-                    if (!Jiffy(message.createdAt.toLocal()).isSame(
-                      nextMessage.createdAt.toLocal(),
-                      Units.DAY,
-                    )) {
-                      separator = _buildDateDivider(nextMessage);
-                    } else {
-                      final timeDiff =
-                          Jiffy(nextMessage.createdAt.toLocal()).diff(
-                        message.createdAt.toLocal(),
-                        Units.MINUTE,
-                      );
-
-                      final isNextUserSame =
-                          message.user!.id == nextMessage.user?.id;
-                      final isDeleted = message.isDeleted;
-                      final hasTimeDiff = timeDiff >= 1;
-
-                      final spacingRules = [
-                        if (hasTimeDiff) SpacingType.timeDiff,
-                        if (!isNextUserSame) SpacingType.otherUser,
-                        if (isThread) SpacingType.thread,
-                        if (isDeleted) SpacingType.deleted,
-                      ];
-
-                      if (spacingRules.isEmpty) {
-                        spacingRules.add(SpacingType.defaultSpacing);
+                      if (i == itemCount - 3) {
+                        if (widget.reverse
+                            ? widget.headerBuilder == null
+                            : widget.footerBuilder == null) {
+                          if (messages.isNotEmpty) {
+                            return _buildDateDivider(messages.last);
+                          }
+                          if (_isThreadConversation) return const Offstage();
+                          return const SizedBox(height: 52);
+                        }
+                        return const SizedBox(height: 8);
+                      }
+                      if (i == 0) {
+                        if (widget.reverse
+                            ? widget.footerBuilder == null
+                            : widget.headerBuilder == null) {
+                          return const SizedBox(height: 30);
+                        }
+                        return const SizedBox(height: 8);
                       }
 
-                      separator = widget.spacingWidgetBuilder.call(
-                        context,
-                        spacingRules,
-                      );
-                    }
+                      if (i == 1 || i == itemCount - 4) return const Offstage();
 
-                    if (!isThread &&
-                        unreadCount > 0 &&
-                        _oldestUnreadMessage?.id == nextMessage.id) {
-                      final unreadMessagesSeparator =
-                          _buildUnreadMessagesSeparator(unreadCount);
-
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          separator,
-                          unreadMessagesSeparator,
-                        ],
-                      );
-                    }
-                    return separator;
-                  },
-                  itemBuilder: (context, i) {
-                    if (i == itemCount - 1) {
-                      if (widget.parentMessage == null) {
-                        return const Offstage();
-                      }
-                      return buildParentMessage(widget.parentMessage!);
-                    }
-
-                    if (i == itemCount - 2) {
+                      late final Message message, nextMessage;
                       if (widget.reverse) {
-                        return widget.headerBuilder?.call(context) ??
-                            const Offstage();
+                        message = messages[i - 1];
+                        nextMessage = messages[i - 2];
                       } else {
-                        return widget.footerBuilder?.call(context) ??
-                            const Offstage();
+                        message = messages[i - 2];
+                        nextMessage = messages[i - 1];
                       }
-                    }
 
-                    final indicatorBuilder =
-                        widget.paginationLoadingIndicatorBuilder;
+                      Widget separator;
 
-                    if (i == itemCount - 3) {
-                      return LoadingIndicator(
-                        direction: QueryDirection.top,
-                        streamTheme: _streamTheme,
-                        streamChannelState: streamChannel!,
-                        isThreadConversation: _isThreadConversation,
-                        indicatorBuilder: indicatorBuilder,
-                      );
-                    }
+                      final isThread = message.replyCount! > 0;
 
-                    if (i == 1) {
-                      return LoadingIndicator(
-                        direction: QueryDirection.bottom,
-                        streamTheme: _streamTheme,
-                        streamChannelState: streamChannel!,
-                        isThreadConversation: _isThreadConversation,
-                        indicatorBuilder: indicatorBuilder,
-                      );
-                    }
-
-                    if (i == 0) {
-                      if (widget.reverse) {
-                        return widget.footerBuilder?.call(context) ??
-                            const Offstage();
+                      if (!Jiffy(message.createdAt.toLocal()).isSame(
+                        nextMessage.createdAt.toLocal(),
+                        Units.DAY,
+                      )) {
+                        separator = _buildDateDivider(nextMessage);
                       } else {
-                        return widget.headerBuilder?.call(context) ??
-                            const Offstage();
+                        final timeDiff =
+                            Jiffy(nextMessage.createdAt.toLocal()).diff(
+                          message.createdAt.toLocal(),
+                          Units.MINUTE,
+                        );
+
+                        final isNextUserSame =
+                            message.user!.id == nextMessage.user?.id;
+                        final isDeleted = message.isDeleted;
+                        final hasTimeDiff = timeDiff >= 1;
+
+                        final spacingRules = [
+                          if (hasTimeDiff) SpacingType.timeDiff,
+                          if (!isNextUserSame) SpacingType.otherUser,
+                          if (isThread) SpacingType.thread,
+                          if (isDeleted) SpacingType.deleted,
+                        ];
+
+                        if (spacingRules.isEmpty) {
+                          spacingRules.add(SpacingType.defaultSpacing);
+                        }
+
+                        separator = widget.spacingWidgetBuilder.call(
+                          context,
+                          spacingRules,
+                        );
                       }
-                    }
 
-                    const bottomMessageIndex = 2; // 1 -> loader // 0 -> footer
+                      if (!isThread &&
+                          unreadCount > 0 &&
+                          _oldestUnreadMessage?.id == nextMessage.id) {
+                        final unreadMessagesSeparator =
+                            _buildUnreadMessagesSeparator(unreadCount);
 
-                    final message = messages[i - 2];
-                    Widget messageWidget;
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            separator,
+                            unreadMessagesSeparator,
+                          ],
+                        );
+                      }
+                      return separator;
+                    },
+                    itemBuilder: (context, i) {
+                      if (i == itemCount - 1) {
+                        if (widget.parentMessage == null) {
+                          return const Offstage();
+                        }
+                        return buildParentMessage(widget.parentMessage!);
+                      }
 
-                    if (i == bottomMessageIndex) {
-                      messageWidget = _buildBottomMessage(
-                        context,
-                        message,
-                        messages,
-                        streamChannel!,
-                        i - 2,
+                      if (i == itemCount - 2) {
+                        if (widget.reverse) {
+                          return widget.headerBuilder?.call(context) ??
+                              const Offstage();
+                        } else {
+                          return widget.footerBuilder?.call(context) ??
+                              const Offstage();
+                        }
+                      }
+
+                      final indicatorBuilder =
+                          widget.paginationLoadingIndicatorBuilder;
+
+                      if (i == itemCount - 3) {
+                        return LoadingIndicator(
+                          direction: QueryDirection.top,
+                          streamTheme: _streamTheme,
+                          streamChannelState: streamChannel!,
+                          isThreadConversation: _isThreadConversation,
+                          indicatorBuilder: indicatorBuilder,
+                        );
+                      }
+
+                      if (i == 1) {
+                        return LoadingIndicator(
+                          direction: QueryDirection.bottom,
+                          streamTheme: _streamTheme,
+                          streamChannelState: streamChannel!,
+                          isThreadConversation: _isThreadConversation,
+                          indicatorBuilder: indicatorBuilder,
+                        );
+                      }
+
+                      if (i == 0) {
+                        if (widget.reverse) {
+                          return widget.footerBuilder?.call(context) ??
+                              const Offstage();
+                        } else {
+                          return widget.headerBuilder?.call(context) ??
+                              const Offstage();
+                        }
+                      }
+
+                      const bottomMessageIndex =
+                          2; // 1 -> loader // 0 -> footer
+
+                      final message = messages[i - 2];
+                      Widget messageWidget;
+
+                      if (i == bottomMessageIndex) {
+                        messageWidget = _buildBottomMessage(
+                          context,
+                          message,
+                          messages,
+                          streamChannel!,
+                          i - 2,
+                        );
+                      } else {
+                        messageWidget = buildMessage(message, messages, i - 2);
+                      }
+                      return KeyedSubtree(
+                        key: ValueKey(message.id),
+                        child: messageWidget,
                       );
-                    } else {
-                      messageWidget = buildMessage(message, messages, i - 2);
-                    }
-                    return KeyedSubtree(
-                      key: ValueKey(message.id),
-                      child: messageWidget,
-                    );
-                  },
+                    },
+                  ),
                 ),
               ),
             );

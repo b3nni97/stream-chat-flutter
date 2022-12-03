@@ -1323,6 +1323,7 @@ class Channel {
     PaginationParams? membersPagination,
     PaginationParams? watchersPagination,
     bool preferOffline = false,
+    Future Function()? waitForUI,
   }) async {
     if (preferOffline && cid != null) {
       final updatedState = await _client.chatPersistenceClient
@@ -1333,6 +1334,10 @@ class Channel {
         if (this.state == null) {
           _initState(updatedState);
         } else {
+          if (waitForUI != null) {
+            await waitForUI();
+          }
+
           this.state?.updateChannelState(updatedState);
         }
         return updatedState;
@@ -1355,6 +1360,10 @@ class Channel {
       if (_id == null) {
         _id = updatedState.channel!.id;
         _cid = updatedState.channel!.cid;
+      }
+
+      if (waitForUI != null) {
+        await waitForUI();
       }
 
       this.state?.updateChannelState(updatedState);
