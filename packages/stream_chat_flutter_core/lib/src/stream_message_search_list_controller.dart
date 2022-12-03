@@ -108,6 +108,15 @@ class StreamMessageSearchListController
   /// [defaultUserPagedLimit].
   final int limit;
 
+  /// Wait for the UI when updating the channel. This helps to reduce the "bounce back"
+  /// when scrolling through the channel and messages get loaded on top or bottom.
+  Future Function()? _waitForUI;
+
+  /// Sets the wait for ui future.
+  set setWaitForUI(Future Function() waitForUI) {
+    _waitForUI = waitForUI;
+  }
+
   /// Allows for the change of filters used for user queries.
   ///
   /// Use this if you need to support runtime filter changes,
@@ -149,6 +158,11 @@ class StreamMessageSearchListController
 
       final results = response.results;
       final nextKey = response.next;
+
+      if (_waitForUI != null) {
+        await _waitForUI!();
+      }
+
       value = PagedValue(
         items: results,
         nextPageKey: nextKey,
@@ -179,6 +193,11 @@ class StreamMessageSearchListController
       final newItems = previousItems + results;
       final next = response.next;
       final nextKey = next != null && next.isNotEmpty ? next : null;
+
+      if (_waitForUI != null) {
+        await _waitForUI!();
+      }
+
       value = PagedValue(
         items: newItems,
         nextPageKey: nextKey,

@@ -103,6 +103,15 @@ class StreamChannelListController extends PagedValueNotifier<int, Channel> {
   /// Number of members to fetch in each channel.
   final int? memberLimit;
 
+  /// Wait for the UI when updating the channel. This helps to reduce the "bounce back"
+  /// when scrolling through the channel and messages get loaded on top or bottom.
+  Future Function()? _waitForUI;
+
+  /// Sets the wait for ui future.
+  set setWaitForUI(Future Function() waitForUI) {
+    _waitForUI = waitForUI;
+  }
+
   @override
   Future<void> doInitialLoad() async {
     final limit = min(
@@ -119,6 +128,11 @@ class StreamChannelListController extends PagedValueNotifier<int, Channel> {
         paginationParams: PaginationParams(limit: limit),
       )) {
         final nextKey = channels.length < limit ? null : channels.length;
+
+        if (_waitForUI != null) {
+          await _waitForUI!();
+        }
+
         value = PagedValue(
           items: channels,
           nextPageKey: nextKey,
@@ -150,6 +164,11 @@ class StreamChannelListController extends PagedValueNotifier<int, Channel> {
         final previousItems = previousValue.items;
         final newItems = previousItems + channels;
         final nextKey = channels.length < limit ? null : newItems.length;
+
+        if (_waitForUI != null) {
+          await _waitForUI!();
+        }
+
         value = PagedValue(
           items: newItems,
           nextPageKey: nextKey,
@@ -220,10 +239,11 @@ class StreamChannelListController extends PagedValueNotifier<int, Channel> {
       _unsubscribeFromChannelListEvents();
     }
 
-    _channelEventSubscription =
-        client.on().skip(1) // Skipping the last emitted event.
-            // We only need to handle the latest events.
-            .listen((event) {
+    _channelEventSubscription = client
+        .on()
+        .skip(1) // Skipping the last emitted event.
+        // We only need to handle the latest events.
+        .listen((event) {
       // Only handle the event if the value is in success state.
       if (value.isNotSuccess) return;
 
