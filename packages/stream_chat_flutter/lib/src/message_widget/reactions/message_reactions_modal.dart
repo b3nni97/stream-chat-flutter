@@ -39,7 +39,7 @@ class StreamMessageReactionsModal extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
+    final size = MediaQuery.sizeOf(context);
     final user = StreamChat.of(context).currentUser;
     final _userPermissions = StreamChannel.of(context).channel.ownCapabilities;
 

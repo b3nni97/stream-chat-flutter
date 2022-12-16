@@ -96,8 +96,7 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
   Widget build(BuildContext context) => _showMessageOptionsModal();
 
   Widget _showMessageOptionsModal() {
-    final mediaQueryData = MediaQuery.of(context);
-    final size = mediaQueryData.size;
+    final size = MediaQuery.sizeOf(context);
     final user = StreamChat.of(context).currentUser;
 
     final roughMaxSize = size.width * 2 / 3;
@@ -166,7 +165,7 @@ class _MessageActionsModalState extends State<MessageActionsModal> {
                   left: widget.reverse ? 0 : 40,
                 ),
                 child: SizedBox(
-                  width: mediaQueryData.size.width * 0.75,
+                  width: size.width * 0.75,
                   child: Material(
                     color: streamChatThemeData.colorTheme.appBg,
                     clipBehavior: Clip.hardEdge,

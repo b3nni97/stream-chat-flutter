@@ -1054,7 +1054,7 @@ class StreamMessageInputState extends State<StreamMessageInput>
                           message: Message(), // dummy message
                           attachment: e,
                           constraints: BoxConstraints.loose(Size(
-                            MediaQuery.of(context).size.width * 0.65,
+                            MediaQuery.sizeOf(context).width * 0.65,
                             56,
                           )),
                           trailing: Padding(

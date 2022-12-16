@@ -129,8 +129,7 @@ class _FullScreenMediaState extends State<StreamFullScreenMedia> {
               ValueListenableBuilder<bool>(
                 valueListenable: _isDisplayingDetail,
                 builder: (context, isDisplayingDetail, child) {
-                  final mediaQuery = MediaQuery.of(context);
-                  final topPadding = mediaQuery.padding.top;
+                  final topPadding = MediaQuery.paddingOf(context).top;
                   return AnimatedPositionedDirectional(
                     duration: kThemeAnimationDuration,
                     curve: Curves.easeInOut,
@@ -177,8 +176,7 @@ class _FullScreenMediaState extends State<StreamFullScreenMedia> {
                 ValueListenableBuilder<bool>(
                   valueListenable: _isDisplayingDetail,
                   builder: (context, isDisplayingDetail, child) {
-                    final mediaQuery = MediaQuery.of(context);
-                    final bottomPadding = mediaQuery.padding.bottom;
+                    final bottomPadding = MediaQuery.paddingOf(context).bottom;
                     return AnimatedPositionedDirectional(
                       duration: kThemeAnimationDuration,
                       curve: Curves.easeInOut,
@@ -411,7 +409,7 @@ class GalleryNavigationItem extends StatelessWidget {
       child: Positioned(
         left: left,
         right: right,
-        top: MediaQuery.of(context).size.height / 2,
+        top: MediaQuery.sizeOf(context).height / 2,
         child: ValueListenableBuilder<bool>(
           valueListenable: opacityAnimation,
           builder: (context, shouldShow, child) {

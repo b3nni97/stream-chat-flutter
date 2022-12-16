@@ -95,7 +95,7 @@ class AttachmentActionsModal extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(right: 8),
           child: Container(
-            width: MediaQuery.of(context).size.width * 0.5,
+            width: MediaQuery.sizeOf(context).width * 0.5,
             clipBehavior: Clip.hardEdge,
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(16),

@@ -64,12 +64,15 @@ class _StreamGalleryFooterState extends State<StreamGalleryFooter> {
   @override
   Widget build(BuildContext context) {
     const showShareButton = !kIsWeb;
-    final mediaQueryData = MediaQuery.of(context);
+
+    final mediaSize = MediaQuery.sizeOf(context);
+    final mediaPadding = MediaQuery.paddingOf(context);
+
     final galleryFooterThemeData = StreamGalleryFooterTheme.of(context);
     return SizedBox.fromSize(
       size: Size(
-        mediaQueryData.size.width,
-        mediaQueryData.padding.bottom + widget.preferredSize.height,
+        mediaSize.width,
+        mediaPadding.bottom + widget.preferredSize.height,
       ),
       child: MediaQuery.removePadding(
         context: context,

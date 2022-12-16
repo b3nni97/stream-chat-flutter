@@ -43,7 +43,7 @@ class _EditMessageSheetState extends State<EditMessageSheet> {
     return KeyboardShortcutRunner(
       onEscapeKeypress: () => Navigator.of(context).pop(),
       child: Padding(
-        padding: MediaQuery.of(context).viewInsets,
+        padding: MediaQuery.viewInsetsOf(context),
         child: StreamChannel(
           channel: widget.channel,
           child: Flex(

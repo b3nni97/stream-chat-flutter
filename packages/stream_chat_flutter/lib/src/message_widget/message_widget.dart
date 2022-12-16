@@ -122,7 +122,7 @@ class StreamMessageWidget extends StatefulWidget {
               borderRadius: attachmentBorderRadiusGeometry ?? BorderRadius.zero,
             );
 
-            final mediaQueryData = MediaQuery.of(context);
+            final mediaSize = MediaQuery.sizeOf(context);
             if (attachments.length > 1) {
               return Padding(
                 padding: attachmentPadding,
@@ -133,7 +133,7 @@ class StreamMessageWidget extends StatefulWidget {
                       constraints: BoxConstraints(
                         maxWidth: 400,
                         minWidth: 400,
-                        maxHeight: mediaQueryData.size.height * 0.3,
+                        maxHeight: mediaSize.height * 0.3,
                       ),
                       images: attachments,
                       message: message,
@@ -160,7 +160,7 @@ class StreamMessageWidget extends StatefulWidget {
                 constraints: BoxConstraints(
                   maxWidth: 400,
                   minWidth: 400,
-                  maxHeight: mediaQueryData.size.height * 0.3,
+                  maxHeight: mediaSize.height * 0.3,
                 ),
                 onShowMessage: onShowMessage,
                 onReplyMessage: onReplyTap,
@@ -188,14 +188,15 @@ class StreamMessageWidget extends StatefulWidget {
             return WrapAttachmentWidget(
               attachmentWidget: Column(
                 children: attachments.map((attachment) {
-                  final mediaQueryData = MediaQuery.of(context);
+                  final mediaSize = MediaQuery.sizeOf(context);
+
                   return StreamVideoAttachment(
                     attachment: attachment,
                     messageTheme: messageTheme,
                     constraints: BoxConstraints(
                       maxWidth: 400,
                       minWidth: 400,
-                      maxHeight: mediaQueryData.size.height * 0.3,
+                      maxHeight: mediaSize.height * 0.3,
                     ),
                     message: message,
                     onShowMessage: onShowMessage,
@@ -223,14 +224,14 @@ class StreamMessageWidget extends StatefulWidget {
             return WrapAttachmentWidget(
               attachmentWidget: Column(
                 children: attachments.map((attachment) {
-                  final mediaQueryData = MediaQuery.of(context);
+                  final mediaSize = MediaQuery.sizeOf(context);
                   return StreamGiphyAttachment(
                     attachment: attachment,
                     message: message,
                     constraints: BoxConstraints(
                       maxWidth: 400,
                       minWidth: 400,
-                      maxHeight: mediaQueryData.size.height * 0.3,
+                      maxHeight: mediaSize.height * 0.3,
                     ),
                     onShowMessage: onShowMessage,
                     onReplyMessage: onReplyTap,
@@ -257,7 +258,7 @@ class StreamMessageWidget extends StatefulWidget {
             return Column(
               children: attachments
                   .map<Widget>((attachment) {
-                    final mediaQueryData = MediaQuery.of(context);
+                    final mediaSize = MediaQuery.sizeOf(context);
                     return WrapAttachmentWidget(
                       attachmentWidget: StreamFileAttachment(
                         message: message,
@@ -265,7 +266,7 @@ class StreamMessageWidget extends StatefulWidget {
                         constraints: BoxConstraints(
                           maxWidth: 400,
                           minWidth: 400,
-                          maxHeight: mediaQueryData.size.height * 0.3,
+                          maxHeight: mediaSize.height * 0.3,
                         ),
                         onAttachmentTap: onAttachmentTap != null
                             ? () {
