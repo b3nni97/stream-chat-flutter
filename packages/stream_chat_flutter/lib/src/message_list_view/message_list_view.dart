@@ -5,6 +5,7 @@ import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
+import 'package:stages/widgets/layout/rebuild_once.dart';
 import 'package:stream_chat_flutter/scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stream_chat_flutter/src/message_list_view/floating_date_divider.dart';
 import 'package:stream_chat_flutter/src/message_list_view/loading_indicator.dart';
@@ -498,7 +499,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             2 + // header + footer
             1 // parent message
         ;
-
     final child = Stack(
       alignment: Alignment.center,
       children: [
@@ -518,7 +518,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                 statusString = context.translations.disconnectedLabel;
                 break;
             }
-
             return StreamInfoTile(
               showMessage: widget.showConnectionStateTile && showStatus,
               tileAnchor: Alignment.topCenter,

@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:stages/widgets/layout/rebuild_once.dart';
 import 'package:stream_chat_flutter/src/message_widget/text_bubble/text_bubble_container.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -204,12 +205,15 @@ class _MessageCardState extends State<MessageCard> {
       );
     }
 
-    return Container(
-      margin: EdgeInsets.symmetric(
-        horizontal: (widget.isFailedState ? 15.0 : 0.0) +
-            (widget.showUserAvatar == DisplayWidget.gone ? 0 : 4.0),
+    return RebuildOnce(
+      key: ValueKey(widget.message.text),
+      child: Container(
+        margin: EdgeInsets.symmetric(
+          horizontal: (widget.isFailedState ? 15.0 : 0.0) +
+              (widget.showUserAvatar == DisplayWidget.gone ? 0 : 4.0),
+        ),
+        child: content,
       ),
-      child: content,
     );
   }
 

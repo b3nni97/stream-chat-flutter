@@ -260,7 +260,8 @@ class ItemScrollController {
     _scrollableListState = null;
   }
 }
-/// 
+
+///
 class ScrollablePositionedListState extends State<ScrollablePositionedList>
     with TickerProviderStateMixin {
   /// Details for the primary (active) [ListView].
@@ -332,81 +333,80 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
   }
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-        builder: (context, constraints) {
-          final cacheExtent = _cacheExtent(constraints);
-          return GestureDetector(
-            onPanDown: (_) => _stopScroll(canceled: true),
-            excludeFromSemantics: true,
-            child: Stack(
-              children: <Widget>[
-                PostMountCallback(
-                  key: primary.key,
-                  callback: startAnimationCallback,
-                  child: FadeTransition(
-                    opacity: ReverseAnimation(opacity),
-                    child: NotificationListener<ScrollNotification>(
-                      onNotification: (_) => _isTransitioning,
-                      child: PositionedList(
-                        keyboardDismissBehavior: widget.keyboardDismissBehavior,
-                        itemBuilder: widget.itemBuilder,
-                        separatorBuilder: widget.separatorBuilder,
-                        itemCount: widget.itemCount,
-                        positionedIndex: primary.target,
-                        controller: primary.scrollController,
-                        itemPositionsNotifier: primary.itemPositionsNotifier,
-                        scrollDirection: widget.scrollDirection,
-                        reverse: widget.reverse,
-                        cacheExtent: cacheExtent,
-                        alignment: primary.alignment,
-                        physics: widget.physics,
-                        addSemanticIndexes: widget.addSemanticIndexes,
-                        semanticChildCount: widget.semanticChildCount,
-                        padding: widget.padding,
-                        addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-                        addRepaintBoundaries: widget.addRepaintBoundaries,
-                        findChildIndexCallback: widget.findChildIndexCallback,
-                      ),
-                    ),
+  Widget build(BuildContext context) {
+    // LayoutBuilder(
+    //     builder: (context, constraints) {
+    //       final cacheExtent = _cacheExtent(constraints);
+    //   );
+    return GestureDetector(
+      onPanDown: (_) => _stopScroll(canceled: true),
+      excludeFromSemantics: true,
+      child: Stack(
+        children: <Widget>[
+          PostMountCallback(
+            key: primary.key,
+            callback: startAnimationCallback,
+            child: FadeTransition(
+              opacity: ReverseAnimation(opacity),
+              child: NotificationListener<ScrollNotification>(
+                onNotification: (_) => _isTransitioning,
+                child: PositionedList(
+                  keyboardDismissBehavior: widget.keyboardDismissBehavior,
+                  itemBuilder: widget.itemBuilder,
+                  separatorBuilder: widget.separatorBuilder,
+                  itemCount: widget.itemCount,
+                  positionedIndex: primary.target,
+                  controller: primary.scrollController,
+                  itemPositionsNotifier: primary.itemPositionsNotifier,
+                  scrollDirection: widget.scrollDirection,
+                  reverse: widget.reverse,
+                  cacheExtent: widget.minCacheExtent,
+                  alignment: primary.alignment,
+                  physics: widget.physics,
+                  addSemanticIndexes: widget.addSemanticIndexes,
+                  semanticChildCount: widget.semanticChildCount,
+                  padding: widget.padding,
+                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                  addRepaintBoundaries: widget.addRepaintBoundaries,
+                  findChildIndexCallback: widget.findChildIndexCallback,
+                ),
+              ),
+            ),
+          ),
+          if (_isTransitioning)
+            PostMountCallback(
+              key: secondary.key,
+              callback: startAnimationCallback,
+              child: FadeTransition(
+                opacity: opacity,
+                child: NotificationListener<ScrollNotification>(
+                  onNotification: (_) => false,
+                  child: PositionedList(
+                    keyboardDismissBehavior: widget.keyboardDismissBehavior,
+                    itemBuilder: widget.itemBuilder,
+                    separatorBuilder: widget.separatorBuilder,
+                    itemCount: widget.itemCount,
+                    itemPositionsNotifier: secondary.itemPositionsNotifier,
+                    positionedIndex: secondary.target,
+                    controller: secondary.scrollController,
+                    scrollDirection: widget.scrollDirection,
+                    reverse: widget.reverse,
+                    cacheExtent: widget.minCacheExtent,
+                    alignment: secondary.alignment,
+                    physics: widget.physics,
+                    addSemanticIndexes: widget.addSemanticIndexes,
+                    semanticChildCount: widget.semanticChildCount,
+                    padding: widget.padding,
+                    addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                    addRepaintBoundaries: widget.addRepaintBoundaries,
                   ),
                 ),
-                if (_isTransitioning)
-                  PostMountCallback(
-                    key: secondary.key,
-                    callback: startAnimationCallback,
-                    child: FadeTransition(
-                      opacity: opacity,
-                      child: NotificationListener<ScrollNotification>(
-                        onNotification: (_) => false,
-                        child: PositionedList(
-                          keyboardDismissBehavior:
-                              widget.keyboardDismissBehavior,
-                          itemBuilder: widget.itemBuilder,
-                          separatorBuilder: widget.separatorBuilder,
-                          itemCount: widget.itemCount,
-                          itemPositionsNotifier:
-                              secondary.itemPositionsNotifier,
-                          positionedIndex: secondary.target,
-                          controller: secondary.scrollController,
-                          scrollDirection: widget.scrollDirection,
-                          reverse: widget.reverse,
-                          cacheExtent: cacheExtent,
-                          alignment: secondary.alignment,
-                          physics: widget.physics,
-                          addSemanticIndexes: widget.addSemanticIndexes,
-                          semanticChildCount: widget.semanticChildCount,
-                          padding: widget.padding,
-                          addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-                          addRepaintBoundaries: widget.addRepaintBoundaries,
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
+              ),
             ),
-          );
-        },
-      );
+        ],
+      ),
+    );
+  }
 
   double _cacheExtent(BoxConstraints constraints) => max(
         constraints.maxHeight * _screenScrollCount,
