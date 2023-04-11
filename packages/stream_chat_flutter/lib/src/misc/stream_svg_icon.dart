@@ -248,29 +248,27 @@ class StreamSvgIcon extends StatelessWidget {
     );
   }
   // Use pre rendered check icon because svgs are performant heavy.
-  static check({
+  static Widget check({
     double? size,
     Color? color,
   }) {
     return SizedBox(
       width: size! * 1.5,
-      height: size * 1.5,
       child: Image.asset(
         'lib/svgs/Icon_check.png',
         package: 'stream_chat_flutter',
         color: color,
       ),
     );
-    
   }
+
 // Use pre rendered check all icon because svgs are performant heavy.
-  static checkAll({
+  static Widget checkAll({
     double? size,
     Color? color,
   }) {
     return SizedBox(
-      width: size! * 1.5,
-      height: size * 1.5,
+      width: size! * 1.45,
       child: Image.asset(
         'lib/svgs/Icon_check_all.png',
         package: 'stream_chat_flutter',

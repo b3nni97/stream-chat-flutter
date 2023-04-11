@@ -208,6 +208,9 @@ Il file è troppo grande per essere caricato. Il limite è di $limitInMB MB.''';
       'Non è stato possibile completare questa operazione.';
 
   @override
+  String get noPhotoOrVideoLabel => 'Non ci sono foto o video';
+
+  @override
   String get replyLabel => 'Rispondi';
 
   @override

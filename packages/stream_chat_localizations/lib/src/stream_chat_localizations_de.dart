@@ -15,6 +15,9 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
   String get noUsersLabel => 'Derzeit gibt es keine User';
 
   @override
+  String get noPhotoOrVideoLabel => 'Es gibt kein Foto oder Video';
+
+  @override
   String get retryLabel => 'Erneut versuchen';
 
   @override
@@ -55,8 +58,8 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
     required User currentUser,
   }) {
     final pinnedByCurrentUser = currentUser.id == pinnedBy.id;
-    if (pinnedByCurrentUser) return 'Angeheftet von Dir';
-    return 'Angeheftet von ${pinnedBy.name}';
+    if (pinnedByCurrentUser) return 'Markiert von Dir';
+    return 'Markiert von ${pinnedBy.name}';
   }
 
   @override
@@ -199,8 +202,8 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
 
   @override
   String togglePinUnpinText({required bool pinned}) {
-    if (pinned) return 'Aus der Unterhaltung lösen';
-    return 'Anheften an die Unterhaltung';
+    if (pinned) return 'Markierung aufheben';
+    return 'Nachricht markieren';
   }
 
   @override

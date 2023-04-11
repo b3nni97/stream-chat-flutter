@@ -958,6 +958,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             streamChannel!.channel.state!.members.any((e) =>
                 e.userId ==
                 streamChannel!.channel.client.state.currentUser!.id);
+
         return Positioned(
           bottom: 8,
           right: 8,

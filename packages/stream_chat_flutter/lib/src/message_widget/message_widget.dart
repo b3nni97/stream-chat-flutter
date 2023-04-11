@@ -112,6 +112,7 @@ class StreamMessageWidget extends StatefulWidget {
     this.enableContextMenu = true,
     this.contextMenuController,
     this.profileAssetBuilder,
+    this.showLoading,
   }) : attachmentBuilders = {
           'image': (context, message, attachments) {
             final border = RoundedRectangleBorder(
@@ -557,6 +558,9 @@ class StreamMessageWidget extends StatefulWidget {
   /// is set
   final Widget Function(BuildContext, Message, bool show)? profileAssetBuilder;
 
+  // Wether the StreamChannel should show a loading indicator.
+  final bool? showLoading;
+
   /// {@template copyWith}
   /// Creates a copy of [StreamMessageWidget] with specified attributes
   /// overridden.
@@ -622,6 +626,7 @@ class StreamMessageWidget extends StatefulWidget {
     bool? enableContextMenu,
     NightVibesContextMenuController? contextMenuController,
     Widget Function(BuildContext, Message, bool)? profileAssetBuilder,
+    bool? showLoading,
   }) {
     return StreamMessageWidget(
       key: key ?? this.key,
@@ -695,6 +700,7 @@ class StreamMessageWidget extends StatefulWidget {
       contextMenuController:
           contextMenuController ?? this.contextMenuController,
       profileAssetBuilder: profileAssetBuilder ?? this.profileAssetBuilder,
+      showLoading: showLoading ?? this.showLoading,
     );
   }
 
@@ -944,23 +950,22 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
         child: Portal(
           child: StreamChannel(
             channel: channel,
+            showLoading: widget.showLoading ?? true,
             child: PlatformWidgetBuilder(
               mobile: (context, child) {
                 if (widget.enableContextMenu) {
-                  final hasAttachment = widget.message.attachments.isNotEmpty;
-
                   child = NightVibesContextMenu(
                     actions: _buildContextMenu(),
                     alignChild: false,
                     childCrossAxisAlignment: CrossAxisAlignment.stretch,
-                    childFlex: hasAttachment
-                        ? (widget.message.attachments.length > 1 ? 3 : 2)
-                        : 1,
+                    childMainAxisAlignment: MainAxisAlignment.center,
                     contextMenuController: widget.contextMenuController,
+                    menuAlignment: Alignment.center,
                     child: child!,
                     decoyBuilder: (context, child) {
                       return StreamChannel(
                         channel: channel,
+                        showLoading: false,
                         child: IgnorePointer(child: child!),
                       );
                     },
@@ -1033,6 +1038,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                           margin: margin,
                           child: widget.copyWith(
                             key: contextMessageKey,
+                            showLoading: false,
                             // message: widget.message.copyWith(
                             //   text: (widget.message.text?.length ?? 0) > 200
                             //       ? '${widget.message.text!.substring(0, 200)}...'
@@ -1052,16 +1058,22 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                           ),
                         ),
                       );
-
-                      return Container(
+                      return SizedBox(
                         key: contextOverlayKey,
+                        width: double.infinity,
                         child: StreamChannel(
                           channel: channel,
+                          showLoading: false,
                           child: Stack(
+                            fit: StackFit.passthrough,
                             children: [
-                              Positioned.fill(
-                                top: topPaddingAnimation.value,
+                              // SizedBox.shrink()
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  top: topPaddingAnimation.value,
+                                ),
                                 child: Align(
+                                  heightFactor: 1,
                                   alignment: alignAnimation.value,
                                   child: Transform.scale(
                                     scale: scaleAnimation.value,
@@ -1080,7 +1092,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                                     final reactionPicker = FadeTransition(
                                       opacity: reactionPickerAnimation,
                                       child: ScaleTransition(
-                                        // alignment: Alignment.centerLeft,
                                         alignment:
                                             reactionPickerAlignAnimation.value,
                                         scale: reactionPickerAnimation,
@@ -1203,6 +1214,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             context.translations.replyLabel,
             maxLines: 1,
             softWrap: false,
+            overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 16,
             ),
@@ -1222,6 +1234,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             context.translations.threadReplyLabel,
             maxLines: 1,
             softWrap: false,
+            overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 14,
             ),
@@ -1240,6 +1253,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             context.translations.editMessageLabel,
             maxLines: 1,
             softWrap: false,
+            overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 16,
             ),
@@ -1279,39 +1293,30 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
       if (shouldShowCopyAction)
         NightVibesContextMenuAction(
           trailingIcon: CupertinoIcons.doc_on_clipboard_fill,
-          // leading: StreamSvgIcon.copy(),
-          // title: Text(context.translations.copyMessageLabel),
           child: Text(
             context.translations.copyMessageLabel,
             maxLines: 1,
             softWrap: false,
+            overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 16,
             ),
           ),
           onPressed: () {
             Navigator.of(context, rootNavigator: true).pop();
-            Clipboard.setData(ClipboardData(text: widget.message.text));
+            Clipboard.setData(ClipboardData(text: widget.message.text ?? ''));
           },
         ),
       if (widget.showPinButton)
         NightVibesContextMenuAction(
-          trailingIcon: CupertinoIcons.pin_fill,
-          // leading: StreamSvgIcon.pin(
-          //   color: Colors.grey,
-          //   size: 24,
-          // ),
-          // title: Text(
-          //   context.translations.togglePinUnpinText(
-          //     pinned: widget.message.pinned,
-          //   ),
-          // ),
+          trailingIcon: CupertinoIcons.star_fill,
           child: Text(
             context.translations.togglePinUnpinText(
               pinned: widget.message.pinned,
             ),
             maxLines: 1,
             softWrap: false,
+            overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 16,
             ),
@@ -1346,6 +1351,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             ),
             maxLines: 1,
             softWrap: false,
+            overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 16,
             ),
@@ -1375,6 +1381,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             context.translations.deleteMessageLabel,
             maxLines: 1,
             softWrap: false,
+            overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 16,
             ),
@@ -1592,7 +1599,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                     : DisplayWidget.show,
           ),
           onCopyTap: (message) =>
-              Clipboard.setData(ClipboardData(text: message.text)),
+              Clipboard.setData(ClipboardData(text: message.text ?? '')),
           messageTheme: widget.messageTheme,
           reverse: widget.reverse,
           showDeleteMessage: shouldShowDeleteAction,

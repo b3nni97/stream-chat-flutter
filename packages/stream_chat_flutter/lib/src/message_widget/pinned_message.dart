@@ -24,27 +24,30 @@ class PinnedMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(left: 8, right: 8, top: 4, bottom: 8),
+      padding: const EdgeInsets.only(left: 8, right: 8, top: 2, bottom: 8),
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
           Icon(
-            CupertinoIcons.pin_fill,
-            size: 16,
+            CupertinoIcons.star_fill,
+            size: 14,
             color: StreamChatTheme.of(context).colorTheme.textLowEmphasis,
           ),
           const SizedBox(
             width: 4,
           ),
-          Text(
-            context.translations.pinnedByUserText(
-              pinnedBy: pinnedBy,
-              currentUser: currentUser,
-            ),
-            style: TextStyle(
-              color: StreamChatTheme.of(context).colorTheme.textLowEmphasis,
-              fontSize: 13,
-              fontWeight: FontWeight.w400,
+          Padding(
+            padding: const EdgeInsets.only(top: 2),
+            child: Text(
+              context.translations.pinnedByUserText(
+                pinnedBy: pinnedBy,
+                currentUser: currentUser,
+              ),
+              style: TextStyle(
+                color: StreamChatTheme.of(context).colorTheme.textLowEmphasis,
+                fontSize: 13,
+                fontWeight: FontWeight.w400,
+              ),
             ),
           ),
         ],
