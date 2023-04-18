@@ -260,24 +260,17 @@ class StreamChannelState extends State<StreamChannel> {
     channel.state!.isUpToDate = false;
     channel.state!.truncate();
 
-    if (messageId == null) {
-      await channel.query(
-        messagesPagination: PaginationParams(
-          limit: limit,
-        ),
-        preferOffline: preferOffline,
-      );
-      channel.state!.isUpToDate = true;
-      return null;
-    }
-
-    return channel.query(
+    final channelState = await channel.query(
       messagesPagination: PaginationParams(
         idAround: messageId,
         limit: limit,
       ),
       preferOffline: preferOffline,
     );
+    channel.state!.isUpToDate =
+        messageId == null || channel.state!.messages.length < limit;
+
+    return channelState;
   }
 
   Future<ChannelState?> _queryAtTimestamp({
@@ -289,13 +282,17 @@ class StreamChannelState extends State<StreamChannel> {
     channel.state!.isUpToDate = false;
     channel.state!.truncate();
 
-    return channel.query(
+    final channelState = await channel.query(
       messagesPagination: PaginationParams(
         createdAtAround: timestamp.toUtc(),
         limit: limit,
       ),
       preferOffline: preferOffline,
     );
+
+    channel.state!.isUpToDate = channel.state!.messages.length < limit;
+
+    return channelState;
   }
 
   ///
