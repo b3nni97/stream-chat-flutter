@@ -1060,7 +1060,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
           );
     }
 
-    final userId = StreamChat.of(context).currentUser!.id;
+    final userId = StreamChat.of(context).currentUser?.id;
     final isMyMessage = message.user?.id == userId;
     final nextMessage = index - 1 >= 0 ? messages[index - 1] : null;
     final isNextUserSame =
@@ -1217,7 +1217,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       messageWidget = widget.messageBuilder!(
         context,
         MessageDetails(
-          userId,
+          userId ?? '',
           message,
           messages,
           index,

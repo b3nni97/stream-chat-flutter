@@ -951,6 +951,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
           child: StreamChannel(
             channel: channel,
             showLoading: widget.showLoading ?? true,
+            populateFutures: false,
             child: PlatformWidgetBuilder(
               mobile: (context, child) {
                 if (widget.enableContextMenu) {
@@ -966,6 +967,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                       return StreamChannel(
                         channel: channel,
                         showLoading: false,
+                        populateFutures: false,
                         child: IgnorePointer(child: child!),
                       );
                     },
@@ -1064,6 +1066,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                         child: StreamChannel(
                           channel: channel,
                           showLoading: false,
+                          populateFutures: false,
                           child: Stack(
                             fit: StackFit.passthrough,
                             children: [

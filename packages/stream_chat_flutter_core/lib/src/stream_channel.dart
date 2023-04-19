@@ -28,6 +28,7 @@ class StreamChannel extends StatefulWidget {
     required this.channel,
     this.showLoading = true,
     this.initialMessageId,
+    this.populateFutures = true,
   });
 
   /// The child of the widget
@@ -41,6 +42,9 @@ class StreamChannel extends StatefulWidget {
 
   /// If passed the channel will load from this particular message.
   final String? initialMessageId;
+
+  /// If the channel should sync to the current messages.
+  final bool populateFutures;
 
   /// Use this method to get the current [StreamChannelState] instance
   static StreamChannelState of(BuildContext context) {
@@ -389,6 +393,11 @@ class StreamChannelState extends State<StreamChannel> {
 
   void _populateFutures() {
     _futures = [widget.channel.initialized];
+
+    if (!widget.populateFutures) {
+      return;
+    }
+
     if (initialMessageId != null) {
       _futures.add(_loadChannelAtMessage);
     } else if (channel.state != null && channel.state!.unreadCount > 0) {

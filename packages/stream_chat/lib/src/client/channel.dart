@@ -160,7 +160,8 @@ class Channel {
   bool get isGroup => memberCount != 2;
 
   /// True if the channel is distinct.
-  bool get isDistinct => id?.startsWith('!members') == true;
+  bool get isDistinct =>
+      id?.startsWith('!members') == true || id?.startsWith('members') == true;
 
   /// Channel configuration.
   ChannelConfig? get config {
@@ -2004,7 +2005,6 @@ class ChannelClientState {
     if (_channelState.channel?.config.readEvents == false) {
       return;
     }
-
     _subscriptions.add(
       _channel.on(EventType.messageRead, EventType.notificationMarkRead).listen(
         (event) {
@@ -2241,6 +2241,10 @@ class ChannelClientState {
   final Debounce _debouncedUpdatePersistenceChannelState;
 
   set _channelState(ChannelState v) {
+    if (_channelStateController.isClosed) {
+      return;
+    }
+
     _channelStateController.add(v);
     _debouncedUpdatePersistenceChannelState.call([v]);
   }
