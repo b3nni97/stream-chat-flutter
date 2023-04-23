@@ -5,6 +5,9 @@
 list(APPEND FLUTTER_PLUGIN_LIST
   desktop_drop
   file_selector_linux
+  flutter_secure_storage_linux
+  isar_flutter_libs
+  sentry_flutter
   sqlite3_flutter_libs
   url_launcher_linux
 )

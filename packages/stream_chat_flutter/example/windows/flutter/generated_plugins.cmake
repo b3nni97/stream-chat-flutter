@@ -6,6 +6,13 @@ list(APPEND FLUTTER_PLUGIN_LIST
   connectivity_plus_windows
   desktop_drop
   file_selector_windows
+  flutter_secure_storage_windows
+  geolocator_windows
+  isar_flutter_libs
+  local_auth_windows
+  permission_handler_windows
+  sentry_flutter
+  share_plus
   sqlite3_flutter_libs
   thumblr_windows
   url_launcher_windows
