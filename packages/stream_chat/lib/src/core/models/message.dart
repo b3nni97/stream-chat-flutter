@@ -94,7 +94,7 @@ class Message extends Equatable {
   /// Returns a id which does not change until id, attachments
   /// or text are changed.
   String get rebuildId {
-    final attatchmentIds = attachments.length > 0
+    final attatchmentIds = attachments.isNotEmpty
         ? attachments
             .map((e) => e.hashCode)
             .reduce((value, element) => value + element)
