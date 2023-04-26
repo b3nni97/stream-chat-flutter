@@ -1,5 +1,7 @@
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:stages/generated/locale_keys.g.dart';
 import 'package:stages/theme/night_vibes_theme/night_vibes_theme.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
@@ -35,44 +37,19 @@ class DeleteMessageDialog extends StatelessWidget {
         CupertinoActionSheetAction(
           isDestructiveAction: true,
           child: Text(
-            context.translations.deleteLabel,
+            LocaleKeys.Delete.tr(),
           ),
           onPressed: () => Navigator.of(context).pop(true),
         ),
         CupertinoActionSheetAction(
           isDefaultAction: true,
           child: Text(
-            context.translations.cancelLabel,
+            LocaleKeys.Cancel.tr(),
             style: TextStyle(
               color: streamTheme.colorTheme.accentPrimary,
             ),
           ),
           onPressed: () => Navigator.of(context).pop(false),
-        ),
-      ],
-    );
-
-    return AlertDialog(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
-      backgroundColor: streamTheme.colorTheme.appBg,
-      title: Text(context.translations.deleteMessageLabel),
-      content: Text(context.translations.deleteMessageQuestion),
-      actions: [
-        TextButton(
-          style: TextButton.styleFrom(
-            foregroundColor: streamTheme.colorTheme.accentPrimary,
-          ),
-          onPressed: () => Navigator.of(context).pop(false),
-          child: Text(context.translations.cancelLabel),
-        ),
-        TextButton(
-          style: TextButton.styleFrom(
-            foregroundColor: streamTheme.colorTheme.accentPrimary,
-          ),
-          onPressed: () => Navigator.of(context).pop(true),
-          child: Text(context.translations.deleteLabel),
         ),
       ],
     );

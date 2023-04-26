@@ -60,6 +60,7 @@ class MessageWidgetContent extends StatelessWidget {
     this.onReactionPressed,
     this.isGroup,
     this.profileAssetBuilder,
+    this.enableMessageContainer = true,
   });
 
   /// {@macro reverse}
@@ -203,6 +204,10 @@ class MessageWidgetContent extends StatelessWidget {
   /// When the channel is a group we show the profile assets of the user if this
   /// is set
   final Widget Function(BuildContext, Message, bool show)? profileAssetBuilder;
+
+  /// Enables the colored text bubbles or rounded bubbles around
+  /// messages.
+  final bool enableMessageContainer;
 
   @override
   Widget build(BuildContext context) {
@@ -370,6 +375,8 @@ class MessageWidgetContent extends StatelessWidget {
                                             borderRadiusGeometry,
                                         borderSide: borderSide,
                                         shape: shape,
+                                        enableMessageContainer:
+                                            enableMessageContainer,
                                       ),
                               ),
                               if (showReactionPickerIndicator)

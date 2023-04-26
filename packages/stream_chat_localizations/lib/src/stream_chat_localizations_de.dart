@@ -156,8 +156,8 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
 
   @override
   String get enablePhotoAndVideoAccessMessage =>
-      'Bitte aktivieren Sie den Zugriff auf Ihre Fotos'
-      '\nund Videos, damit Sie sie mit Freunden teilen können.';
+      'Bitte aktiviere den Zugriff auf deine Fotos'
+      '\nund Videos, damit du sie mit Freunden teilen kannst.';
 
   @override
   String get allowGalleryAccessMessage => 'Zugang zu Ihrer Galerie gewähren';
@@ -167,14 +167,14 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
 
   @override
   String get flagMessageQuestion =>
-      'Möchten Sie eine Kopie dieser Nachricht an einen'
+      'Möchtest du eine Kopie dieser Nachricht an einen'
       '\nModerator für weitere Untersuchungen senden?';
 
   @override
-  String get flagLabel => 'MELDEN';
+  String get flagLabel => 'Melden';
 
   @override
-  String get cancelLabel => 'ABBRECHEN';
+  String get cancelLabel => 'Abbrechen';
 
   @override
   String get flagMessageSuccessfulLabel => 'Nachricht gemeldet';
@@ -184,14 +184,14 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
       'Die Nachricht wurde an einen Moderator weitergeleitet.';
 
   @override
-  String get deleteLabel => 'LÖSCHEN';
+  String get deleteLabel => 'Löschen';
 
   @override
   String get deleteMessageLabel => 'Nachricht löschen';
 
   @override
   String get deleteMessageQuestion =>
-      'Sind Sie sicher, dass Sie diese Nachricht endgültig löschen wollen?';
+      'Bist du sicher, dass du diese Nachricht endgültig löschen wollen?';
 
   @override
   String get operationCouldNotBeCompletedText =>
@@ -263,7 +263,7 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
   String get letsStartChattingLabel => 'Lass uns anfangen zu chatten!';
 
   @override
-  String get sendingFirstMessageLabel => 'Wie wäre es, wenn Sie Ihre erste '
+  String get sendingFirstMessageLabel => 'Wie wäre es, wenn du deine erste '
       'Nachricht an einen Freund senden würden?';
 
   @override
@@ -277,7 +277,7 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
 
   @override
   String get deleteConversationQuestion =>
-      'Sind Sie sicher, dass Sie diese Unterhaltung löschen wollen?';
+      'Bist du sicher, dass du diese Unterhaltung löschen willst?';
 
   @override
   String get streamChatLabel => 'Stream Chat';
@@ -309,14 +309,14 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
   String get leaveGroupLabel => 'Gruppe verlassen';
 
   @override
-  String get leaveLabel => 'VERLASSEN';
+  String get leaveLabel => 'Verlassen';
 
   @override
   String get leaveConversationLabel => 'Unterhaltung verlassen';
 
   @override
   String get leaveConversationQuestion =>
-      'Sind Sie sicher, dass Sie diese Unterhaltung verlassen wollen?';
+      'Bist du sicher, dass du diese Unterhaltung verlassen wollen?';
 
   @override
   String get showInChatLabel => 'Im Chat anzeigen';
@@ -380,7 +380,7 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
 
   @override
   String get sendMessagePermissionError =>
-      'Sie sind nicht berechtigt Nachrichten zu senden';
+      'Du bist nicht berechtigt Nachrichten zu senden';
 
   @override
   String get couldNotReadBytesFromFileError =>
@@ -443,8 +443,8 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
 
   @override
   String get enableFileAccessMessage =>
-      'Bitte aktivieren Sie den Zugriff auf Dateien,'
-      '\ndamit Sie sie mit Freunden teilen können.';
+      'Bitte aktiviere den Zugriff auf Dateien,'
+      '\ndamit du sie mit Freunden teilen kannst.';
 
   @override
   String get allowFileAccessMessage => 'Zugriff auf Dateien zulassen';

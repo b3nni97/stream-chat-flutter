@@ -91,6 +91,16 @@ class Message extends Equatable {
   /// the message is added.
   final String id;
 
+  /// Returns a id which does not change until id, attachments
+  /// or text are changed.
+  String get rebuildId {
+    final attatchmentIds = attachments
+        .map((e) => e.hashCode)
+        .reduce((value, element) => value + element);
+
+    return '$id$attatchmentIds$status$text';
+  }
+
   /// The text of this message.
   final String? text;
 

@@ -34,6 +34,7 @@ class MessageCard extends StatefulWidget {
     this.onLinkTap,
     this.onMentionTap,
     this.onQuotedMessageTap,
+    this.enableMessageContainer = true,
   });
 
   /// {@macro isFailedState}
@@ -96,6 +97,10 @@ class MessageCard extends StatefulWidget {
   /// {@macro reverse}
   final bool reverse;
 
+  /// Enables the colored text bubbles or rounded bubbles around
+  /// messages.
+  final bool enableMessageContainer;
+
   @override
   State<MessageCard> createState() => _MessageCardState();
 }
@@ -132,7 +137,7 @@ class _MessageCardState extends State<MessageCard> {
   @override
   Widget build(BuildContext context) {
     final isRoundMessage = _isRadiusRound(
-      widget.borderRadiusGeometry?.resolve(TextDirection.ltr) ??
+      widget.borderRadiusGeometry?.resolve(Directionality.of(context)) ??
           BorderRadius.zero,
     );
 
@@ -179,34 +184,36 @@ class _MessageCardState extends State<MessageCard> {
       ),
     );
 
-    if (!isRoundMessage) {
-      content = TextBubbleContainer(
-        backgroundColor: _getBackgroundColor() ?? Colors.transparent,
-        reverse: widget.reverse,
-        child: Container(
+    if (widget.enableMessageContainer) {
+      if (!isRoundMessage) {
+        content = TextBubbleContainer(
+          backgroundColor: _getBackgroundColor() ?? Colors.transparent,
+          reverse: widget.reverse,
+          child: Container(
+            margin: EdgeInsets.only(
+              left: widget.reverse ? 0 : 6,
+              right: widget.reverse ? 6 : 0,
+            ),
+            child: content,
+          ),
+        );
+      } else {
+        content = Container(
           margin: EdgeInsets.only(
             left: widget.reverse ? 0 : 6,
             right: widget.reverse ? 6 : 0,
           ),
+          decoration: BoxDecoration(
+            borderRadius: widget.borderRadiusGeometry,
+            color: _getBackgroundColor(),
+          ),
           child: content,
-        ),
-      );
-    } else {
-      content = Container(
-        margin: EdgeInsets.only(
-          left: widget.reverse ? 0 : 6,
-          right: widget.reverse ? 6 : 0,
-        ),
-        decoration: BoxDecoration(
-          borderRadius: widget.borderRadiusGeometry,
-          color: _getBackgroundColor(),
-        ),
-        child: content,
-      );
+        );
+      }
     }
 
     return RebuildOnce(
-      key: ValueKey(widget.message.text),
+      key: ValueKey(widget.message.rebuildId),
       child: Container(
         margin: EdgeInsets.symmetric(
           horizontal: (widget.isFailedState ? 15.0 : 0.0) +

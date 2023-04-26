@@ -249,7 +249,7 @@ class StreamSvgIcon extends StatelessWidget {
   }
   // Use pre rendered check icon because svgs are performant heavy.
   static Widget check({
-    double? size,
+    double? size = 12,
     Color? color,
   }) {
     return SizedBox(
