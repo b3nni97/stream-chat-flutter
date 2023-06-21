@@ -92,8 +92,8 @@ void main() {
       );
 
       const errorMessage = 'Error! Error! Error!';
-      final error = DioError(
-        type: DioErrorType.unknown,
+      final error = DioException(
+        type: DioExceptionType.unknown,
         error: errorMessage,
         requestOptions: RequestOptions(path: ''),
       );

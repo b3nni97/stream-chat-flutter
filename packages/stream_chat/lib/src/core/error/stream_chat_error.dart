@@ -87,7 +87,7 @@ class StreamChatNetworkError extends StreamChatError {
   }) : super(message);
 
   ///
-  factory StreamChatNetworkError.fromDioError(DioError error) {
+  factory StreamChatNetworkError.fromDioError(DioException error) {
     final response = error.response;
     ErrorResponse? errorResponse;
     final data = response?.data;

@@ -112,25 +112,6 @@ class _MessageCardState extends State<MessageCard> {
 
   @override
   void initState() {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final attachmentsRenderBox =
-          attachmentsKey.currentContext?.findRenderObject() as RenderBox?;
-      final attachmentsWidth = attachmentsRenderBox?.size.width;
-
-      final linkRenderBox =
-          linksKey.currentContext?.findRenderObject() as RenderBox?;
-      final linkWidth = linkRenderBox?.size.width;
-
-      if (mounted) {
-        setState(() {
-          if (attachmentsWidth != null && linkWidth != null) {
-            widthLimit = max(attachmentsWidth, linkWidth);
-          } else {
-            widthLimit = attachmentsWidth ?? linkWidth;
-          }
-        });
-      }
-    });
     super.initState();
   }
 
@@ -141,47 +122,39 @@ class _MessageCardState extends State<MessageCard> {
           BorderRadius.zero,
     );
 
-    Widget content = ConstrainedBox(
-      constraints: BoxConstraints(
-        maxWidth: widthLimit ?? double.infinity,
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (widget.hasQuotedMessage)
-            QuotedMessage(
-              reverse: widget.reverse,
-              message: widget.message,
-              hasNonUrlAttachments: widget.hasNonUrlAttachments,
-              onQuotedMessageTap: widget.onQuotedMessageTap,
-            ),
-          if (widget.hasNonUrlAttachments)
-            ParseAttachments(
-              key: attachmentsKey,
-              message: widget.message,
-              attachmentBuilders: widget.attachmentBuilders,
-              attachmentPadding: widget.attachmentPadding,
-            ),
-          if (!widget.isGiphy)
-            ConstrainedBox(
-              constraints: BoxConstraints.loose(const Size.fromWidth(500)),
-              child: TextBubble(
-                messageTheme: widget.messageTheme,
-                message: widget.message,
-                textPadding: widget.textPadding,
-                textBuilder: widget.textBuilder,
-                isOnlyEmoji: widget.isOnlyEmoji,
-                hasQuotedMessage: widget.hasQuotedMessage,
-                hasUrlAttachments: widget.hasUrlAttachments,
-                onLinkTap: widget.onLinkTap,
-                onMentionTap: widget.onMentionTap,
-              ),
-            ),
-          if (widget.hasUrlAttachments && !widget.hasQuotedMessage)
-            _buildUrlAttachment(),
-        ],
-      ),
+    Widget content = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (widget.hasQuotedMessage)
+          QuotedMessage(
+            reverse: widget.reverse,
+            message: widget.message,
+            hasNonUrlAttachments: widget.hasNonUrlAttachments,
+            onQuotedMessageTap: widget.onQuotedMessageTap,
+          ),
+        if (widget.hasNonUrlAttachments)
+          ParseAttachments(
+            key: attachmentsKey,
+            message: widget.message,
+            attachmentBuilders: widget.attachmentBuilders,
+            attachmentPadding: widget.attachmentPadding,
+          ),
+        if (!widget.isGiphy)
+          TextBubble(
+            messageTheme: widget.messageTheme,
+            message: widget.message,
+            textPadding: widget.textPadding,
+            textBuilder: widget.textBuilder,
+            isOnlyEmoji: widget.isOnlyEmoji,
+            hasQuotedMessage: widget.hasQuotedMessage,
+            hasUrlAttachments: widget.hasUrlAttachments,
+            onLinkTap: widget.onLinkTap,
+            onMentionTap: widget.onMentionTap,
+          ),
+        if (widget.hasUrlAttachments && !widget.hasQuotedMessage)
+          _buildUrlAttachment(),
+      ],
     );
 
     if (widget.enableMessageContainer) {
