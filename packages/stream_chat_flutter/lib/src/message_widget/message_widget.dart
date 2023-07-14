@@ -959,10 +959,14 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
       enableMessageContainer: widget.enableMessageContainer,
     );
 
-    Widget content = FractionallySizedBox(
+    Widget content = Align(
       alignment: widget.reverse ? Alignment.centerRight : Alignment.centerLeft,
-      widthFactor: 0.78,
-      child: messageContent,
+      child: ConstrainedBox(
+        constraints: BoxConstraints(
+          maxWidth: MediaQuery.sizeOf(context).width * 0.76,
+        ),
+        child: messageContent,
+      ),
     );
 
     // Without a intrinsic sized widget the complete horizontal space

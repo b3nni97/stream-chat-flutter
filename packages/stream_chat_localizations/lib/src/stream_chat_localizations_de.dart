@@ -349,7 +349,7 @@ class StreamChatLocalizationsDe extends GlobalStreamChatLocalizations {
   String get youText => 'Du';
 
   @override
-  String get editedText => 'Bearbeited';
+  String get editedText => 'Bearbeitet';
 
   @override
   String galleryPaginationText({
