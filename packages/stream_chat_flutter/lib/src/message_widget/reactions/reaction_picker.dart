@@ -143,14 +143,19 @@ class _StreamReactionPickerState extends State<StreamReactionPicker>
 
   Future<void> triggerAnimations() async {
     for (final a in animations) {
-      a.start();
+      if (mounted) {
+        a.start();
+      }
+
       await Future.delayed(const Duration(milliseconds: 100));
     }
   }
 
   Future<void> pop() async {
     for (final a in animations) {
-      a.stop();
+      if (mounted) {
+        a.stop();
+      }
     }
     Navigator.of(context).pop();
   }

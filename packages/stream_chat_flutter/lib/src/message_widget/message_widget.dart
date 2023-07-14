@@ -12,6 +12,9 @@ import 'package:night_vibes_context_menu/night_vibes_context_menu_action.dart';
 import 'package:night_vibes_context_menu/night_vibes_context_menu_controller.dart';
 import 'package:stages/generated/locale_keys.g.dart';
 import 'package:stages/widgets/animation/routes/context_menu.dart';
+import 'package:stages/widgets/layout/freeze_media_query_wrapper.dart';
+import 'package:stages/widgets/layout/rebuild_once.dart';
+import 'package:stages/widgets/misc/async_helper.dart';
 import 'package:stages/widgets/notification/local_notifications.dart';
 import 'package:stream_chat_flutter/conditional_parent_builder/conditional_parent_builder.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/platform_widget_builder.dart';
@@ -22,6 +25,7 @@ import 'package:stream_chat_flutter/src/message_actions_modal/message_actions_mo
 import 'package:stream_chat_flutter/src/message_widget/message_widget_content.dart';
 import 'package:stream_chat_flutter/src/message_widget/reactions/message_reactions_modal.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
+import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 /// The display behaviour of a widget
 enum DisplayWidget {
@@ -111,9 +115,11 @@ class StreamMessageWidget extends StatefulWidget {
     this.hideBottomRow = false,
     this.enableContextMenu = true,
     this.contextMenuController,
+    this.freezeMediaQueryController,
     this.profileAssetBuilder,
     this.showLoading,
     this.enableMessageContainer = true,
+    this.useIntrinsicSize = false,
   }) : attachmentBuilders = {
           'image': (context, message, attachments) {
             final border = RoundedRectangleBorder(
@@ -555,6 +561,9 @@ class StreamMessageWidget extends StatefulWidget {
   /// Provide context menu controller
   final NightVibesContextMenuController? contextMenuController;
 
+  /// Provide freeze media query controller
+  final FreezeMediaQueryController? freezeMediaQueryController;
+
   /// When the channel is a group we show the profile assets of the user if this
   /// is set
   final Widget Function(BuildContext, Message, bool show)? profileAssetBuilder;
@@ -566,73 +575,80 @@ class StreamMessageWidget extends StatefulWidget {
   /// messages.
   final bool enableMessageContainer;
 
+  /// Enables wether or not to use a [IntrinsicWidth] widget to size
+  /// the messages horizontally.
+  final bool useIntrinsicSize;
+
   /// {@template copyWith}
   /// Creates a copy of [StreamMessageWidget] with specified attributes
   /// overridden.
   /// {@endtemplate}
-  StreamMessageWidget copyWith(
-      {Key? key,
-      void Function(User)? onMentionTap,
-      void Function(Message)? onThreadTap,
-      void Function(Message)? onReplyTap,
-      EditMessageInputBuilder? editMessageInputBuilder,
-      Widget Function(BuildContext, Message)? textBuilder,
-      Widget Function(BuildContext, Message)? usernameBuilder,
-      Widget Function(BuildContext, Message)? bottomRowBuilder,
-      Widget Function(BuildContext, Message)? deletedBottomRowBuilder,
-      void Function(BuildContext, Message)? onMessageActions,
-      Message? message,
-      StreamMessageThemeData? messageTheme,
-      bool? reverse,
-      ShapeBorder? shape,
-      ShapeBorder? attachmentShape,
-      BorderSide? borderSide,
-      BorderSide? attachmentBorderSide,
-      BorderRadiusGeometry? borderRadiusGeometry,
-      BorderRadiusGeometry? attachmentBorderRadiusGeometry,
-      EdgeInsetsGeometry? padding,
-      EdgeInsets? textPadding,
-      EdgeInsetsGeometry? attachmentPadding,
-      DisplayWidget? showUserAvatar,
-      bool? showSendingIndicator,
-      bool? showReactions,
-      bool? allRead,
-      bool? showThreadReplyIndicator,
-      bool? showInChannelIndicator,
-      void Function(User)? onUserAvatarTap,
-      void Function(String)? onLinkTap,
-      bool? showReactionPickerIndicator,
-      GlobalKey? reactionPickerIndicatorKey,
-      GlobalKey? reactionsKey,
-      List<Read>? readList,
-      ShowMessageCallback? onShowMessage,
-      bool? showUsername,
-      bool? showTimestamp,
-      bool? showReplyMessage,
-      bool? showThreadReplyMessage,
-      bool? showEditMessage,
-      bool? showCopyMessage,
-      bool? showDeleteMessage,
-      bool? showResendMessage,
-      bool? showFlagButton,
-      bool? showPinButton,
-      bool? showPinHighlight,
-      Map<String, AttachmentBuilder>? customAttachmentBuilders,
-      bool? translateUserAvatar,
-      OnQuotedMessageTap? onQuotedMessageTap,
-      void Function(Message)? onMessageTap,
-      List<StreamMessageAction>? customActions,
-      void Function(Message message, Attachment attachment)? onAttachmentTap,
-      Widget Function(BuildContext, User)? userAvatarBuilder,
-      Size? imageAttachmentThumbnailSize,
-      String? imageAttachmentThumbnailResizeType,
-      String? imageAttachmentThumbnailCropType,
-      bool? hideBottomRow,
-      bool? enableContextMenu,
-      NightVibesContextMenuController? contextMenuController,
-      Widget Function(BuildContext, Message, bool)? profileAssetBuilder,
-      bool? showLoading,
-      bool? enableMessageContainer}) {
+  StreamMessageWidget copyWith({
+    Key? key,
+    void Function(User)? onMentionTap,
+    void Function(Message)? onThreadTap,
+    void Function(Message)? onReplyTap,
+    EditMessageInputBuilder? editMessageInputBuilder,
+    Widget Function(BuildContext, Message)? textBuilder,
+    Widget Function(BuildContext, Message)? usernameBuilder,
+    Widget Function(BuildContext, Message)? bottomRowBuilder,
+    Widget Function(BuildContext, Message)? deletedBottomRowBuilder,
+    void Function(BuildContext, Message)? onMessageActions,
+    Message? message,
+    StreamMessageThemeData? messageTheme,
+    bool? reverse,
+    ShapeBorder? shape,
+    ShapeBorder? attachmentShape,
+    BorderSide? borderSide,
+    BorderSide? attachmentBorderSide,
+    BorderRadiusGeometry? borderRadiusGeometry,
+    BorderRadiusGeometry? attachmentBorderRadiusGeometry,
+    EdgeInsetsGeometry? padding,
+    EdgeInsets? textPadding,
+    EdgeInsetsGeometry? attachmentPadding,
+    DisplayWidget? showUserAvatar,
+    bool? showSendingIndicator,
+    bool? showReactions,
+    bool? allRead,
+    bool? showThreadReplyIndicator,
+    bool? showInChannelIndicator,
+    void Function(User)? onUserAvatarTap,
+    void Function(String)? onLinkTap,
+    bool? showReactionPickerIndicator,
+    GlobalKey? reactionPickerIndicatorKey,
+    GlobalKey? reactionsKey,
+    List<Read>? readList,
+    ShowMessageCallback? onShowMessage,
+    bool? showUsername,
+    bool? showTimestamp,
+    bool? showReplyMessage,
+    bool? showThreadReplyMessage,
+    bool? showEditMessage,
+    bool? showCopyMessage,
+    bool? showDeleteMessage,
+    bool? showResendMessage,
+    bool? showFlagButton,
+    bool? showPinButton,
+    bool? showPinHighlight,
+    Map<String, AttachmentBuilder>? customAttachmentBuilders,
+    bool? translateUserAvatar,
+    OnQuotedMessageTap? onQuotedMessageTap,
+    void Function(Message)? onMessageTap,
+    List<StreamMessageAction>? customActions,
+    void Function(Message message, Attachment attachment)? onAttachmentTap,
+    Widget Function(BuildContext, User)? userAvatarBuilder,
+    Size? imageAttachmentThumbnailSize,
+    String? imageAttachmentThumbnailResizeType,
+    String? imageAttachmentThumbnailCropType,
+    bool? hideBottomRow,
+    bool? enableContextMenu,
+    NightVibesContextMenuController? contextMenuController,
+    FreezeMediaQueryController? freezeMediaQueryController,
+    Widget Function(BuildContext, Message, bool)? profileAssetBuilder,
+    bool? showLoading,
+    bool? enableMessageContainer,
+    bool? useIntrinsicSize,
+  }) {
     return StreamMessageWidget(
       key: key ?? this.key,
       onMentionTap: onMentionTap ?? this.onMentionTap,
@@ -704,10 +720,13 @@ class StreamMessageWidget extends StatefulWidget {
       enableContextMenu: enableContextMenu ?? this.enableContextMenu,
       contextMenuController:
           contextMenuController ?? this.contextMenuController,
+      freezeMediaQueryController:
+          freezeMediaQueryController ?? this.freezeMediaQueryController,
       profileAssetBuilder: profileAssetBuilder ?? this.profileAssetBuilder,
       showLoading: showLoading ?? this.showLoading,
       enableMessageContainer:
           enableMessageContainer ?? this.enableMessageContainer,
+      useIntrinsicSize: useIntrinsicSize ?? this.useIntrinsicSize,
     );
   }
 
@@ -887,67 +906,80 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
       });
     }
 
-    final content = Padding(
-      padding: widget.padding ?? const EdgeInsets.all(8),
-      child: FractionallySizedBox(
-        alignment:
-            widget.reverse ? Alignment.centerRight : Alignment.centerLeft,
-        widthFactor: 0.78,
-        child: MessageWidgetContent(
-          streamChatTheme: _streamChatTheme,
-          showUsername: showUsername,
-          showTimeStamp: showTimeStamp,
-          showThreadReplyIndicator: showThreadReplyIndicator,
-          showSendingIndicator: showSendingIndicator,
-          showInChannel: showInChannel,
-          isGiphy: isGiphy,
-          isOnlyEmoji: isOnlyEmoji,
-          hasUrlAttachments: hasUrlAttachments,
-          messageTheme: widget.messageTheme,
-          reverse: widget.reverse,
-          message: widget.message,
-          hasNonUrlAttachments: hasNonUrlAttachments,
-          shouldShowReactions: shouldShowReactions,
-          hasQuotedMessage: hasQuotedMessage,
-          textPadding: widget.textPadding,
-          attachmentBuilders: widget.attachmentBuilders,
-          attachmentPadding: widget.attachmentPadding,
-          avatarWidth: avatarWidth,
-          bottomRowPadding: bottomRowPadding,
-          isFailedState: isFailedState,
-          isPinned: isPinned,
-          messageWidget: widget,
-          showBottomRow: showBottomRow,
-          showPinHighlight: widget.showPinHighlight,
-          reactionPickerIndicatorKey: reactionPickerIndicatorKey,
-          showReactionPickerIndicator: widget.showReactionPickerIndicator,
-          showReactions: showReactions,
-          showUserAvatar: widget.showUserAvatar,
-          streamChat: _streamChat,
-          translateUserAvatar: widget.translateUserAvatar,
-          deletedBottomRowBuilder: widget.deletedBottomRowBuilder,
-          onThreadTap: widget.onThreadTap,
-          shape: widget.shape,
-          borderSide: widget.borderSide,
-          borderRadiusGeometry: widget.borderRadiusGeometry,
-          textBuilder: widget.textBuilder,
-          onLinkTap: widget.onLinkTap,
-          onMentionTap: widget.onMentionTap,
-          onQuotedMessageTap: widget.onQuotedMessageTap,
-          bottomRowBuilder: widget.bottomRowBuilder,
-          onUserAvatarTap: widget.onUserAvatarTap,
-          userAvatarBuilder: widget.userAvatarBuilder,
-          usernameBuilder: widget.usernameBuilder,
-          onReactionPressed: () {
-            widget.contextMenuController?.openContextMenu();
-          },
-          isGroup: channel.isGroup,
-          profileAssetBuilder: widget.profileAssetBuilder,
-          enableMessageContainer: widget.enableMessageContainer,
-        ),
-      ),
+    final messageContent = MessageWidgetContent(
+      streamChatTheme: _streamChatTheme,
+      showUsername: showUsername,
+      showTimeStamp: showTimeStamp,
+      showThreadReplyIndicator: showThreadReplyIndicator,
+      showSendingIndicator: showSendingIndicator,
+      showInChannel: showInChannel,
+      isGiphy: isGiphy,
+      isOnlyEmoji: isOnlyEmoji,
+      hasUrlAttachments: hasUrlAttachments,
+      messageTheme: widget.messageTheme,
+      reverse: widget.reverse,
+      message: widget.message,
+      hasNonUrlAttachments: hasNonUrlAttachments,
+      shouldShowReactions: shouldShowReactions,
+      hasQuotedMessage: hasQuotedMessage,
+      textPadding: widget.textPadding,
+      attachmentBuilders: widget.attachmentBuilders,
+      attachmentPadding: widget.attachmentPadding,
+      avatarWidth: avatarWidth,
+      bottomRowPadding: bottomRowPadding,
+      isFailedState: isFailedState,
+      isPinned: isPinned,
+      messageWidget: widget,
+      showBottomRow: showBottomRow,
+      showPinHighlight: widget.showPinHighlight,
+      reactionPickerIndicatorKey: reactionPickerIndicatorKey,
+      showReactionPickerIndicator: widget.showReactionPickerIndicator,
+      showReactions: showReactions,
+      showUserAvatar: widget.showUserAvatar,
+      streamChat: _streamChat,
+      translateUserAvatar: widget.translateUserAvatar,
+      deletedBottomRowBuilder: widget.deletedBottomRowBuilder,
+      onThreadTap: widget.onThreadTap,
+      shape: widget.shape,
+      borderSide: widget.borderSide,
+      borderRadiusGeometry: widget.borderRadiusGeometry,
+      textBuilder: widget.textBuilder,
+      onLinkTap: widget.onLinkTap,
+      onMentionTap: widget.onMentionTap,
+      onQuotedMessageTap: widget.onQuotedMessageTap,
+      bottomRowBuilder: widget.bottomRowBuilder,
+      onUserAvatarTap: widget.onUserAvatarTap,
+      userAvatarBuilder: widget.userAvatarBuilder,
+      usernameBuilder: widget.usernameBuilder,
+      onReactionPressed: () {
+        widget.contextMenuController?.openContextMenu();
+      },
+      isGroup: channel.isGroup,
+      profileAssetBuilder: widget.profileAssetBuilder,
+      enableMessageContainer: widget.enableMessageContainer,
     );
 
+    Widget content = FractionallySizedBox(
+      alignment: widget.reverse ? Alignment.centerRight : Alignment.centerLeft,
+      widthFactor: 0.78,
+      child: messageContent,
+    );
+
+    // Without a intrinsic sized widget the complete horizontal space
+    // is requested even if the message is not that big.
+    // This leads to the problem where the user tries to click outside
+    // of a NightVibesContextMenu but it won´t close because this widget
+    // uses the whole space.
+    if (widget.useIntrinsicSize) {
+      content = IntrinsicWidth(
+        child: content,
+      );
+    }
+
+    content = Padding(
+      padding: widget.padding ?? const EdgeInsets.all(8),
+      child: content,
+    );
     return Material(
       type: MaterialType.transparency,
       child: AnimatedContainer(
@@ -963,13 +995,17 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             child: PlatformWidgetBuilder(
               mobile: (context, child) {
                 if (widget.enableContextMenu) {
+                  final viewPadding = MediaQuery.viewPaddingOf(context);
+
                   child = NightVibesContextMenu(
                     actions: _buildContextMenu(),
+                    enableSafeArea: false,
                     alignChild: false,
                     childCrossAxisAlignment: CrossAxisAlignment.stretch,
                     childMainAxisAlignment: MainAxisAlignment.center,
                     contextMenuController: widget.contextMenuController,
                     menuAlignment: Alignment.center,
+                    padding: viewPadding,
                     child: child!,
                     decoyBuilder: (context, child) {
                       return StreamChannel(
@@ -1043,20 +1079,20 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                       final pickerPosition =
                           _getReactionsPickerIndicatorPosition();
 
-                      final messageContent = IgnorePointer(
-                        child: Container(
-                          margin: margin,
+                      final messageContent = Padding(
+                        padding: margin,
+                        child: RebuildOnce(
+                          key: contextMessageKey,
                           child: widget.copyWith(
-                            key: contextMessageKey,
                             showLoading: false,
                             // message: widget.message.copyWith(
                             //   text: (widget.message.text?.length ?? 0) > 200
                             //       ? '${widget.message.text!.substring(0, 200)}...'
                             //       : widget.message.text,
                             // ),
+
                             showReactions: false,
                             hideBottomRow: true,
-
                             reactionPickerIndicatorKey:
                                 reactionPickerIndicatorKey,
                             reactionsKey: reactionsKey,
@@ -1065,12 +1101,16 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                                     MessageSendingStatus.sent,
                             showPinHighlight: false,
                             enableContextMenu: false,
+                            contextMenuController: widget.contextMenuController,
+                            freezeMediaQueryController:
+                                widget.freezeMediaQueryController,
+                            useIntrinsicSize: true,
                           ),
                         ),
                       );
+
                       return SizedBox(
                         key: contextOverlayKey,
-                        width: double.infinity,
                         child: StreamChannel(
                           channel: channel,
                           showLoading: false,

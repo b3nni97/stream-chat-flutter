@@ -121,6 +121,7 @@ class StreamMessageListView extends StatefulWidget {
     this.spacingWidgetBuilder = _defaultSpacingWidgetBuilder,
     this.scrollToBottomWidget,
     this.scrollableKey,
+    this.onScrollNotification,
   });
 
   /// [ScrollViewKeyboardDismissBehavior] the defines how this [PositionedList] will
@@ -277,6 +278,9 @@ class StreamMessageListView extends StatefulWidget {
   /// Key of scrollable positioned list
   final Key? scrollableKey;
 
+  /// Notifies if a scroll has happened.
+  final void Function(ScrollNotification)? onScrollNotification;
+
   static Widget _defaultSpacingWidgetBuilder(
     BuildContext context,
     List<SpacingType> spacingTypes,
@@ -419,6 +423,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
   @override
   Widget build(BuildContext context) {
+    // print("_StreamMessageListViewState");
     return Portal(
       labels: const [kPortalMessageListViewLabel],
       child: MessageListCore(
@@ -457,6 +462,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
   }
 
   Widget _buildListView(List<Message> data) {
+    // print("_buildListView");
     messages = data;
 
     if (_userRead != null &&
@@ -552,6 +558,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                   child: ScrollablePositionedList.separated(
                     key: widget.scrollableKey,
                     keyboardDismissBehavior: widget.keyboardDismissBehavior,
+                    onNotification: widget.onScrollNotification,
                     itemPositionsListener: _itemPositionListener,
                     initialScrollIndex: initialIndex,
                     initialAlignment: initialAlignment,
@@ -745,20 +752,34 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                       const bottomMessageIndex =
                           2; // 1 -> loader // 0 -> footer
 
-                      final message = messages[i - 2];
+                      final messageIndex = i - 2;
+                      final message = messages[messageIndex];
                       Widget messageWidget;
 
                       if (i == bottomMessageIndex) {
+                        // print("BUILD BOTTOM MESSAGE WITH INDEX: " +
+                        //     messageIndex.toString());
                         messageWidget = _buildBottomMessage(
                           context,
                           message,
                           messages,
                           streamChannel!,
-                          i - 2,
+                          messageIndex,
                         );
                       } else {
-                        messageWidget = buildMessage(message, messages, i - 2);
+                        // print("BUILD MESSAGE WITH INDEX: " +
+                        //     messageIndex.toString());
+                        messageWidget = buildMessage(
+                          context,
+                          message,
+                          messages,
+                          messageIndex,
+                        );
                       }
+                      // print(messages.length);
+                      // print(messageIndex);
+                      // print(messageIndex >= messages.length - 1);
+                      // print(i);
                       return KeyedSubtree(
                         key: ValueKey(message.id),
                         child: messageWidget,
@@ -875,7 +896,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     StreamChannelState streamChannel,
     int index,
   ) {
-    final messageWidget = buildMessage(message, messages, index);
+    final messageWidget = buildMessage(context, message, messages, index);
     return messageWidget;
   }
 
@@ -941,7 +962,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
   Widget _buildScrollToBottom() {
     return StreamBuilder<int>(
       stream: streamChannel!.channel.state!.unreadCountStream,
-      builder: (_, snapshot) {
+      builder: (context, snapshot) {
         if (snapshot.hasError) {
           return const Offstage();
         } else if (!snapshot.hasData) {
@@ -959,95 +980,106 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                 e.userId ==
                 streamChannel!.channel.client.state.currentUser!.id);
 
-        return Positioned(
-          bottom: 8,
-          right: 8,
-          width: 44,
-          height: 44,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              Positioned.fill(
-                child: CupertinoButton(
-                  minSize: 0,
-                  padding: EdgeInsets.zero,
-                  onPressed: () async {
-                    if (unreadCount > 0) {
-                      streamChannel!.channel.markRead();
-                    }
-                    if (!_upToDate) {
-                      _bottomPaginationActive = false;
-                      initialAlignment = 0;
-                      initialIndex = 0;
-                      await streamChannel!.reloadChannel();
+        return Builder(builder: (context) {
+          return Positioned(
+            bottom: 8 +
+                MediaQuery.viewInsetsOf(context).bottom +
+                MediaQuery.paddingOf(context).bottom +
+                48,
+            right: 8,
+            width: 44,
+            height: 44,
+            child: RepaintBoundary(
+              child: Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Positioned.fill(
+                    child: CupertinoButton(
+                      minSize: 0,
+                      padding: EdgeInsets.zero,
+                      onPressed: () async {
+                        if (unreadCount > 0) {
+                          streamChannel!.channel.markRead();
+                        }
+                        if (!_upToDate) {
+                          _bottomPaginationActive = false;
+                          initialAlignment = 0;
+                          initialIndex = 0;
+                          await streamChannel!.reloadChannel();
 
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        _scrollController!.jumpTo(index: 0);
-                      });
-                    } else {
-                      _showScrollToBottom.value = false;
-                      _scrollController!.jumpTo(
-                        index: 0,
-                      );
-                    }
-                  },
-                  child: widget.scrollToBottomWidget ??
-                      Container(
-                        decoration: BoxDecoration(
-                          color: _streamTheme.colorTheme.barsBg,
-                          shape: BoxShape.circle,
-                        ),
-                        padding: const EdgeInsets.all(4),
-                        child: widget.reverse
-                            ? Icon(
-                                CupertinoIcons.chevron_down,
-                                color: _streamTheme.colorTheme.textHighEmphasis,
-                                size: 24,
-                              )
-                            : Icon(
-                                CupertinoIcons.chevron_up,
-                                color: _streamTheme.colorTheme.textHighEmphasis,
-                                size: 24,
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            _scrollController!.jumpTo(index: 0);
+                          });
+                        } else {
+                          _showScrollToBottom.value = false;
+                          _scrollController!.jumpTo(
+                            index: 0,
+                          );
+                        }
+                      },
+                      child: widget.scrollToBottomWidget ??
+                          Container(
+                            decoration: BoxDecoration(
+                              color: _streamTheme.colorTheme.barsBg,
+                              shape: BoxShape.circle,
+                            ),
+                            padding: const EdgeInsets.all(4),
+                            child: widget.reverse
+                                ? Icon(
+                                    CupertinoIcons.chevron_down,
+                                    color: _streamTheme
+                                        .colorTheme.textHighEmphasis,
+                                    size: 24,
+                                  )
+                                : Icon(
+                                    CupertinoIcons.chevron_up,
+                                    color: _streamTheme
+                                        .colorTheme.textHighEmphasis,
+                                    size: 24,
+                                  ),
+                          ),
+                    ),
+                  ),
+                  if (showUnreadCount)
+                    Positioned(
+                      left: 0,
+                      right: 0,
+                      top: -10,
+                      child: Center(
+                        child: Material(
+                          borderRadius: BorderRadius.circular(8),
+                          color: StreamChatTheme.of(context)
+                              .colorTheme
+                              .accentPrimary,
+                          child: Padding(
+                            padding: const EdgeInsets.only(
+                              left: 5,
+                              right: 5,
+                              top: 2,
+                              bottom: 2,
+                            ),
+                            child: Text(
+                              '${unreadCount > 99 ? '99+' : unreadCount}',
+                              style: const TextStyle(
+                                fontSize: 11,
+                                color: Colors.white,
                               ),
-                      ),
-                ),
-              ),
-              if (showUnreadCount)
-                Positioned(
-                  left: 0,
-                  right: 0,
-                  top: -10,
-                  child: Center(
-                    child: Material(
-                      borderRadius: BorderRadius.circular(8),
-                      color:
-                          StreamChatTheme.of(context).colorTheme.accentPrimary,
-                      child: Padding(
-                        padding: const EdgeInsets.only(
-                          left: 5,
-                          right: 5,
-                          top: 2,
-                          bottom: 2,
-                        ),
-                        child: Text(
-                          '${unreadCount > 99 ? '99+' : unreadCount}',
-                          style: const TextStyle(
-                            fontSize: 11,
-                            color: Colors.white,
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-            ],
-          ),
-        );
+                ],
+              ),
+            ),
+          );
+        });
       },
     );
   }
 
-  Widget buildMessage(Message message, List<Message> messages, int index) {
+  Widget buildMessage(BuildContext context, Message message,
+      List<Message> messages, int index) {
     if ((message.type == 'system' || message.type == 'error') &&
         message.text?.isNotEmpty == true) {
       return widget.systemMessageBuilder?.call(context, message) ??

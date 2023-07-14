@@ -51,6 +51,7 @@ class ScrollablePositionedList extends StatefulWidget {
     this.minCacheExtent,
     this.findChildIndexCallback,
     this.keyboardDismissBehavior,
+    this.onNotification,
   })  : itemPositionsNotifier = itemPositionsListener as ItemPositionsNotifier?,
         separatorBuilder = null,
         super(key: key);
@@ -77,6 +78,7 @@ class ScrollablePositionedList extends StatefulWidget {
     this.minCacheExtent,
     this.findChildIndexCallback,
     this.keyboardDismissBehavior,
+    this.onNotification,
   })  : assert(separatorBuilder != null, 'seperatorBuilder cannot be null'),
         itemPositionsNotifier = itemPositionsListener as ItemPositionsNotifier?,
         super(key: key);
@@ -173,6 +175,12 @@ class ScrollablePositionedList extends StatefulWidget {
   /// in builds of widgets that would otherwise already be built in the
   /// cache extent.
   final double? minCacheExtent;
+
+  /// Callback for scroll notifications. Because [ScrollablePositionedList]
+  /// uses multiple scrollviews to do it´s layouting, listening to the
+  /// [ScrollNotification] in an ancestor does not work correctly.
+  /// Because of this limitation we are exposing this callback.
+  final void Function(ScrollNotification)? onNotification;
 
   @override
   State<StatefulWidget> createState() => ScrollablePositionedListState();
@@ -349,7 +357,10 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
             child: FadeTransition(
               opacity: ReverseAnimation(opacity),
               child: NotificationListener<ScrollNotification>(
-                onNotification: (_) => _isTransitioning,
+                onNotification: (notification) {
+                  widget.onNotification?.call(notification);
+                  return _isTransitioning;
+                },
                 child: PositionedList(
                   keyboardDismissBehavior: widget.keyboardDismissBehavior,
                   itemBuilder: widget.itemBuilder,
@@ -380,7 +391,10 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
               child: FadeTransition(
                 opacity: opacity,
                 child: NotificationListener<ScrollNotification>(
-                  onNotification: (_) => false,
+                  onNotification: (notification) {
+                    widget.onNotification?.call(notification);
+                    return false;
+                  },
                   child: PositionedList(
                     keyboardDismissBehavior: widget.keyboardDismissBehavior,
                     itemBuilder: widget.itemBuilder,
