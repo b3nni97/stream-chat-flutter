@@ -170,50 +170,72 @@ class _PositionedListState extends State<PositionedList> {
   }
 
   @override
-  Widget build(BuildContext context) => RegistryWidget(
-        elementNotifier: registeredElements,
-        child: UnboundedCustomScrollView(
-          anchor: widget.alignment,
-          center: _centerKey,
-          controller: scrollController,
-          keyboardDismissBehavior: widget.keyboardDismissBehavior,
-          scrollDirection: widget.scrollDirection,
-          reverse: widget.reverse,
-          cacheExtent: widget.cacheExtent,
-          physics: widget.physics,
-          semanticChildCount: widget.semanticChildCount ?? widget.itemCount,
-          slivers: <Widget>[
-            if (widget.positionedIndex > 0)
-              SliverPadding(
-                padding: _leadingSliverPadding,
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) => widget.separatorBuilder == null
-                        ? _buildItem(widget.positionedIndex - (index + 1))
-                        : _buildSeparatedListElement(
-                            widget.positionedIndex * 2 - (index + 1),
-                          ),
-                    childCount: widget.separatorBuilder == null
-                        ? widget.positionedIndex
-                        : widget.positionedIndex * 2,
-                    addSemanticIndexes: false,
-                    findChildIndexCallback: widget.findChildIndexCallback,
-                    addRepaintBoundaries: widget.addRepaintBoundaries,
-                    addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-                  ),
-                ),
-              ),
+  Widget build(BuildContext context) {
+    return RegistryWidget(
+      elementNotifier: registeredElements,
+      child: UnboundedCustomScrollView(
+        anchor: widget.alignment,
+        center: _centerKey,
+        controller: scrollController,
+        keyboardDismissBehavior: widget.keyboardDismissBehavior,
+        scrollDirection: widget.scrollDirection,
+        reverse: widget.reverse,
+        cacheExtent: widget.cacheExtent,
+        physics: widget.physics,
+        semanticChildCount: widget.semanticChildCount ?? widget.itemCount,
+        slivers: <Widget>[
+          if (widget.positionedIndex > 0)
             SliverPadding(
-              key: _centerKey,
-              padding: _centerSliverPadding,
+              padding: _leadingSliverPadding,
               sliver: SliverList(
                 delegate: SliverChildBuilderDelegate(
                   (context, index) => widget.separatorBuilder == null
-                      ? _buildItem(index + widget.positionedIndex)
+                      ? _buildItem(widget.positionedIndex - (index + 1))
                       : _buildSeparatedListElement(
-                          index + widget.positionedIndex * 2,
+                          widget.positionedIndex * 2 - (index + 1),
                         ),
-                  childCount: widget.itemCount != 0 ? 1 : 0,
+                  childCount: widget.separatorBuilder == null
+                      ? widget.positionedIndex
+                      : widget.positionedIndex * 2,
+                  addSemanticIndexes: false,
+                  findChildIndexCallback: widget.findChildIndexCallback,
+                  addRepaintBoundaries: widget.addRepaintBoundaries,
+                  addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+                ),
+              ),
+            ),
+          SliverPadding(
+            key: _centerKey,
+            padding: _centerSliverPadding,
+            sliver: SliverList(
+              delegate: SliverChildBuilderDelegate(
+                (context, index) => widget.separatorBuilder == null
+                    ? _buildItem(index + widget.positionedIndex)
+                    : _buildSeparatedListElement(
+                        index + widget.positionedIndex * 2,
+                      ),
+                childCount: widget.itemCount != 0 ? 1 : 0,
+                findChildIndexCallback: widget.findChildIndexCallback,
+                addSemanticIndexes: false,
+                addRepaintBoundaries: widget.addRepaintBoundaries,
+                addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
+              ),
+            ),
+          ),
+          if (widget.positionedIndex >= 0 &&
+              widget.positionedIndex < widget.itemCount - 1)
+            SliverPadding(
+              padding: _trailingSliverPadding,
+              sliver: SliverList(
+                delegate: SliverChildBuilderDelegate(
+                  (context, index) => widget.separatorBuilder == null
+                      ? _buildItem(index + widget.positionedIndex + 1)
+                      : _buildSeparatedListElement(
+                          index + widget.positionedIndex * 2 + 1,
+                        ),
+                  childCount: widget.separatorBuilder == null
+                      ? widget.itemCount - widget.positionedIndex - 1
+                      : 2 * (widget.itemCount - widget.positionedIndex - 1),
                   findChildIndexCallback: widget.findChildIndexCallback,
                   addSemanticIndexes: false,
                   addRepaintBoundaries: widget.addRepaintBoundaries,
@@ -221,30 +243,10 @@ class _PositionedListState extends State<PositionedList> {
                 ),
               ),
             ),
-            if (widget.positionedIndex >= 0 &&
-                widget.positionedIndex < widget.itemCount - 1)
-              SliverPadding(
-                padding: _trailingSliverPadding,
-                sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) => widget.separatorBuilder == null
-                        ? _buildItem(index + widget.positionedIndex + 1)
-                        : _buildSeparatedListElement(
-                            index + widget.positionedIndex * 2 + 1,
-                          ),
-                    childCount: widget.separatorBuilder == null
-                        ? widget.itemCount - widget.positionedIndex - 1
-                        : 2 * (widget.itemCount - widget.positionedIndex - 1),
-                    findChildIndexCallback: widget.findChildIndexCallback,
-                    addSemanticIndexes: false,
-                    addRepaintBoundaries: widget.addRepaintBoundaries,
-                    addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
-                  ),
-                ),
-              ),
-          ],
-        ),
-      );
+        ],
+      ),
+    );
+  }
 
   Widget _buildSeparatedListElement(int index) {
     if (index.isEven) {
@@ -256,11 +258,18 @@ class _PositionedListState extends State<PositionedList> {
 
   Widget _buildItem(int index) {
     final child = widget.itemBuilder(context, index);
-    return RegisteredElementWidget(
-      key: IndexedKey(child.key, index),
-      child: widget.addSemanticIndexes
-          ? IndexedSemantics(index: index, child: child)
-          : child,
+
+    // Wrapping the RegisteredElementWidget with a Builder splits
+    // the context and prevents some rebuilds one [PositionedList].
+    return Builder(
+      builder: (context) {
+        return RegisteredElementWidget(
+          key: IndexedKey(child.key, index),
+          child: widget.addSemanticIndexes
+              ? IndexedSemantics(index: index, child: child)
+              : child,
+        );
+      },
     );
   }
 

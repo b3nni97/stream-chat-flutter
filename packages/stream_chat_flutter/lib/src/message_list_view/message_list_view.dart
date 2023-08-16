@@ -5,7 +5,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_portal/flutter_portal.dart';
-import 'package:stages/widgets/layout/rebuild_once.dart';
 import 'package:stream_chat_flutter/scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:stream_chat_flutter/src/message_list_view/floating_date_divider.dart';
 import 'package:stream_chat_flutter/src/message_list_view/loading_indicator.dart';
@@ -309,7 +308,11 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
   double get _initialAlignment {
     final initialAlignment = widget.initialAlignment;
     if (initialAlignment != null) return initialAlignment;
-    return initialIndex == 0 ? 0 : 0.1;
+    return initialIndex == 0
+        ? 0
+        : initialIndex > 3
+            ? 0.5 * 1.5
+            : 0.5;
   }
 
   bool get _upToDate => streamChannel!.channel.state!.isUpToDate;
@@ -423,7 +426,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
   @override
   Widget build(BuildContext context) {
-    // print("_StreamMessageListViewState");
     return Portal(
       labels: const [kPortalMessageListViewLabel],
       child: MessageListCore(
@@ -462,7 +464,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
   }
 
   Widget _buildListView(List<Message> data) {
-    // print("_buildListView");
     messages = data;
 
     if (_userRead != null &&
@@ -491,7 +492,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             if (messages[0].user?.id !=
                 streamChannel!.channel.client.state.currentUser?.id) {
               initialIndex = first.index + diff;
-              initialAlignment = first.itemLeadingEdge;
+              initialAlignment = first.itemLeadingEdge * 1.5;
             }
           }
         }
@@ -501,10 +502,10 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     _messageListLength = newMessagesListLength;
 
     final itemCount = messages.length + // total messages
-            2 + // top + bottom loading indicator
-            2 + // header + footer
-            1 // parent message
-        ;
+        2 + // top + bottom loading indicator
+        2 + // header + footer
+        1; // parent message
+
     final child = Stack(
       alignment: Alignment.center,
       children: [
@@ -699,6 +700,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                       return separator;
                     },
                     itemBuilder: (context, i) {
+                      print("ITEM BUILDER");
                       if (i == itemCount - 1) {
                         if (widget.parentMessage == null) {
                           return const Offstage();
@@ -757,6 +759,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                       Widget messageWidget;
 
                       if (i == bottomMessageIndex) {
+                        // print(message.text);
                         // print("BUILD BOTTOM MESSAGE WITH INDEX: " +
                         //     messageIndex.toString());
                         messageWidget = _buildBottomMessage(
@@ -767,6 +770,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                           messageIndex,
                         );
                       } else {
+                        // print(message.text);
                         // print("BUILD MESSAGE WITH INDEX: " +
                         //     messageIndex.toString());
                         messageWidget = buildMessage(
@@ -983,9 +987,14 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         return Builder(builder: (context) {
           return Positioned(
             bottom: 8 +
-                MediaQuery.viewInsetsOf(context).bottom +
-                MediaQuery.paddingOf(context).bottom +
-                48,
+                // This bottom padding is needed because the viewport is 1.5x the
+                // screen height, to allow message widgets to be visible which are
+                // otherwise clipped.
+                MediaQuery.sizeOf(context).height * 0.5 +
+                MediaQuery.viewPaddingOf(context).bottom +
+                MediaQuery.viewPaddingOf(context).top +
+                36 +
+                54,
             right: 8,
             width: 44,
             height: 44,
@@ -1176,7 +1185,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
               .loadChannelAtMessage(quotedMessageId)
               .then((_) async {
             initialIndex = 21; // 19 + 2 | 19 is the index of the message
-            initialAlignment = 0.1;
+            initialAlignment = 0.5 * 1.5;
           });
         }
       },

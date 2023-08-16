@@ -871,7 +871,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
     reactionsKey = widget.reactionsKey ?? GlobalKey();
     reactionPickerIndicatorKey =
         widget.reactionPickerIndicatorKey ?? GlobalKey();
-
     super.initState();
   }
 
@@ -979,7 +978,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
         child: content,
       );
     }
-
     content = Padding(
       padding: widget.padding ?? const EdgeInsets.all(8),
       child: content,
