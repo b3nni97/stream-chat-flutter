@@ -700,7 +700,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                       return separator;
                     },
                     itemBuilder: (context, i) {
-                      print("ITEM BUILDER");
                       if (i == itemCount - 1) {
                         if (widget.parentMessage == null) {
                           return const Offstage();
@@ -759,9 +758,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                       Widget messageWidget;
 
                       if (i == bottomMessageIndex) {
-                        // print(message.text);
-                        // print("BUILD BOTTOM MESSAGE WITH INDEX: " +
-                        //     messageIndex.toString());
                         messageWidget = _buildBottomMessage(
                           context,
                           message,
@@ -770,9 +766,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                           messageIndex,
                         );
                       } else {
-                        // print(message.text);
-                        // print("BUILD MESSAGE WITH INDEX: " +
-                        //     messageIndex.toString());
                         messageWidget = buildMessage(
                           context,
                           message,
@@ -780,10 +773,6 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                           messageIndex,
                         );
                       }
-                      // print(messages.length);
-                      // print(messageIndex);
-                      // print(messageIndex >= messages.length - 1);
-                      // print(i);
                       return KeyedSubtree(
                         key: ValueKey(message.id),
                         child: messageWidget,

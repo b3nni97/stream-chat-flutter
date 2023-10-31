@@ -40,10 +40,12 @@ dependencies:
   night_vibes_context_menu:
     path: ../../../night_vibes_context_menu
   path_provider: ^2.0.9
-  photo_manager: ^2.0.1
+  photo_manager:
+    git:
+      url: https://github.com/moffatman/flutter_photo_manager.git
   photo_view: ^0.14.0
   rxdart: ^0.27.0
-  share_plus: ^6.3.0
+  share_plus: ^7.1.0
   shimmer: ^3.0.0
   stages:
     path: ../../../../stages
