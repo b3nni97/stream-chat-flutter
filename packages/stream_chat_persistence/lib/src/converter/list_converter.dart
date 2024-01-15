@@ -20,4 +20,16 @@ class ListConverter<T> extends TypeConverter<List<T>, String> {
     }
     return jsonEncode(value);
   }
+
+  @override
+  List<T> fromSql(String fromDb) {
+    // TODO: implement fromSql
+    throw UnimplementedError();
+  }
+
+  @override
+  String toSql(List<T> value) {
+    // TODO: implement toSql
+    throw UnimplementedError();
+  }
 }

@@ -20,4 +20,16 @@ class MapConverter<T> extends TypeConverter<Map<String, T>, String> {
     }
     return jsonEncode(value);
   }
+
+  @override
+  Map<String, T> fromSql(String fromDb) {
+    // TODO: implement fromSql
+    throw UnimplementedError();
+  }
+
+  @override
+  String toSql(Map<String, T> value) {
+    // TODO: implement toSql
+    throw UnimplementedError();
+  }
 }

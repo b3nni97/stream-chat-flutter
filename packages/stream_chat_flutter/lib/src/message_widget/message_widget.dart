@@ -1440,6 +1440,10 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             ),
           ),
           onPressed: () async {
+            Completer completer = Completer();
+            widget.contextMenuController?.waitForFutureAfterClose =
+                completer.future;
+
             Navigator.of(context, rootNavigator: true).pop();
 
             final deleted = await showCupertinoModalPopup(
@@ -1449,7 +1453,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
               },
             );
 
-            if (deleted) {
+            if (deleted ?? false) {
               try {
                 await StreamChannel.of(context)
                     .channel
@@ -1461,6 +1465,8 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                 );
               }
             }
+
+            completer.complete();
           },
         ),
     ];

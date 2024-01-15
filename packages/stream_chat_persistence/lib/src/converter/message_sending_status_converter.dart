@@ -48,4 +48,16 @@ class MessageSendingStatusConverter
         return null;
     }
   }
+
+  @override
+  MessageSendingStatus fromSql(int fromDb) {
+    // TODO: implement fromSql
+    throw UnimplementedError();
+  }
+
+  @override
+  int toSql(MessageSendingStatus value) {
+    // TODO: implement toSql
+    throw UnimplementedError();
+  }
 }
