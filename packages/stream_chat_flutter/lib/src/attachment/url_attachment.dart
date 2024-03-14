@@ -40,8 +40,8 @@ class StreamUrlAttachment extends StatelessWidget {
 
     return ConstrainedBox(
       constraints: const BoxConstraints(
-        maxWidth: 400,
-        minWidth: 400,
+        maxWidth: 200,
+        minWidth: 200,
       ),
       child: MouseRegion(
         cursor: SystemMouseCursors.click,
@@ -64,39 +64,10 @@ class StreamUrlAttachment extends StatelessWidget {
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: Stack(
-                    children: [
-                      CachedNetworkImage(
-                        width: double.infinity,
-                        imageUrl: urlAttachment.imageUrl!,
-                        fit: BoxFit.cover,
-                      ),
-                      Positioned(
-                        left: 0,
-                        bottom: -1,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.only(
-                              topRight: Radius.circular(16),
-                            ),
-                            color: messageTheme.linkBackgroundColor,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(
-                              top: 8,
-                              left: 8,
-                              right: 8,
-                            ),
-                            child: Text(
-                              hostDisplayName,
-                              style: chatThemeData.textTheme.bodyBold.copyWith(
-                                color: chatThemeData.colorTheme.accentPrimary,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
+                  alignment: Alignment.center,
+                  child: CachedNetworkImage(
+                    imageUrl: urlAttachment.imageUrl!,
+                    fit: BoxFit.cover,
                   ),
                 ),
               Padding(
