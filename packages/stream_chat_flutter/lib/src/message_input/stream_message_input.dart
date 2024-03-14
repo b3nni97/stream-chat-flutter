@@ -5,7 +5,6 @@ import 'dart:math';
 
 import 'package:cached_network_image/cached_network_image.dart'
     hide ErrorListener;
-import 'package:desktop_drop/desktop_drop.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:photo_manager/photo_manager.dart';
@@ -702,94 +701,72 @@ class StreamMessageInputState extends State<StreamMessageInput>
             : EdgeInsets.zero);
 
     return Expanded(
-      child: DropTarget(
-        onDragDone: (details) async {
-          final files = details.files;
-          final attachments = <Attachment>[];
-          for (final file in files) {
-            final attachment = await file.toAttachment(type: 'file');
-            attachments.add(attachment);
-          }
-
-          if (attachments.isNotEmpty) _addAttachments(attachments);
-        },
-        onDragEntered: (details) {
-          setState(() {
-            _draggingBorder = Border.all(
-              color: _streamChatTheme.colorTheme.accentPrimary,
-            );
-          });
-        },
-        onDragExited: (details) {
-          setState(() => _draggingBorder = null);
-        },
-        child: Container(
-          clipBehavior: Clip.hardEdge,
-          margin: margin,
-          decoration: BoxDecoration(
-            borderRadius: _messageInputTheme.borderRadius,
-            color: _effectiveFocusNode.hasFocus
-                ? _messageInputTheme.activeBorderColor
-                : _messageInputTheme.idleBorderColor,
-            border: _draggingBorder,
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(1.5),
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                borderRadius: _messageInputTheme.borderRadius,
-                color: _messageInputTheme.inputBackgroundColor,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildReplyToMessage(),
-                  _buildAttachments(),
-                  LimitedBox(
-                    maxHeight: widget.maxHeight,
-                    child: PlatformWidgetBuilder(
-                      web: (context, child) => KeyboardShortcutRunner(
-                        onEnterKeypress: sendMessage,
-                        onEscapeKeypress: () {
-                          if (_hasQuotedMessage &&
-                              _effectiveController.text.isEmpty) {
-                            widget.onQuotedMessageCleared?.call();
-                          }
-                        },
-                        child: child!,
-                      ),
-                      desktop: (context, child) => KeyboardShortcutRunner(
-                        onEnterKeypress: sendMessage,
-                        onEscapeKeypress: () {
-                          if (_hasQuotedMessage &&
-                              _effectiveController.text.isEmpty) {
-                            widget.onQuotedMessageCleared?.call();
-                          }
-                        },
-                        child: child!,
-                      ),
-                      mobile: (context, child) => child,
-                      child: StreamMessageTextField(
-                        key: const Key('messageInputText'),
-                        maxLines: widget.maxLines,
-                        minLines: widget.minLines,
-                        textInputAction: widget.textInputAction,
-                        onSubmitted: (_) => sendMessage(),
-                        keyboardType: widget.keyboardType,
-                        controller: _effectiveController,
-                        focusNode: _effectiveFocusNode,
-                        style: _messageInputTheme.inputTextStyle,
-                        autofocus: widget.autofocus,
-                        textAlignVertical: TextAlignVertical.center,
-                        decoration: _getInputDecoration(context),
-                        textCapitalization: widget.textCapitalization,
-                        autocorrect: widget.autoCorrect,
-                      ),
+      child: Container(
+        clipBehavior: Clip.hardEdge,
+        margin: margin,
+        decoration: BoxDecoration(
+          borderRadius: _messageInputTheme.borderRadius,
+          color: _effectiveFocusNode.hasFocus
+              ? _messageInputTheme.activeBorderColor
+              : _messageInputTheme.idleBorderColor,
+          border: _draggingBorder,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.all(1.5),
+          child: DecoratedBox(
+            decoration: BoxDecoration(
+              borderRadius: _messageInputTheme.borderRadius,
+              color: _messageInputTheme.inputBackgroundColor,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildReplyToMessage(),
+                _buildAttachments(),
+                LimitedBox(
+                  maxHeight: widget.maxHeight,
+                  child: PlatformWidgetBuilder(
+                    web: (context, child) => KeyboardShortcutRunner(
+                      onEnterKeypress: sendMessage,
+                      onEscapeKeypress: () {
+                        if (_hasQuotedMessage &&
+                            _effectiveController.text.isEmpty) {
+                          widget.onQuotedMessageCleared?.call();
+                        }
+                      },
+                      child: child!,
+                    ),
+                    desktop: (context, child) => KeyboardShortcutRunner(
+                      onEnterKeypress: sendMessage,
+                      onEscapeKeypress: () {
+                        if (_hasQuotedMessage &&
+                            _effectiveController.text.isEmpty) {
+                          widget.onQuotedMessageCleared?.call();
+                        }
+                      },
+                      child: child!,
+                    ),
+                    mobile: (context, child) => child,
+                    child: StreamMessageTextField(
+                      key: const Key('messageInputText'),
+                      maxLines: widget.maxLines,
+                      minLines: widget.minLines,
+                      textInputAction: widget.textInputAction,
+                      onSubmitted: (_) => sendMessage(),
+                      keyboardType: widget.keyboardType,
+                      controller: _effectiveController,
+                      focusNode: _effectiveFocusNode,
+                      style: _messageInputTheme.inputTextStyle,
+                      autofocus: widget.autofocus,
+                      textAlignVertical: TextAlignVertical.center,
+                      decoration: _getInputDecoration(context),
+                      textCapitalization: widget.textCapitalization,
+                      autocorrect: widget.autoCorrect,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),

@@ -74,14 +74,6 @@ class StreamFullScreenMediaBuilder extends StatelessWidget {
       // );
     }
 
-    return StreamFullScreenMedia(
-      mediaAttachmentPackages: mediaAttachmentPackages,
-      startIndex: startIndex,
-      userName: userName,
-      onShowMessage: onShowMessage,
-      onReplyMessage: onReplyMessage,
-      attachmentActionsModalBuilder: attachmentActionsModalBuilder,
-      autoplayVideos: autoplayVideos,
-    );
+    return const SizedBox.shrink();
   }
 }

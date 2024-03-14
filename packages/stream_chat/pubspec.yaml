@@ -22,7 +22,7 @@ dependencies:
   mime: ^1.0.0
   rate_limiter: ^0.1.1
   rxdart: ^0.27.0
-  uuid: ^3.0.4
+  uuid: ^4.3.3
   web_socket_channel: ^2.0.0
 
 dev_dependencies:

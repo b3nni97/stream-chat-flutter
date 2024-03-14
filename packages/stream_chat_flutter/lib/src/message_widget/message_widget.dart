@@ -1440,7 +1440,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             ),
           ),
           onPressed: () async {
-            Completer completer = Completer();
+            final completer = Completer();
             widget.contextMenuController?.waitForFutureAfterClose =
                 completer.future;
 
