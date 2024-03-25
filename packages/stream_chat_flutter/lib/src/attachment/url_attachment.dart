@@ -36,8 +36,6 @@ class StreamUrlAttachment extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final chatThemeData = StreamChatTheme.of(context);
-
     return ConstrainedBox(
       constraints: const BoxConstraints(
         maxWidth: 200,
@@ -80,14 +78,14 @@ class StreamUrlAttachment extends StatelessWidget {
                         urlAttachment.title!.trim(),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: chatThemeData.textTheme.body
-                            .copyWith(fontWeight: FontWeight.w700),
+                        style: messageTheme.messageTextStyle
+                            ?.copyWith(fontWeight: FontWeight.w600),
                       ),
                     if (urlAttachment.text != null)
                       Text(
                         urlAttachment.text!,
-                        style: chatThemeData.textTheme.body
-                            .copyWith(fontWeight: FontWeight.w400),
+                        style: messageTheme.messageTextStyle
+                            ?.copyWith(fontWeight: FontWeight.w400),
                       ),
                   ],
                 ),

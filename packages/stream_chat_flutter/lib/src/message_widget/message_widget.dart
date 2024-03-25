@@ -1009,12 +1009,17 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
                     menuAlignment: Alignment.center,
                     padding: viewPadding,
                     child: child!,
-                    decoyBuilder: (context, child) {
+                    decoyBuilder: (_, child) {
                       return StreamChannel(
                         channel: channel,
                         showLoading: false,
                         populateFutures: false,
-                        child: IgnorePointer(child: child!),
+                        child: IgnorePointer(
+                          child: DefaultTextStyle(
+                            style: DefaultTextStyle.of(context).style,
+                            child: child!,
+                          ),
+                        ),
                       );
                     },
                     previewBuilder: (context, animation, child) {
