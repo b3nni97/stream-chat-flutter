@@ -93,7 +93,7 @@ class StreamHttpClient {
       error = err.error;
     } else {
       // real network request dio error
-      error = StreamChatNetworkError.fromDioError(err);
+      error = StreamChatNetworkError.fromDioException(err);
     }
     return error..stackTrace = err.stackTrace;
   }

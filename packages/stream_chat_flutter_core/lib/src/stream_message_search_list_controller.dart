@@ -192,7 +192,8 @@ class StreamMessageSearchListController
       final previousItems = previousValue.items;
       final newItems = previousItems + results;
       final next = response.next;
-      final nextKey = next != null && next.isNotEmpty ? next : null;
+      final nextKey =
+          next != null && nextPageKey != next && next.isNotEmpty ? next : null;
 
       if (_waitForUI != null) {
         await _waitForUI!();

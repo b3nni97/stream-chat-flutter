@@ -174,7 +174,7 @@ void main() {
       await client.get(path);
     } catch (e) {
       expect(e, isA<StreamChatNetworkError>());
-      expect(e, StreamChatNetworkError.fromDioError(error));
+      expect(e, StreamChatNetworkError.fromDioException(error));
     }
 
     verify(() => dio.get(
@@ -227,7 +227,7 @@ void main() {
         await client.post(path);
       } catch (e) {
         expect(e, isA<StreamChatNetworkError>());
-        expect(e, StreamChatNetworkError.fromDioError(error));
+        expect(e, StreamChatNetworkError.fromDioException(error));
       }
 
       verify(() => dio.post(
@@ -281,7 +281,7 @@ void main() {
         await client.delete(path);
       } catch (e) {
         expect(e, isA<StreamChatNetworkError>());
-        expect(e, StreamChatNetworkError.fromDioError(error));
+        expect(e, StreamChatNetworkError.fromDioException(error));
       }
 
       verify(() => dio.delete(
@@ -335,7 +335,7 @@ void main() {
         await client.patch(path);
       } catch (e) {
         expect(e, isA<StreamChatNetworkError>());
-        expect(e, StreamChatNetworkError.fromDioError(error));
+        expect(e, StreamChatNetworkError.fromDioException(error));
       }
 
       verify(() => dio.patch(
@@ -389,7 +389,7 @@ void main() {
         await client.put(path);
       } catch (e) {
         expect(e, isA<StreamChatNetworkError>());
-        expect(e, StreamChatNetworkError.fromDioError(error));
+        expect(e, StreamChatNetworkError.fromDioException(error));
       }
 
       verify(() => dio.put(
@@ -450,7 +450,7 @@ void main() {
         await client.postFile(path, file);
       } catch (e) {
         expect(e, isA<StreamChatNetworkError>());
-        expect(e, StreamChatNetworkError.fromDioError(error));
+        expect(e, StreamChatNetworkError.fromDioException(error));
       }
 
       verify(() => dio.post(

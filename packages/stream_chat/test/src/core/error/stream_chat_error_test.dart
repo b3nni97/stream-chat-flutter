@@ -77,7 +77,7 @@ void main() {
           data: data.toJson(),
         ),
       );
-      final error = StreamChatNetworkError.fromDioError(dioError);
+      final error = StreamChatNetworkError.fromDioException(dioError);
       expect(error, isNotNull);
       expect(error.code, code);
       expect(error.message, message);

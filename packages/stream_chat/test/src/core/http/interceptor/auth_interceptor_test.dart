@@ -192,7 +192,7 @@ void main() {
         // need to cast it as the type is private in dio
         final error = (e as dynamic).data;
         expect(error, isA<DioError>());
-        final response = StreamChatNetworkError.fromDioError(error);
+        final response = StreamChatNetworkError.fromDioException(error);
         expect(response.errorCode, code);
       }
 
