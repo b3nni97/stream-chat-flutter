@@ -649,16 +649,19 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
                       final isThread = message.replyCount! > 0;
 
-                      if (!Jiffy(message.createdAt.toLocal()).isSame(
-                        nextMessage.createdAt.toLocal(),
-                        Units.DAY,
+                      if (!Jiffy.parseFromDateTime(message.createdAt.toLocal())
+                          .isSame(
+                        Jiffy.parseFromDateTime(
+                            nextMessage.createdAt.toLocal()),
+                        unit: Unit.day,
                       )) {
                         separator = _buildDateDivider(nextMessage);
                       } else {
-                        final timeDiff =
-                            Jiffy(nextMessage.createdAt.toLocal()).diff(
-                          message.createdAt.toLocal(),
-                          Units.MINUTE,
+                        final timeDiff = Jiffy.parseFromDateTime(
+                                nextMessage.createdAt.toLocal())
+                            .diff(
+                          Jiffy.parseFromDateTime(message.createdAt.toLocal()),
+                          unit: Unit.minute,
                         );
 
                         final isNextUserSame =
@@ -1098,9 +1101,9 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
     num timeDiff = 0;
     if (nextMessage != null) {
-      timeDiff = Jiffy(nextMessage.createdAt.toLocal()).diff(
-        message.createdAt.toLocal(),
-        Units.MINUTE,
+      timeDiff = Jiffy.parseFromDateTime(nextMessage.createdAt.toLocal()).diff(
+        Jiffy.parseFromDateTime(message.createdAt.toLocal()),
+        unit: Unit.minute,
       );
     }
 

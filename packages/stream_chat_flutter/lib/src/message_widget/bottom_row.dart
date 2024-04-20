@@ -141,7 +141,7 @@ class BottomRow extends StatelessWidget {
       if (showTimeStamp)
         WidgetSpan(
           child: Text(
-            Jiffy(message.createdAt.toLocal()).jm,
+            Jiffy.parseFromDateTime(message.createdAt.toLocal()).jm,
             style: messageTheme.createdAtStyle,
           ),
         ),

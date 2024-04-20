@@ -242,13 +242,15 @@ class StreamChatLocalizationsNo extends GlobalStreamChatLocalizations {
     } else if (date == yesterday) {
       return 'i går';
     } else {
-      return 'på ${Jiffy(date).MMMd}';
+      return 'på ${Jiffy.parseFromDateTime(date).MMMd}';
     }
   }
 
   @override
   String sentAtText({required DateTime date, required DateTime time}) =>
-      'Sent ${_getDay(date)} kl. ${Jiffy(time.toLocal()).format('HH:mm')}';
+      'Sent ${_getDay(date)} kl. ${Jiffy.parseFromDateTime(time.toLocal()).format(
+        pattern: 'HH:mm',
+      )}';
 
   @override
   String get todayLabel => 'I dag';

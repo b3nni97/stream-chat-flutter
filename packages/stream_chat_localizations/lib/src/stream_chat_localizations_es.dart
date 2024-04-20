@@ -250,13 +250,15 @@ class StreamChatLocalizationsEs extends GlobalStreamChatLocalizations {
     } else if (date == yesterday) {
       return 'ayer';
     } else {
-      return 'el ${Jiffy(date).MMMd}';
+      return 'el ${Jiffy.parseFromDateTime(date).MMMd}';
     }
   }
 
   @override
   String sentAtText({required DateTime date, required DateTime time}) =>
-      '''Enviado el ${_getDay(date)} a las ${Jiffy(time.toLocal()).format('HH:mm')}''';
+      '''Enviado el ${_getDay(date)} a las ${Jiffy.parseFromDateTime(time.toLocal()).format(
+        pattern: 'HH:mm',
+      )}''';
 
   @override
   String get todayLabel => 'Hoy';
