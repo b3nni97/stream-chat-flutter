@@ -14,6 +14,10 @@ import 'package:stream_chat_flutter/src/message_list_view/unread_messages_separa
 import 'package:stream_chat_flutter/src/misc/swipeable.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
 
+/// Is called when the Scrollable Positioned List Key changes.
+typedef void OnScrollablePositionedListKeyChanged(
+    GlobalKey<ScrollablePositionedListState> positionedListKey);
+
 /// Spacing Types (These are properties of a message to help inform the decision
 /// of how much space / which widget to build after it)
 enum SpacingType {
@@ -119,8 +123,8 @@ class StreamMessageListView extends StatefulWidget {
     this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.onDrag,
     this.spacingWidgetBuilder = _defaultSpacingWidgetBuilder,
     this.scrollToBottomWidget,
-    this.scrollableKey,
     this.onScrollNotification,
+    this.onScrollablePositionedListKeyChanged,
   });
 
   /// [ScrollViewKeyboardDismissBehavior] the defines how this [PositionedList] will
@@ -274,11 +278,12 @@ class StreamMessageListView extends StatefulWidget {
   /// Replace the scroll to bottom indicator with a custom widget
   final Widget? scrollToBottomWidget;
 
-  /// Key of scrollable positioned list
-  final Key? scrollableKey;
-
   /// Notifies if a scroll has happened.
   final void Function(ScrollNotification)? onScrollNotification;
+
+  /// Notifies if the Scrollable Positioned List Key changes.
+  final OnScrollablePositionedListKeyChanged?
+      onScrollablePositionedListKeyChanged;
 
   static Widget _defaultSpacingWidgetBuilder(
     BuildContext context,
@@ -342,6 +347,11 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
   Read? _userRead;
   Message? _oldestUnreadMessage;
 
+  // The currently used GlobalKey for the ScrollablePositionedList.
+  GlobalKey<ScrollablePositionedListState> _scrollableKey = GlobalKey();
+  // The currently used String Key used for differentiating _scrollableKey´s.
+  String? _scrollableStringKey;
+
   @override
   void initState() {
     super.initState();
@@ -370,6 +380,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             it.user.id == streamChannel?.channel.client.state.currentUser?.id,
       );
       _messageNewListener?.cancel();
+
       unreadCount = streamChannel?.channel.state?.unreadCount ?? 0;
       initialIndex = getInitialIndex(
         widget.initialScrollIndex,
@@ -422,6 +433,22 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
     _itemPositionListener.itemPositions
         .removeListener(_handleItemPositionsChanged);
     super.dispose();
+  }
+
+  GlobalKey<ScrollablePositionedListState> getScrollablePositionedListKey(
+      {required int initialIndex, required double initialAlignment}) {
+    final newKey = (initialIndex != 0 && initialAlignment != 0)
+        ? '$initialIndex-$initialAlignment'
+        : null;
+
+    if (_scrollableStringKey != newKey) {
+      _scrollableStringKey = newKey;
+
+      _scrollableKey = GlobalKey();
+      widget.onScrollablePositionedListKeyChanged?.call(_scrollableKey);
+    }
+
+    return _scrollableKey;
   }
 
   @override
@@ -492,7 +519,8 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
             if (messages[0].user?.id !=
                 streamChannel!.channel.client.state.currentUser?.id) {
               initialIndex = first.index + diff;
-              initialAlignment = first.itemLeadingEdge * 1.5;
+              initialAlignment = first.itemLeadingEdge;
+              // initialAlignment = first.itemLeadingEdge * 1.5;
             }
           }
         }
@@ -552,236 +580,232 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                 onInBetweenOfPage: () {
                   _inBetweenList = true;
                 },
-                child: KeyedSubtree(
-                  key: (initialIndex != 0 && initialAlignment != 0)
-                      ? ValueKey('$initialIndex-$initialAlignment')
-                      : null,
-                  child: ScrollablePositionedList.separated(
-                    key: widget.scrollableKey,
-                    keyboardDismissBehavior: widget.keyboardDismissBehavior,
-                    onNotification: widget.onScrollNotification,
-                    itemPositionsListener: _itemPositionListener,
-                    initialScrollIndex: initialIndex,
+                child: ScrollablePositionedList.separated(
+                  key: getScrollablePositionedListKey(
+                    initialIndex: initialIndex,
                     initialAlignment: initialAlignment,
-                    physics: widget.scrollPhysics,
-                    itemScrollController: _scrollController,
-                    reverse: widget.reverse,
-                    itemCount: itemCount,
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                    findChildIndexCallback: (Key key) {
-                      final indexedKey = key as IndexedKey;
-                      final valueKey = indexedKey.key as ValueKey<String>?;
-                      if (valueKey != null) {
-                        final index = messagesIndex[valueKey.value];
-                        if (index != null) {
-                          return ((index + 2) * 2) - 1;
-                        }
-                      }
-                      return null;
-                    },
-
-                    // Item Count -> 8 (1 parent, 2 header+footer, 2 top+bottom, 3 messages)
-                    // eg:     |Type|         rev(|Index(item)|)     rev(|Index(separator)|)    |Index(item)|    |Index(separator)|
-                    //     ParentMessage  ->        7                                             (count-1)
-                    //        Separator(ThreadSeparator)          ->           6                                      (count-2)
-                    //     Header         ->        6                                             (count-2)
-                    //        Separator(Header -> 8??T -> 0||52)  ->           5                                      (count-3)
-                    //     TopLoader      ->        5                                             (count-3)
-                    //        Separator(0)                        ->           4                                      (count-4)
-                    //     Message        ->        4                                             (count-4)
-                    //        Separator(2||8)                     ->           3                                      (count-5)
-                    //     Message        ->        3                                             (count-5)
-                    //        Separator(2||8)                     ->           2                                      (count-6)
-                    //     Message        ->        2                                             (count-6)
-                    //        Separator(0)                        ->           1                                      (count-7)
-                    //     BottomLoader   ->        1                                             (count-7)
-                    //        Separator(Footer -> 8??30)          ->           0                                      (count-8)
-                    //     Footer         ->        0                                             (count-8)
-
-                    separatorBuilder: (context, i) {
-                      if (i == itemCount - 2) {
-                        if (widget.parentMessage == null) {
-                          return const Offstage();
-                        }
-
-                        if (widget.threadSeparatorBuilder != null) {
-                          return widget.threadSeparatorBuilder!
-                              .call(context, widget.parentMessage!);
-                        }
-
-                        return ThreadSeparator(
-                          parentMessage: widget.parentMessage,
-                        );
-                      }
-                      if (i == itemCount - 3) {
-                        if (widget.reverse
-                            ? widget.headerBuilder == null
-                            : widget.footerBuilder == null) {
-                          if (messages.isNotEmpty) {
-                            return _buildDateDivider(messages.last);
-                          }
-                          if (_isThreadConversation) return const Offstage();
-                          return const SizedBox(height: 52);
-                        }
-                        return const SizedBox(height: 8);
-                      }
-                      if (i == 0) {
-                        if (widget.reverse
-                            ? widget.footerBuilder == null
-                            : widget.headerBuilder == null) {
-                          return const SizedBox(height: 30);
-                        }
-                        return const SizedBox(height: 8);
-                      }
-
-                      if (i == 1 || i == itemCount - 4) return const Offstage();
-
-                      late final Message message, nextMessage;
-                      if (widget.reverse) {
-                        message = messages[i - 1];
-                        nextMessage = messages[i - 2];
-                      } else {
-                        message = messages[i - 2];
-                        nextMessage = messages[i - 1];
-                      }
-
-                      Widget separator;
-
-                      final isThread = message.replyCount! > 0;
-
-                      if (!Jiffy.parseFromDateTime(message.createdAt.toLocal())
-                          .isSame(
-                        Jiffy.parseFromDateTime(
-                            nextMessage.createdAt.toLocal()),
-                        unit: Unit.day,
-                      )) {
-                        separator = _buildDateDivider(nextMessage);
-                      } else {
-                        final timeDiff = Jiffy.parseFromDateTime(
-                                nextMessage.createdAt.toLocal())
-                            .diff(
-                          Jiffy.parseFromDateTime(message.createdAt.toLocal()),
-                          unit: Unit.minute,
-                        );
-
-                        final isNextUserSame =
-                            message.user!.id == nextMessage.user?.id;
-                        final isDeleted = message.isDeleted;
-                        final hasTimeDiff = timeDiff >= 1;
-
-                        final spacingRules = [
-                          if (hasTimeDiff) SpacingType.timeDiff,
-                          if (!isNextUserSame) SpacingType.otherUser,
-                          if (isThread) SpacingType.thread,
-                          if (isDeleted) SpacingType.deleted,
-                        ];
-
-                        if (spacingRules.isEmpty) {
-                          spacingRules.add(SpacingType.defaultSpacing);
-                        }
-
-                        separator = widget.spacingWidgetBuilder.call(
-                          context,
-                          spacingRules,
-                        );
-                      }
-
-                      if (!isThread &&
-                          unreadCount > 0 &&
-                          _oldestUnreadMessage?.id == nextMessage.id) {
-                        final unreadMessagesSeparator =
-                            _buildUnreadMessagesSeparator(unreadCount);
-
-                        return Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            separator,
-                            unreadMessagesSeparator,
-                          ],
-                        );
-                      }
-                      return separator;
-                    },
-                    itemBuilder: (context, i) {
-                      if (i == itemCount - 1) {
-                        if (widget.parentMessage == null) {
-                          return const Offstage();
-                        }
-                        return buildParentMessage(widget.parentMessage!);
-                      }
-
-                      if (i == itemCount - 2) {
-                        if (widget.reverse) {
-                          return widget.headerBuilder?.call(context) ??
-                              const Offstage();
-                        } else {
-                          return widget.footerBuilder?.call(context) ??
-                              const Offstage();
-                        }
-                      }
-
-                      final indicatorBuilder =
-                          widget.paginationLoadingIndicatorBuilder;
-
-                      if (i == itemCount - 3) {
-                        return LoadingIndicator(
-                          direction: QueryDirection.top,
-                          streamTheme: _streamTheme,
-                          streamChannelState: streamChannel!,
-                          isThreadConversation: _isThreadConversation,
-                          indicatorBuilder: indicatorBuilder,
-                        );
-                      }
-
-                      if (i == 1) {
-                        return LoadingIndicator(
-                          direction: QueryDirection.bottom,
-                          streamTheme: _streamTheme,
-                          streamChannelState: streamChannel!,
-                          isThreadConversation: _isThreadConversation,
-                          indicatorBuilder: indicatorBuilder,
-                        );
-                      }
-
-                      if (i == 0) {
-                        if (widget.reverse) {
-                          return widget.footerBuilder?.call(context) ??
-                              const Offstage();
-                        } else {
-                          return widget.headerBuilder?.call(context) ??
-                              const Offstage();
-                        }
-                      }
-
-                      const bottomMessageIndex =
-                          2; // 1 -> loader // 0 -> footer
-
-                      final messageIndex = i - 2;
-                      final message = messages[messageIndex];
-                      Widget messageWidget;
-
-                      if (i == bottomMessageIndex) {
-                        messageWidget = _buildBottomMessage(
-                          context,
-                          message,
-                          messages,
-                          streamChannel!,
-                          messageIndex,
-                        );
-                      } else {
-                        messageWidget = buildMessage(
-                          context,
-                          message,
-                          messages,
-                          messageIndex,
-                        );
-                      }
-                      return KeyedSubtree(
-                        key: ValueKey(message.id),
-                        child: messageWidget,
-                      );
-                    },
                   ),
+                  keyboardDismissBehavior: widget.keyboardDismissBehavior,
+                  onNotification: widget.onScrollNotification,
+                  itemPositionsListener: _itemPositionListener,
+                  initialScrollIndex: initialIndex,
+                  initialAlignment: initialAlignment,
+                  physics: widget.scrollPhysics,
+                  itemScrollController: _scrollController,
+                  reverse: widget.reverse,
+                  itemCount: itemCount,
+                  padding: const EdgeInsets.symmetric(horizontal: 4),
+                  // findChildIndexCallback: (Key key) {
+                  //   final indexedKey = key as IndexedKey;
+                  //   final valueKey = indexedKey.key as ValueKey<String>?;
+                  //   if (valueKey != null) {
+                  //     final index = messagesIndex[valueKey.value];
+                  //     if (index != null) {
+                  //       return ((index + 2) * 2) - 1;
+                  //     }
+                  //   }
+                  //   return null;
+                  // },
+
+                  // Item Count -> 8 (1 parent, 2 header+footer, 2 top+bottom, 3 messages)
+                  // eg:     |Type|         rev(|Index(item)|)     rev(|Index(separator)|)    |Index(item)|    |Index(separator)|
+                  //     ParentMessage  ->        7                                             (count-1)
+                  //        Separator(ThreadSeparator)          ->           6                                      (count-2)
+                  //     Header         ->        6                                             (count-2)
+                  //        Separator(Header -> 8??T -> 0||52)  ->           5                                      (count-3)
+                  //     TopLoader      ->        5                                             (count-3)
+                  //        Separator(0)                        ->           4                                      (count-4)
+                  //     Message        ->        4                                             (count-4)
+                  //        Separator(2||8)                     ->           3                                      (count-5)
+                  //     Message        ->        3                                             (count-5)
+                  //        Separator(2||8)                     ->           2                                      (count-6)
+                  //     Message        ->        2                                             (count-6)
+                  //        Separator(0)                        ->           1                                      (count-7)
+                  //     BottomLoader   ->        1                                             (count-7)
+                  //        Separator(Footer -> 8??30)          ->           0                                      (count-8)
+                  //     Footer         ->        0                                             (count-8)
+
+                  separatorBuilder: (context, i) {
+                    if (i == itemCount - 2) {
+                      if (widget.parentMessage == null) {
+                        return const Offstage();
+                      }
+
+                      if (widget.threadSeparatorBuilder != null) {
+                        return widget.threadSeparatorBuilder!
+                            .call(context, widget.parentMessage!);
+                      }
+
+                      return ThreadSeparator(
+                        parentMessage: widget.parentMessage,
+                      );
+                    }
+                    if (i == itemCount - 3) {
+                      if (widget.reverse
+                          ? widget.headerBuilder == null
+                          : widget.footerBuilder == null) {
+                        if (messages.isNotEmpty) {
+                          return _buildDateDivider(messages.last);
+                        }
+                        if (_isThreadConversation) return const Offstage();
+                        return const SizedBox(height: 52);
+                      }
+                      return const SizedBox(height: 8);
+                    }
+                    if (i == 0) {
+                      if (widget.reverse
+                          ? widget.footerBuilder == null
+                          : widget.headerBuilder == null) {
+                        return const SizedBox(height: 30);
+                      }
+                      return const SizedBox(height: 8);
+                    }
+
+                    if (i == 1 || i == itemCount - 4) return const Offstage();
+
+                    late final Message message, nextMessage;
+                    if (widget.reverse) {
+                      message = messages[i - 1];
+                      nextMessage = messages[i - 2];
+                    } else {
+                      message = messages[i - 2];
+                      nextMessage = messages[i - 1];
+                    }
+
+                    Widget separator;
+
+                    final isThread = message.replyCount! > 0;
+
+                    if (!Jiffy.parseFromDateTime(message.createdAt.toLocal())
+                        .isSame(
+                      Jiffy.parseFromDateTime(nextMessage.createdAt.toLocal()),
+                      unit: Unit.day,
+                    )) {
+                      separator = _buildDateDivider(nextMessage);
+                    } else {
+                      final timeDiff = Jiffy.parseFromDateTime(
+                              nextMessage.createdAt.toLocal())
+                          .diff(
+                        Jiffy.parseFromDateTime(message.createdAt.toLocal()),
+                        unit: Unit.minute,
+                      );
+
+                      final isNextUserSame =
+                          message.user!.id == nextMessage.user?.id;
+                      final isDeleted = message.isDeleted;
+                      final hasTimeDiff = timeDiff >= 1;
+
+                      final spacingRules = [
+                        if (hasTimeDiff) SpacingType.timeDiff,
+                        if (!isNextUserSame) SpacingType.otherUser,
+                        if (isThread) SpacingType.thread,
+                        if (isDeleted) SpacingType.deleted,
+                      ];
+
+                      if (spacingRules.isEmpty) {
+                        spacingRules.add(SpacingType.defaultSpacing);
+                      }
+
+                      separator = widget.spacingWidgetBuilder.call(
+                        context,
+                        spacingRules,
+                      );
+                    }
+
+                    if (!isThread &&
+                        unreadCount > 0 &&
+                        _oldestUnreadMessage?.id == nextMessage.id) {
+                      final unreadMessagesSeparator =
+                          _buildUnreadMessagesSeparator(unreadCount);
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          separator,
+                          unreadMessagesSeparator,
+                        ],
+                      );
+                    }
+                    return separator;
+                  },
+                  itemBuilder: (context, i) {
+                    if (i == itemCount - 1) {
+                      if (widget.parentMessage == null) {
+                        return const Offstage();
+                      }
+                      return buildParentMessage(widget.parentMessage!);
+                    }
+
+                    if (i == itemCount - 2) {
+                      if (widget.reverse) {
+                        return widget.headerBuilder?.call(context) ??
+                            const Offstage();
+                      } else {
+                        return widget.footerBuilder?.call(context) ??
+                            const Offstage();
+                      }
+                    }
+
+                    final indicatorBuilder =
+                        widget.paginationLoadingIndicatorBuilder;
+
+                    if (i == itemCount - 3) {
+                      return LoadingIndicator(
+                        direction: QueryDirection.top,
+                        streamTheme: _streamTheme,
+                        streamChannelState: streamChannel!,
+                        isThreadConversation: _isThreadConversation,
+                        indicatorBuilder: indicatorBuilder,
+                      );
+                    }
+
+                    if (i == 1) {
+                      return LoadingIndicator(
+                        direction: QueryDirection.bottom,
+                        streamTheme: _streamTheme,
+                        streamChannelState: streamChannel!,
+                        isThreadConversation: _isThreadConversation,
+                        indicatorBuilder: indicatorBuilder,
+                      );
+                    }
+
+                    if (i == 0) {
+                      if (widget.reverse) {
+                        return widget.footerBuilder?.call(context) ??
+                            const Offstage();
+                      } else {
+                        return widget.headerBuilder?.call(context) ??
+                            const Offstage();
+                      }
+                    }
+
+                    const bottomMessageIndex = 2; // 1 -> loader // 0 -> footer
+
+                    final messageIndex = i - 2;
+                    final message = messages[messageIndex];
+                    Widget messageWidget;
+
+                    if (i == bottomMessageIndex) {
+                      messageWidget = _buildBottomMessage(
+                        context,
+                        message,
+                        messages,
+                        streamChannel!,
+                        messageIndex,
+                      );
+                    } else {
+                      messageWidget = buildMessage(
+                        context,
+                        message,
+                        messages,
+                        messageIndex,
+                      );
+                    }
+                    return KeyedSubtree(
+                      key: ValueKey(message.id),
+                      child: messageWidget,
+                    );
+                  },
                 ),
               ),
             );

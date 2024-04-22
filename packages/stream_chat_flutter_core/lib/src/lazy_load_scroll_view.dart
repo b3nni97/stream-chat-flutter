@@ -86,8 +86,8 @@ class _LazyLoadScrollViewState extends State<LazyLoadScrollView> {
         }
       }
 
-      final extentBefore = notification.metrics.extentBefore;
-      final extentAfter = notification.metrics.extentAfter;
+      final extentBefore = notification.metrics.extentBefore - 100;
+      final extentAfter = notification.metrics.extentAfter + 100;
       final scrollingDown = _scrollPosition < pixels;
       _scrollPosition = pixels;
 

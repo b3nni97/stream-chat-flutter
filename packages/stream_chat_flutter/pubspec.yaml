@@ -41,6 +41,8 @@ dependencies:
     path: ../stream_chat_flutter_core
   synchronized: ^3.0.0
   thumblr: ^0.0.4
+  sliver_tools:
+    path: ../../../sliver_tools
   
 dependency_overrides:
   http: ^1.1.2

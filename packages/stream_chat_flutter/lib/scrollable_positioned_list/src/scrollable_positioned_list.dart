@@ -35,8 +35,9 @@ class ScrollablePositionedList extends StatefulWidget {
   const ScrollablePositionedList.builder({
     required this.itemCount,
     required this.itemBuilder,
-    Key? key,
+    super.key,
     this.itemScrollController,
+    this.shrinkWrap = false,
     ItemPositionsListener? itemPositionsListener,
     this.initialScrollIndex = 0,
     this.initialAlignment = 0,
@@ -50,19 +51,19 @@ class ScrollablePositionedList extends StatefulWidget {
     this.addRepaintBoundaries = true,
     this.minCacheExtent,
     this.findChildIndexCallback,
-    this.keyboardDismissBehavior,
-    this.onNotification,
+    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+     this.onNotification,
   })  : itemPositionsNotifier = itemPositionsListener as ItemPositionsNotifier?,
-        separatorBuilder = null,
-        super(key: key);
+        separatorBuilder = null;
 
   /// Create a [ScrollablePositionedList] whose items are provided by
   /// [itemBuilder] and separators provided by [separatorBuilder].
   const ScrollablePositionedList.separated({
     required this.itemCount,
     required this.itemBuilder,
-    required this.separatorBuilder,
-    Key? key,
+    required IndexedWidgetBuilder this.separatorBuilder,
+    super.key,
+    this.shrinkWrap = false,
     this.itemScrollController,
     ItemPositionsListener? itemPositionsListener,
     this.initialScrollIndex = 0,
@@ -77,26 +78,9 @@ class ScrollablePositionedList extends StatefulWidget {
     this.addRepaintBoundaries = true,
     this.minCacheExtent,
     this.findChildIndexCallback,
-    this.keyboardDismissBehavior,
-    this.onNotification,
-  })  : assert(separatorBuilder != null, 'seperatorBuilder cannot be null'),
-        itemPositionsNotifier = itemPositionsListener as ItemPositionsNotifier?,
-        super(key: key);
-
-  /// Called to find the new index of a child based on its key in case of
-  /// reordering.
-  ///
-  /// If not provided, a child widget may not map to its existing [RenderObject]
-  /// when the order in which children are returned from [builder] changes.
-  /// This may result in state-loss.
-  ///
-  /// This callback should take an input [Key], and it should return the
-  /// index of the child element with that associated key, or null if not found.
-  final ChildIndexGetter? findChildIndexCallback;
-
-  /// [ScrollViewKeyboardDismissBehavior] the defines how this [PositionedList] will
-  /// dismiss the keyboard automatically.
-  final ScrollViewKeyboardDismissBehavior? keyboardDismissBehavior;
+    this.keyboardDismissBehavior = ScrollViewKeyboardDismissBehavior.manual,
+     this.onNotification,
+  }) : itemPositionsNotifier = itemPositionsListener as ItemPositionsNotifier?;
 
   /// Number of items the [itemBuilder] can produce.
   final int itemCount;
@@ -135,6 +119,15 @@ class ScrollablePositionedList extends StatefulWidget {
   ///
   /// See [ScrollView.reverse].
   final bool reverse;
+
+  /// {@template flutter.widgets.scroll_view.shrinkWrap}
+  /// Whether the extent of the scroll view in the [scrollDirection] should be
+  /// determined by the contents being viewed.
+  ///
+  ///  Defaults to false.
+  ///
+  /// See [ScrollView.shrinkWrap].
+  final bool shrinkWrap;
 
   /// How the scroll view should respond to user input.
   ///
@@ -175,6 +168,23 @@ class ScrollablePositionedList extends StatefulWidget {
   /// in builds of widgets that would otherwise already be built in the
   /// cache extent.
   final double? minCacheExtent;
+
+  /// Called to find the new index of a child based on its key in case of reordering.
+  ///
+  /// If not provided, a child widget may not map to its existing [RenderObject]
+  /// when the order of children returned from the children builder changes.
+  /// This may result in state-loss.
+  ///
+  /// This callback should take an input [Key], and it should return the
+  /// index of the child element with that associated key, or null if not found.
+  ///
+  /// See [SliverChildBuilderDelegate.findChildIndexCallback].
+  final ChildIndexGetter? findChildIndexCallback;
+
+  /// Defines how this [ScrollView] will dismiss the keyboard automatically.
+  ///
+  /// See [ScrollView.keyboardDismissBehavior].
+  final ScrollViewKeyboardDismissBehavior keyboardDismissBehavior;
 
   /// Callback for scroll notifications. Because [ScrollablePositionedList]
   /// uses multiple scrollviews to do it´s layouting, listening to the
@@ -244,11 +254,15 @@ class ItemScrollController {
     Curve curve = Curves.linear,
     List<double> opacityAnimationWeights = const [40, 20, 40],
   }) {
-    assert(_scrollableListState != null, '_scrollableListState cannot be null');
-    assert(opacityAnimationWeights.length == 3,
-        'opacityAnimationWeights.length is not equal to 3');
-    assert(duration > Duration.zero,
-        'duration needs to be bigger than Duration.zero');
+    assert(
+      _scrollableListState != null,
+      '''ScrollController must be attached to a ScrollablePositionedList to scroll.''',
+    );
+    assert(
+      opacityAnimationWeights.length == 3,
+      'opacityAnimationWeights must have exactly three elements.',
+    );
+    assert(duration > Duration.zero, 'Duration must be greater than zero.');
     return _scrollableListState!._scrollTo(
       index: index,
       alignment: alignment,
@@ -260,7 +274,9 @@ class ItemScrollController {
 
   void _attach(ScrollablePositionedListState scrollableListState) {
     assert(
-        _scrollableListState == null, '_scrollableListState needs to be null');
+      _scrollableListState == null,
+      '''ScrollController must not be attached to multiple ScrollablePositionedLists.''',
+    );
     _scrollableListState = scrollableListState;
   }
 
@@ -285,14 +301,16 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
 
   bool _isTransitioning = false;
 
+  AnimationController? _animationController;
+
   @override
   void initState() {
     super.initState();
-    final ItemPosition? initialPosition =
-        PageStorage.of(context)!.readState(context);
+    final initialPosition = PageStorage.of(context).readState(context);
     primary
       ..target = initialPosition?.index ?? widget.initialScrollIndex
       ..alignment = initialPosition?.itemLeadingEdge ?? widget.initialAlignment;
+
     if (widget.itemCount > 0 && primary.target > widget.itemCount - 1) {
       primary.target = widget.itemCount - 1;
     }
@@ -313,6 +331,7 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
         .removeListener(_updatePositions);
     secondary.itemPositionsNotifier.itemPositions
         .removeListener(_updatePositions);
+    _animationController?.dispose();
     super.dispose();
   }
 
@@ -342,10 +361,9 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
 
   @override
   Widget build(BuildContext context) {
-    // LayoutBuilder(
-    //     builder: (context, constraints) {
-    //       final cacheExtent = _cacheExtent(constraints);
-    //   );
+    // return LayoutBuilder(
+    //   builder: (context, constraints) {
+    //     final cacheExtent = _cacheExtent(constraints);
     return GestureDetector(
       onPanDown: (_) => _stopScroll(canceled: true),
       excludeFromSemantics: true,
@@ -358,11 +376,10 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
               opacity: ReverseAnimation(opacity),
               child: NotificationListener<ScrollNotification>(
                 onNotification: (notification) {
-                  widget.onNotification?.call(notification);
-                  return _isTransitioning;
-                },
+              widget.onNotification?.call(notification);
+              return _isTransitioning;
+            },
                 child: PositionedList(
-                  keyboardDismissBehavior: widget.keyboardDismissBehavior,
                   itemBuilder: widget.itemBuilder,
                   separatorBuilder: widget.separatorBuilder,
                   itemCount: widget.itemCount,
@@ -374,12 +391,14 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
                   cacheExtent: widget.minCacheExtent,
                   alignment: primary.alignment,
                   physics: widget.physics,
+                  shrinkWrap: widget.shrinkWrap,
                   addSemanticIndexes: widget.addSemanticIndexes,
                   semanticChildCount: widget.semanticChildCount,
                   padding: widget.padding,
                   addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
                   addRepaintBoundaries: widget.addRepaintBoundaries,
                   findChildIndexCallback: widget.findChildIndexCallback,
+                  keyboardDismissBehavior: widget.keyboardDismissBehavior,
                 ),
               ),
             ),
@@ -392,11 +411,10 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
                 opacity: opacity,
                 child: NotificationListener<ScrollNotification>(
                   onNotification: (notification) {
-                    widget.onNotification?.call(notification);
-                    return false;
-                  },
+                widget.onNotification?.call(notification);
+                return false;
+              },
                   child: PositionedList(
-                    keyboardDismissBehavior: widget.keyboardDismissBehavior,
                     itemBuilder: widget.itemBuilder,
                     separatorBuilder: widget.separatorBuilder,
                     itemCount: widget.itemCount,
@@ -408,22 +426,28 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
                     cacheExtent: widget.minCacheExtent,
                     alignment: secondary.alignment,
                     physics: widget.physics,
+                    shrinkWrap: widget.shrinkWrap,
                     addSemanticIndexes: widget.addSemanticIndexes,
                     semanticChildCount: widget.semanticChildCount,
                     padding: widget.padding,
                     addAutomaticKeepAlives: widget.addAutomaticKeepAlives,
                     addRepaintBoundaries: widget.addRepaintBoundaries,
+                    findChildIndexCallback: widget.findChildIndexCallback,
+                    keyboardDismissBehavior: widget.keyboardDismissBehavior,
                   ),
                 ),
               ),
             ),
         ],
       ),
-    );
+    );   
   }
 
   double _cacheExtent(BoxConstraints constraints) => max(
-        constraints.maxHeight * _screenScrollCount,
+        (widget.scrollDirection == Axis.vertical
+                ? constraints.maxHeight
+                : constraints.maxWidth) *
+            _screenScrollCount,
         widget.minCacheExtent ?? 0,
       );
 
@@ -451,16 +475,19 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
       index = widget.itemCount - 1;
     }
     if (_isTransitioning) {
+      final scrollCompleter = Completer<void>();
       _stopScroll(canceled: true);
-      SchedulerBinding.instance.addPostFrameCallback((_) {
-        _startScroll(
+      SchedulerBinding.instance.addPostFrameCallback((_) async {
+        await _startScroll(
           index: index,
           alignment: alignment,
           duration: duration,
           curve: curve,
           opacityAnimationWeights: opacityAnimationWeights,
         );
+        scrollCompleter.complete();
       });
+      await scrollCompleter.future;
     } else {
       await _startScroll(
         index: index,
@@ -503,10 +530,11 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
       startAnimationCallback = () {
         SchedulerBinding.instance.addPostFrameCallback((_) {
           startAnimationCallback = () {};
-
-          opacity.parent = _opacityAnimation(opacityAnimationWeights).animate(
-            AnimationController(vsync: this, duration: duration)..forward(),
-          );
+          _animationController?.dispose();
+          _animationController =
+              AnimationController(vsync: this, duration: duration)..forward();
+          opacity.parent = _opacityAnimation(opacityAnimationWeights)
+              .animate(_animationController!);
           secondary.scrollController.jumpTo(-direction *
               (_screenScrollCount *
                       primary.scrollController.position.viewportDimension -
@@ -549,17 +577,19 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
       }
     }
 
-    setState(() {
-      if (opacity.value >= 0.5) {
-        // Secondary [ListView] is more visible than the primary; make it the
-        // new primary.
-        final temp = primary;
-        primary = secondary;
-        secondary = temp;
-      }
-      _isTransitioning = false;
-      opacity.parent = const AlwaysStoppedAnimation<double>(0);
-    });
+    if (mounted) {
+      setState(() {
+        if (opacity.value >= 0.5) {
+          // Secondary [ListView] is more visible than the primary; make it the
+          // new primary.
+          final temp = primary;
+          primary = secondary;
+          secondary = temp;
+        }
+        _isTransitioning = false;
+        opacity.parent = const AlwaysStoppedAnimation<double>(0);
+      });
+    }
   }
 
   Animatable<double> _opacityAnimation(List<double> opacityAnimationWeights) {
@@ -586,7 +616,7 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
         .where((ItemPosition position) =>
             position.itemLeadingEdge < 1 && position.itemTrailingEdge > 0);
     if (itemPositions.isNotEmpty) {
-      PageStorage.of(context)!.writeState(
+      PageStorage.of(context).writeState(
         context,
         itemPositions.reduce((value, element) =>
             value.itemLeadingEdge < element.itemLeadingEdge ? value : element),

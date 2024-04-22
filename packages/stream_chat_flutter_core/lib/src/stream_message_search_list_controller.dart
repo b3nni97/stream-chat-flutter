@@ -165,7 +165,7 @@ class StreamMessageSearchListController
 
       value = PagedValue(
         items: results,
-        nextPageKey: nextKey,
+        nextPageKey: results.length >= limit ? nextKey : null,
       );
     } on StreamChatError catch (error) {
       value = PagedValue.error(error);
