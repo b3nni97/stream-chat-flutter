@@ -951,7 +951,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
       userAvatarBuilder: widget.userAvatarBuilder,
       usernameBuilder: widget.usernameBuilder,
       onReactionPressed: () {
-        widget.contextMenuController?.openContextMenu();
+        widget.contextMenuController?.openContextMenu(openScale: 1);
       },
       isGroup: channel.isGroup,
       profileAssetBuilder: widget.profileAssetBuilder,
@@ -1085,7 +1085,6 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
 
                       final pickerPosition =
                           _getReactionsPickerIndicatorPosition();
-
                       final messageContent = Padding(
                         padding: margin,
                         child: RebuildOnce(
