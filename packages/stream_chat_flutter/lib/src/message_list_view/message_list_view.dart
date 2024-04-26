@@ -348,7 +348,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
   Message? _oldestUnreadMessage;
 
   // The currently used GlobalKey for the ScrollablePositionedList.
-  GlobalKey<ScrollablePositionedListState> _scrollableKey = GlobalKey();
+  GlobalKey<ScrollablePositionedListState>? _scrollableKey;
   // The currently used String Key used for differentiating _scrollableKey´s.
   String? _scrollableStringKey;
 
@@ -441,14 +441,14 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         ? '$initialIndex-$initialAlignment'
         : null;
 
-    if (_scrollableStringKey != newKey) {
+    if (_scrollableKey == null || _scrollableStringKey != newKey) {
       _scrollableStringKey = newKey;
 
       _scrollableKey = GlobalKey();
-      widget.onScrollablePositionedListKeyChanged?.call(_scrollableKey);
+      widget.onScrollablePositionedListKeyChanged?.call(_scrollableKey!);
     }
 
-    return _scrollableKey;
+    return _scrollableKey!;
   }
 
   @override
