@@ -59,4 +59,12 @@ class UserApi {
     );
     return UpdateUsersResponse.fromJson(response.data);
   }
+
+  /// Batch partial update of [users].
+  Future<UnreadCountsReponse> queryUnreadCounts() async {
+    final response = await _client.get(
+      '/unread',
+    );
+    return UnreadCountsReponse.fromJson(response.data);
+  }
 }

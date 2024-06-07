@@ -498,6 +498,40 @@ class OGAttachmentResponse extends _BaseResponse {
       _$OGAttachmentResponseFromJson(json);
 }
 
+/// Model response for [Client.queryUnreadCount] api call.
+@JsonSerializable(createToJson: false)
+class UnreadCountsReponse extends _BaseResponse {
+  @JsonKey(name: 'total_unread_count')
+  int? totalUnreadCount;
+
+  @JsonKey(name: 'total_unread_threads_count')
+  int? totalUnreadThreadsCount;
+
+  @JsonKey(name: 'channel_type')
+  List<UnreadChannelType>? channelType;
+
+  /// Create a new instance from a [json].
+  static UnreadCountsReponse fromJson(Map<String, dynamic> json) =>
+      _$UnreadCountsReponseFromJson(json);
+}
+
+/// Model response for [Client.queryUnreadCount] api call.
+@JsonSerializable(createToJson: false)
+class UnreadChannelType extends _BaseResponse {
+  @JsonKey(name: 'channel_type')
+  String? channelType;
+
+  @JsonKey(name: 'channel_count')
+  int? channelCount;
+
+  @JsonKey(name: 'unread_count')
+  int? unreadCount;
+
+  /// Create a new instance from a [json].
+  static UnreadChannelType fromJson(Map<String, dynamic> json) =>
+      _$UnreadChannelTypeFromJson(json);
+}
+
 /// The response to [CallApi.getCallToken]
 @JsonSerializable(createToJson: false)
 class CallTokenPayload extends _BaseResponse {

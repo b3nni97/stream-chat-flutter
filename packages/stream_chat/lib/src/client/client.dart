@@ -1460,6 +1460,12 @@ class StreamChatClient {
     closeConnection();
   }
 
+  /// Requests unread counts from the connected user.
+  Future<UnreadCountsReponse> queryUnreadCounts() async {
+    final response = await _chatApi.user.queryUnreadCounts();
+    return response;
+  }
+
   /// Call this function to dispose the client
   Future<void> dispose() async {
     logger.info('Disposing new StreamChatClient');
@@ -1516,6 +1522,8 @@ class ClientState {
         currentUser = currentUser?.copyWith(totalUnreadCount: count);
       }));
 
+    _listenChannelLeft();
+
     _listenChannelDeleted();
 
     _listenChannelHidden();
@@ -1548,7 +1556,7 @@ class ClientState {
       _client.on(EventType.channelHidden).listen((event) async {
         final eventChannel = event.channel!;
         await _client.chatPersistenceClient?.deleteChannels([eventChannel.cid]);
-        channels[eventChannel.cid]?.dispose();
+        channels.remove(eventChannel.cid)?.dispose();
       }),
     );
   }
@@ -1576,18 +1584,36 @@ class ClientState {
     );
   }
 
+  void _listenChannelLeft() {
+    _eventsSubscription?.add(
+      _client
+          .on(
+        EventType.memberRemoved,
+        EventType.notificationRemovedFromChannel,
+      )
+          .listen((event) async {
+        final isCurrentUser = event.user!.id == currentUser!.id;
+        if (isCurrentUser && event.channel != null) {
+          final eventChannel = event.channel!;
+          await _client.chatPersistenceClient
+              ?.deleteChannels([eventChannel.cid]);
+          channels.remove(eventChannel.cid)?.dispose();
+        }
+      }),
+    );
+  }
+
   void _listenChannelDeleted() {
     _eventsSubscription?.add(
       _client
           .on(
         EventType.channelDeleted,
-        EventType.notificationRemovedFromChannel,
         EventType.notificationChannelDeleted,
       )
           .listen((Event event) async {
         final eventChannel = event.channel!;
         await _client.chatPersistenceClient?.deleteChannels([eventChannel.cid]);
-        channels[eventChannel.cid]?.dispose();
+        channels.remove(eventChannel.cid)?.dispose();
       }),
     );
   }
@@ -1605,7 +1631,7 @@ class ClientState {
   void updateUsers(List<User?> userList) {
     final newUsers = {
       ...users,
-      for (var user in userList)
+      for (final user in userList)
         if (user != null) user.id: user,
     };
     _usersController.add(newUsers);
@@ -1694,9 +1720,9 @@ class ClientState {
     _unreadChannelsController.close();
     _totalUnreadCountController.close();
 
-    final channels = this.channels.values.toList();
+    final channels = [...this.channels.keys];
     for (final channel in channels) {
-      channel.dispose();
+      this.channels.remove(channel)?.dispose();
     }
     _channelsController.close();
   }

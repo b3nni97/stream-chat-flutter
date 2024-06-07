@@ -9,9 +9,9 @@ part of 'responses.dart';
 ErrorResponse _$ErrorResponseFromJson(Map<String, dynamic> json) =>
     ErrorResponse()
       ..duration = json['duration'] as String?
-      ..code = json['code'] as int?
+      ..code = (json['code'] as num?)?.toInt()
       ..message = json['message'] as String?
-      ..statusCode = json['StatusCode'] as int?
+      ..statusCode = (json['StatusCode'] as num?)?.toInt()
       ..moreInfo = json['more_info'] as String?;
 
 Map<String, dynamic> _$ErrorResponseToJson(ErrorResponse instance) =>
@@ -277,7 +277,7 @@ ChannelStateResponse _$ChannelStateResponseFromJson(
               ?.map((e) => Member.fromJson(e as Map<String, dynamic>))
               .toList() ??
           []
-      ..watcherCount = json['watcher_count'] as int? ?? 0
+      ..watcherCount = (json['watcher_count'] as num?)?.toInt() ?? 0
       ..read = (json['read'] as List<dynamic>?)
               ?.map((e) => Read.fromJson(e as Map<String, dynamic>))
               .toList() ??
@@ -298,11 +298,28 @@ OGAttachmentResponse _$OGAttachmentResponseFromJson(
       ..titleLink = json['title_link'] as String?
       ..type = json['type'] as String?;
 
+UnreadCountsReponse _$UnreadCountsReponseFromJson(Map<String, dynamic> json) =>
+    UnreadCountsReponse()
+      ..duration = json['duration'] as String?
+      ..totalUnreadCount = (json['total_unread_count'] as num?)?.toInt()
+      ..totalUnreadThreadsCount =
+          (json['total_unread_threads_count'] as num?)?.toInt()
+      ..channelType = (json['channel_type'] as List<dynamic>?)
+          ?.map((e) => UnreadChannelType.fromJson(e as Map<String, dynamic>))
+          .toList();
+
+UnreadChannelType _$UnreadChannelTypeFromJson(Map<String, dynamic> json) =>
+    UnreadChannelType()
+      ..duration = json['duration'] as String?
+      ..channelType = json['channel_type'] as String?
+      ..channelCount = (json['channel_count'] as num?)?.toInt()
+      ..unreadCount = (json['unread_count'] as num?)?.toInt();
+
 CallTokenPayload _$CallTokenPayloadFromJson(Map<String, dynamic> json) =>
     CallTokenPayload()
       ..duration = json['duration'] as String?
       ..token = json['token'] as String?
-      ..agoraUid = json['agora_uid'] as int?
+      ..agoraUid = (json['agora_uid'] as num?)?.toInt()
       ..agoraAppId = json['agora_app_id'] as String?;
 
 CreateCallPayload _$CreateCallPayloadFromJson(Map<String, dynamic> json) =>

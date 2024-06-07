@@ -1,7 +1,7 @@
 // coverage:ignore-file
 // GENERATED CODE - DO NOT MODIFY BY HAND
 // ignore_for_file: type=lint
-// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target
+// ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
 part of 'attachment_file.dart';
 
@@ -12,7 +12,7 @@ part of 'attachment_file.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 UploadState _$UploadStateFromJson(Map<String, dynamic> json) {
   switch (json['runtimeType']) {
@@ -43,10 +43,10 @@ mixin _$UploadState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? preparing,
-    TResult Function(int uploaded, int total)? inProgress,
-    TResult Function()? success,
-    TResult Function(String error)? failed,
+    TResult? Function()? preparing,
+    TResult? Function(int uploaded, int total)? inProgress,
+    TResult? Function()? success,
+    TResult? Function(String error)? failed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -68,10 +68,10 @@ mixin _$UploadState {
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(Preparing value)? preparing,
-    TResult Function(InProgress value)? inProgress,
-    TResult Function(Success value)? success,
-    TResult Function(Failed value)? failed,
+    TResult? Function(Preparing value)? preparing,
+    TResult? Function(InProgress value)? inProgress,
+    TResult? Function(Success value)? success,
+    TResult? Function(Failed value)? failed,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -90,45 +90,45 @@ mixin _$UploadState {
 abstract class $UploadStateCopyWith<$Res> {
   factory $UploadStateCopyWith(
           UploadState value, $Res Function(UploadState) then) =
-      _$UploadStateCopyWithImpl<$Res>;
+      _$UploadStateCopyWithImpl<$Res, UploadState>;
 }
 
 /// @nodoc
-class _$UploadStateCopyWithImpl<$Res> implements $UploadStateCopyWith<$Res> {
+class _$UploadStateCopyWithImpl<$Res, $Val extends UploadState>
+    implements $UploadStateCopyWith<$Res> {
   _$UploadStateCopyWithImpl(this._value, this._then);
 
-  final UploadState _value;
   // ignore: unused_field
-  final $Res Function(UploadState) _then;
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
 }
 
 /// @nodoc
-abstract class _$$PreparingCopyWith<$Res> {
-  factory _$$PreparingCopyWith(
-          _$Preparing value, $Res Function(_$Preparing) then) =
-      __$$PreparingCopyWithImpl<$Res>;
+abstract class _$$PreparingImplCopyWith<$Res> {
+  factory _$$PreparingImplCopyWith(
+          _$PreparingImpl value, $Res Function(_$PreparingImpl) then) =
+      __$$PreparingImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$PreparingCopyWithImpl<$Res> extends _$UploadStateCopyWithImpl<$Res>
-    implements _$$PreparingCopyWith<$Res> {
-  __$$PreparingCopyWithImpl(
-      _$Preparing _value, $Res Function(_$Preparing) _then)
-      : super(_value, (v) => _then(v as _$Preparing));
-
-  @override
-  _$Preparing get _value => super._value as _$Preparing;
+class __$$PreparingImplCopyWithImpl<$Res>
+    extends _$UploadStateCopyWithImpl<$Res, _$PreparingImpl>
+    implements _$$PreparingImplCopyWith<$Res> {
+  __$$PreparingImplCopyWithImpl(
+      _$PreparingImpl _value, $Res Function(_$PreparingImpl) _then)
+      : super(_value, _then);
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$Preparing extends Preparing {
-  const _$Preparing({final String? $type})
+class _$PreparingImpl extends Preparing {
+  const _$PreparingImpl({final String? $type})
       : $type = $type ?? 'preparing',
         super._();
 
-  factory _$Preparing.fromJson(Map<String, dynamic> json) =>
-      _$$PreparingFromJson(json);
+  factory _$PreparingImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PreparingImplFromJson(json);
 
   @JsonKey(name: 'runtimeType')
   final String $type;
@@ -139,9 +139,9 @@ class _$Preparing extends Preparing {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$Preparing);
+        (other.runtimeType == runtimeType && other is _$PreparingImpl);
   }
 
   @JsonKey(ignore: true)
@@ -162,10 +162,10 @@ class _$Preparing extends Preparing {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? preparing,
-    TResult Function(int uploaded, int total)? inProgress,
-    TResult Function()? success,
-    TResult Function(String error)? failed,
+    TResult? Function()? preparing,
+    TResult? Function(int uploaded, int total)? inProgress,
+    TResult? Function()? success,
+    TResult? Function(String error)? failed,
   }) {
     return preparing?.call();
   }
@@ -199,10 +199,10 @@ class _$Preparing extends Preparing {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(Preparing value)? preparing,
-    TResult Function(InProgress value)? inProgress,
-    TResult Function(Success value)? success,
-    TResult Function(Failed value)? failed,
+    TResult? Function(Preparing value)? preparing,
+    TResult? Function(InProgress value)? inProgress,
+    TResult? Function(Success value)? success,
+    TResult? Function(Failed value)? failed,
   }) {
     return preparing?.call(this);
   }
@@ -224,48 +224,49 @@ class _$Preparing extends Preparing {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$PreparingToJson(
+    return _$$PreparingImplToJson(
       this,
     );
   }
 }
 
 abstract class Preparing extends UploadState {
-  const factory Preparing() = _$Preparing;
+  const factory Preparing() = _$PreparingImpl;
   const Preparing._() : super._();
 
-  factory Preparing.fromJson(Map<String, dynamic> json) = _$Preparing.fromJson;
+  factory Preparing.fromJson(Map<String, dynamic> json) =
+      _$PreparingImpl.fromJson;
 }
 
 /// @nodoc
-abstract class _$$InProgressCopyWith<$Res> {
-  factory _$$InProgressCopyWith(
-          _$InProgress value, $Res Function(_$InProgress) then) =
-      __$$InProgressCopyWithImpl<$Res>;
+abstract class _$$InProgressImplCopyWith<$Res> {
+  factory _$$InProgressImplCopyWith(
+          _$InProgressImpl value, $Res Function(_$InProgressImpl) then) =
+      __$$InProgressImplCopyWithImpl<$Res>;
+  @useResult
   $Res call({int uploaded, int total});
 }
 
 /// @nodoc
-class __$$InProgressCopyWithImpl<$Res> extends _$UploadStateCopyWithImpl<$Res>
-    implements _$$InProgressCopyWith<$Res> {
-  __$$InProgressCopyWithImpl(
-      _$InProgress _value, $Res Function(_$InProgress) _then)
-      : super(_value, (v) => _then(v as _$InProgress));
+class __$$InProgressImplCopyWithImpl<$Res>
+    extends _$UploadStateCopyWithImpl<$Res, _$InProgressImpl>
+    implements _$$InProgressImplCopyWith<$Res> {
+  __$$InProgressImplCopyWithImpl(
+      _$InProgressImpl _value, $Res Function(_$InProgressImpl) _then)
+      : super(_value, _then);
 
-  @override
-  _$InProgress get _value => super._value as _$InProgress;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? uploaded = freezed,
-    Object? total = freezed,
+    Object? uploaded = null,
+    Object? total = null,
   }) {
-    return _then(_$InProgress(
-      uploaded: uploaded == freezed
+    return _then(_$InProgressImpl(
+      uploaded: null == uploaded
           ? _value.uploaded
           : uploaded // ignore: cast_nullable_to_non_nullable
               as int,
-      total: total == freezed
+      total: null == total
           ? _value.total
           : total // ignore: cast_nullable_to_non_nullable
               as int,
@@ -275,14 +276,14 @@ class __$$InProgressCopyWithImpl<$Res> extends _$UploadStateCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$InProgress extends InProgress {
-  const _$InProgress(
+class _$InProgressImpl extends InProgress {
+  const _$InProgressImpl(
       {required this.uploaded, required this.total, final String? $type})
       : $type = $type ?? 'inProgress',
         super._();
 
-  factory _$InProgress.fromJson(Map<String, dynamic> json) =>
-      _$$InProgressFromJson(json);
+  factory _$InProgressImpl.fromJson(Map<String, dynamic> json) =>
+      _$$InProgressImplFromJson(json);
 
   @override
   final int uploaded;
@@ -298,25 +299,24 @@ class _$InProgress extends InProgress {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$InProgress &&
-            const DeepCollectionEquality().equals(other.uploaded, uploaded) &&
-            const DeepCollectionEquality().equals(other.total, total));
+            other is _$InProgressImpl &&
+            (identical(other.uploaded, uploaded) ||
+                other.uploaded == uploaded) &&
+            (identical(other.total, total) || other.total == total));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      const DeepCollectionEquality().hash(uploaded),
-      const DeepCollectionEquality().hash(total));
+  int get hashCode => Object.hash(runtimeType, uploaded, total);
 
   @JsonKey(ignore: true)
   @override
-  _$$InProgressCopyWith<_$InProgress> get copyWith =>
-      __$$InProgressCopyWithImpl<_$InProgress>(this, _$identity);
+  @pragma('vm:prefer-inline')
+  _$$InProgressImplCopyWith<_$InProgressImpl> get copyWith =>
+      __$$InProgressImplCopyWithImpl<_$InProgressImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -332,10 +332,10 @@ class _$InProgress extends InProgress {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? preparing,
-    TResult Function(int uploaded, int total)? inProgress,
-    TResult Function()? success,
-    TResult Function(String error)? failed,
+    TResult? Function()? preparing,
+    TResult? Function(int uploaded, int total)? inProgress,
+    TResult? Function()? success,
+    TResult? Function(String error)? failed,
   }) {
     return inProgress?.call(uploaded, total);
   }
@@ -369,10 +369,10 @@ class _$InProgress extends InProgress {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(Preparing value)? preparing,
-    TResult Function(InProgress value)? inProgress,
-    TResult Function(Success value)? success,
-    TResult Function(Failed value)? failed,
+    TResult? Function(Preparing value)? preparing,
+    TResult? Function(InProgress value)? inProgress,
+    TResult? Function(Success value)? success,
+    TResult? Function(Failed value)? failed,
   }) {
     return inProgress?.call(this);
   }
@@ -394,7 +394,7 @@ class _$InProgress extends InProgress {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$InProgressToJson(
+    return _$$InProgressImplToJson(
       this,
     );
   }
@@ -402,44 +402,45 @@ class _$InProgress extends InProgress {
 
 abstract class InProgress extends UploadState {
   const factory InProgress(
-      {required final int uploaded, required final int total}) = _$InProgress;
+      {required final int uploaded,
+      required final int total}) = _$InProgressImpl;
   const InProgress._() : super._();
 
   factory InProgress.fromJson(Map<String, dynamic> json) =
-      _$InProgress.fromJson;
+      _$InProgressImpl.fromJson;
 
   int get uploaded;
   int get total;
   @JsonKey(ignore: true)
-  _$$InProgressCopyWith<_$InProgress> get copyWith =>
+  _$$InProgressImplCopyWith<_$InProgressImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class _$$SuccessCopyWith<$Res> {
-  factory _$$SuccessCopyWith(_$Success value, $Res Function(_$Success) then) =
-      __$$SuccessCopyWithImpl<$Res>;
+abstract class _$$SuccessImplCopyWith<$Res> {
+  factory _$$SuccessImplCopyWith(
+          _$SuccessImpl value, $Res Function(_$SuccessImpl) then) =
+      __$$SuccessImplCopyWithImpl<$Res>;
 }
 
 /// @nodoc
-class __$$SuccessCopyWithImpl<$Res> extends _$UploadStateCopyWithImpl<$Res>
-    implements _$$SuccessCopyWith<$Res> {
-  __$$SuccessCopyWithImpl(_$Success _value, $Res Function(_$Success) _then)
-      : super(_value, (v) => _then(v as _$Success));
-
-  @override
-  _$Success get _value => super._value as _$Success;
+class __$$SuccessImplCopyWithImpl<$Res>
+    extends _$UploadStateCopyWithImpl<$Res, _$SuccessImpl>
+    implements _$$SuccessImplCopyWith<$Res> {
+  __$$SuccessImplCopyWithImpl(
+      _$SuccessImpl _value, $Res Function(_$SuccessImpl) _then)
+      : super(_value, _then);
 }
 
 /// @nodoc
 @JsonSerializable()
-class _$Success extends Success {
-  const _$Success({final String? $type})
+class _$SuccessImpl extends Success {
+  const _$SuccessImpl({final String? $type})
       : $type = $type ?? 'success',
         super._();
 
-  factory _$Success.fromJson(Map<String, dynamic> json) =>
-      _$$SuccessFromJson(json);
+  factory _$SuccessImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SuccessImplFromJson(json);
 
   @JsonKey(name: 'runtimeType')
   final String $type;
@@ -450,9 +451,9 @@ class _$Success extends Success {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$Success);
+        (other.runtimeType == runtimeType && other is _$SuccessImpl);
   }
 
   @JsonKey(ignore: true)
@@ -473,10 +474,10 @@ class _$Success extends Success {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? preparing,
-    TResult Function(int uploaded, int total)? inProgress,
-    TResult Function()? success,
-    TResult Function(String error)? failed,
+    TResult? Function()? preparing,
+    TResult? Function(int uploaded, int total)? inProgress,
+    TResult? Function()? success,
+    TResult? Function(String error)? failed,
   }) {
     return success?.call();
   }
@@ -510,10 +511,10 @@ class _$Success extends Success {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(Preparing value)? preparing,
-    TResult Function(InProgress value)? inProgress,
-    TResult Function(Success value)? success,
-    TResult Function(Failed value)? failed,
+    TResult? Function(Preparing value)? preparing,
+    TResult? Function(InProgress value)? inProgress,
+    TResult? Function(Success value)? success,
+    TResult? Function(Failed value)? failed,
   }) {
     return success?.call(this);
   }
@@ -535,41 +536,43 @@ class _$Success extends Success {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SuccessToJson(
+    return _$$SuccessImplToJson(
       this,
     );
   }
 }
 
 abstract class Success extends UploadState {
-  const factory Success() = _$Success;
+  const factory Success() = _$SuccessImpl;
   const Success._() : super._();
 
-  factory Success.fromJson(Map<String, dynamic> json) = _$Success.fromJson;
+  factory Success.fromJson(Map<String, dynamic> json) = _$SuccessImpl.fromJson;
 }
 
 /// @nodoc
-abstract class _$$FailedCopyWith<$Res> {
-  factory _$$FailedCopyWith(_$Failed value, $Res Function(_$Failed) then) =
-      __$$FailedCopyWithImpl<$Res>;
+abstract class _$$FailedImplCopyWith<$Res> {
+  factory _$$FailedImplCopyWith(
+          _$FailedImpl value, $Res Function(_$FailedImpl) then) =
+      __$$FailedImplCopyWithImpl<$Res>;
+  @useResult
   $Res call({String error});
 }
 
 /// @nodoc
-class __$$FailedCopyWithImpl<$Res> extends _$UploadStateCopyWithImpl<$Res>
-    implements _$$FailedCopyWith<$Res> {
-  __$$FailedCopyWithImpl(_$Failed _value, $Res Function(_$Failed) _then)
-      : super(_value, (v) => _then(v as _$Failed));
+class __$$FailedImplCopyWithImpl<$Res>
+    extends _$UploadStateCopyWithImpl<$Res, _$FailedImpl>
+    implements _$$FailedImplCopyWith<$Res> {
+  __$$FailedImplCopyWithImpl(
+      _$FailedImpl _value, $Res Function(_$FailedImpl) _then)
+      : super(_value, _then);
 
-  @override
-  _$Failed get _value => super._value as _$Failed;
-
+  @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? error = freezed,
+    Object? error = null,
   }) {
-    return _then(_$Failed(
-      error: error == freezed
+    return _then(_$FailedImpl(
+      error: null == error
           ? _value.error
           : error // ignore: cast_nullable_to_non_nullable
               as String,
@@ -579,13 +582,13 @@ class __$$FailedCopyWithImpl<$Res> extends _$UploadStateCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$Failed extends Failed {
-  const _$Failed({required this.error, final String? $type})
+class _$FailedImpl extends Failed {
+  const _$FailedImpl({required this.error, final String? $type})
       : $type = $type ?? 'failed',
         super._();
 
-  factory _$Failed.fromJson(Map<String, dynamic> json) =>
-      _$$FailedFromJson(json);
+  factory _$FailedImpl.fromJson(Map<String, dynamic> json) =>
+      _$$FailedImplFromJson(json);
 
   @override
   final String error;
@@ -599,22 +602,22 @@ class _$Failed extends Failed {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$Failed &&
-            const DeepCollectionEquality().equals(other.error, error));
+            other is _$FailedImpl &&
+            (identical(other.error, error) || other.error == error));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(error));
+  int get hashCode => Object.hash(runtimeType, error);
 
   @JsonKey(ignore: true)
   @override
-  _$$FailedCopyWith<_$Failed> get copyWith =>
-      __$$FailedCopyWithImpl<_$Failed>(this, _$identity);
+  @pragma('vm:prefer-inline')
+  _$$FailedImplCopyWith<_$FailedImpl> get copyWith =>
+      __$$FailedImplCopyWithImpl<_$FailedImpl>(this, _$identity);
 
   @override
   @optionalTypeArgs
@@ -630,10 +633,10 @@ class _$Failed extends Failed {
   @override
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
-    TResult Function()? preparing,
-    TResult Function(int uploaded, int total)? inProgress,
-    TResult Function()? success,
-    TResult Function(String error)? failed,
+    TResult? Function()? preparing,
+    TResult? Function(int uploaded, int total)? inProgress,
+    TResult? Function()? success,
+    TResult? Function(String error)? failed,
   }) {
     return failed?.call(error);
   }
@@ -667,10 +670,10 @@ class _$Failed extends Failed {
   @override
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
-    TResult Function(Preparing value)? preparing,
-    TResult Function(InProgress value)? inProgress,
-    TResult Function(Success value)? success,
-    TResult Function(Failed value)? failed,
+    TResult? Function(Preparing value)? preparing,
+    TResult? Function(InProgress value)? inProgress,
+    TResult? Function(Success value)? success,
+    TResult? Function(Failed value)? failed,
   }) {
     return failed?.call(this);
   }
@@ -692,20 +695,20 @@ class _$Failed extends Failed {
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$FailedToJson(
+    return _$$FailedImplToJson(
       this,
     );
   }
 }
 
 abstract class Failed extends UploadState {
-  const factory Failed({required final String error}) = _$Failed;
+  const factory Failed({required final String error}) = _$FailedImpl;
   const Failed._() : super._();
 
-  factory Failed.fromJson(Map<String, dynamic> json) = _$Failed.fromJson;
+  factory Failed.fromJson(Map<String, dynamic> json) = _$FailedImpl.fromJson;
 
   String get error;
   @JsonKey(ignore: true)
-  _$$FailedCopyWith<_$Failed> get copyWith =>
+  _$$FailedImplCopyWith<_$FailedImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

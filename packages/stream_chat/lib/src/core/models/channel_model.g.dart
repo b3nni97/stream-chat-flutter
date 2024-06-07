@@ -32,36 +32,27 @@ ChannelModel _$ChannelModelFromJson(Map<String, dynamic> json) => ChannelModel(
       deletedAt: json['deleted_at'] == null
           ? null
           : DateTime.parse(json['deleted_at'] as String),
-      memberCount: json['member_count'] as int? ?? 0,
+      memberCount: (json['member_count'] as num?)?.toInt() ?? 0,
       extraData: json['extra_data'] as Map<String, dynamic>? ?? const {},
       team: json['team'] as String?,
-      cooldown: json['cooldown'] as int? ?? 0,
+      cooldown: (json['cooldown'] as num?)?.toInt() ?? 0,
     );
 
-Map<String, dynamic> _$ChannelModelToJson(ChannelModel instance) {
-  final val = <String, dynamic>{
-    'id': instance.id,
-    'type': instance.type,
-  };
-
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('cid', readonly(instance.cid));
-  writeNotNull('own_capabilities', readonly(instance.ownCapabilities));
-  writeNotNull('config', readonly(instance.config));
-  writeNotNull('created_by', readonly(instance.createdBy));
-  val['frozen'] = instance.frozen;
-  writeNotNull('last_message_at', readonly(instance.lastMessageAt));
-  writeNotNull('created_at', readonly(instance.createdAt));
-  writeNotNull('updated_at', readonly(instance.updatedAt));
-  writeNotNull('deleted_at', readonly(instance.deletedAt));
-  writeNotNull('member_count', readonly(instance.memberCount));
-  val['cooldown'] = instance.cooldown;
-  val['extra_data'] = instance.extraData;
-  writeNotNull('team', readonly(instance.team));
-  return val;
-}
+Map<String, dynamic> _$ChannelModelToJson(ChannelModel instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'type': instance.type,
+      'cid': readonly(instance.cid),
+      'own_capabilities': readonly(instance.ownCapabilities),
+      'config': readonly(instance.config),
+      'created_by': readonly(instance.createdBy),
+      'frozen': instance.frozen,
+      'last_message_at': readonly(instance.lastMessageAt),
+      'created_at': readonly(instance.createdAt),
+      'updated_at': readonly(instance.updatedAt),
+      'deleted_at': readonly(instance.deletedAt),
+      'member_count': readonly(instance.memberCount),
+      'cooldown': instance.cooldown,
+      'extra_data': instance.extraData,
+      'team': readonly(instance.team),
+    };
