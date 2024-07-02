@@ -14,6 +14,7 @@ part 'stream_chat_localizations_ko.dart';
 part 'stream_chat_localizations_pt.dart';
 part 'stream_chat_localizations_no.dart';
 part 'stream_chat_localizations_ru.dart';
+part 'stream_chat_localizations_tr.dart';
 
 /// The set of supported languages, as language code strings.
 ///
@@ -35,6 +36,7 @@ const kStreamChatSupportedLanguages = {
   'de',
   'no',
   'ru',
+  'tr',
 };
 
 /// Creates a [GlobalStreamChatLocalizations] instance for the given `locale`.
@@ -79,6 +81,8 @@ GlobalStreamChatLocalizations? getStreamChatTranslation(Locale locale) {
       return const StreamChatLocalizationsNo();
     case 'ru':
       return const StreamChatLocalizationsRu();
+    case 'tr':
+      return const StreamChatLocalizationsTr();
     default:
       return null;
   }
