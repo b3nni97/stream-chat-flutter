@@ -1274,6 +1274,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 16,
+              height: 1.15,
             ),
           ),
           // title: Text(context.translations.replyLabel),
@@ -1293,7 +1294,8 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             softWrap: false,
             overflow: TextOverflow.fade,
             style: const TextStyle(
-              fontSize: 14,
+              fontSize: 16,
+              height: 1.15,
             ),
           ),
           onPressed: () {
@@ -1313,6 +1315,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 16,
+              height: 1.15,
             ),
           ),
           onPressed: () {
@@ -1357,6 +1360,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 16,
+              height: 1.15,
             ),
           ),
           onPressed: () {
@@ -1376,6 +1380,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 16,
+              height: 1.15,
             ),
           ),
           onPressed: () async {
@@ -1411,6 +1416,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 16,
+              height: 1.15,
             ),
           ),
           onPressed: () {
@@ -1441,6 +1447,7 @@ class _StreamMessageWidgetState extends State<StreamMessageWidget>
             overflow: TextOverflow.fade,
             style: const TextStyle(
               fontSize: 16,
+              height: 1.15,
             ),
           ),
           onPressed: () async {
