@@ -165,6 +165,19 @@ class StreamChannelListEventHandler {
   }
 
   /// Function which gets called for the event
+  /// [EventType.notificationInviteAccepted].
+  ///
+  /// This event is fired when a user has accepted a invite from a channel which
+  /// we are not currently watching.
+  /// By default, this adds the channel and moves it to the top of list.
+  void onNotificationInviteAccepted(
+    Event event,
+    StreamChannelListController controller,
+  ) {
+    onChannelVisible(event, controller);
+  }
+
+  /// Function which gets called for the event
   /// 'user.presence.changed' and [EventType.userUpdated].
   ///
   /// This event is fired when a user's presence changes or gets updated.
