@@ -206,6 +206,9 @@ class ItemScrollController {
 
   ScrollablePositionedListState? _scrollableListState;
 
+  /// The scrollable list state.
+  ScrollablePositionedListState? get scrollableListState => _scrollableListState;
+
   /// Immediately, without animation, reconfigure the list so that the item at
   /// [index]'s leading edge is at the given [alignment].
   ///
@@ -253,6 +256,7 @@ class ItemScrollController {
     required Duration duration,
     Curve curve = Curves.linear,
     List<double> opacityAnimationWeights = const [40, 20, 40],
+    bool allowOutOfBounds = true,
   }) {
     assert(
       _scrollableListState != null,
@@ -263,12 +267,14 @@ class ItemScrollController {
       'opacityAnimationWeights must have exactly three elements.',
     );
     assert(duration > Duration.zero, 'Duration must be greater than zero.');
+    
     return _scrollableListState!._scrollTo(
       index: index,
       alignment: alignment,
       duration: duration,
       curve: curve,
       opacityAnimationWeights: opacityAnimationWeights,
+      allowOutOfBounds: allowOutOfBounds,
     );
   }
 
@@ -470,6 +476,7 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
     required Duration duration,
     Curve curve = Curves.linear,
     required List<double> opacityAnimationWeights,
+    bool allowOutOfBounds = true,
   }) async {
     if (index > widget.itemCount - 1) {
       index = widget.itemCount - 1;
@@ -484,6 +491,7 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
           duration: duration,
           curve: curve,
           opacityAnimationWeights: opacityAnimationWeights,
+          allowOutOfBounds: allowOutOfBounds,
         );
         scrollCompleter.complete();
       });
@@ -495,7 +503,9 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
         duration: duration,
         curve: curve,
         opacityAnimationWeights: opacityAnimationWeights,
+        allowOutOfBounds: allowOutOfBounds,
       );
+
     }
   }
 
@@ -505,6 +515,7 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
     required Duration duration,
     Curve curve = Curves.linear,
     required List<double> opacityAnimationWeights,
+    bool allowOutOfBounds = true,
   }) async {
     final direction = index > primary.target ? 1 : -1;
     final itemPosition =
@@ -513,12 +524,22 @@ class ScrollablePositionedListState extends State<ScrollablePositionedList>
     );
     if (itemPosition != null) {
       // Scroll directly.
-      final localScrollAmount = itemPosition.itemLeadingEdge *
-          primary.scrollController.position.viewportDimension;
+      final position = primary.scrollController.position;
+      final localScrollAmount =
+          itemPosition.itemLeadingEdge * position.viewportDimension;
+
+      final targetOffset = primary.scrollController.offset +
+          localScrollAmount -
+          alignment * position.viewportDimension;
+
+      if (!allowOutOfBounds &&
+          (targetOffset < position.minScrollExtent ||
+              targetOffset > position.maxScrollExtent)) {
+        return;
+      }
+
       await primary.scrollController.animateTo(
-        primary.scrollController.offset +
-            localScrollAmount -
-            alignment * primary.scrollController.position.viewportDimension,
+        targetOffset,
         duration: duration,
         curve: curve,
       );

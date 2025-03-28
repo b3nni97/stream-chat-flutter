@@ -75,7 +75,7 @@ class StreamMessageText extends StatelessWidget {
                 decorationStyle: messageTheme.messageTextStyle?.decorationStyle,
                 fontFamily: messageTheme.messageTextStyle?.fontFamily,
               ),
-              cardTheme: CardTheme(
+              cardTheme: CardThemeData(
                 color: messageTheme.messageBackgroundColor,
               ),
             ),

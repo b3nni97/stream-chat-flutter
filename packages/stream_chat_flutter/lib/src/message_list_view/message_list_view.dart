@@ -317,7 +317,7 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
         ? 0
         : initialIndex > 3
             ? 0.5 * 1.5
-            : 0.5;
+            : 0.48;
   }
 
   bool get _upToDate => streamChannel!.channel.state!.isUpToDate;
@@ -391,12 +391,18 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
 
       initialAlignment = _initialAlignment;
 
-      if (_scrollController?.isAttached == true) {
-        _scrollController?.jumpTo(
-          index: initialIndex,
-          alignment: initialAlignment,
-        );
-      }
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        await Future.delayed(const Duration(milliseconds: 500));
+        if (_scrollController?.isAttached == true && initialIndex > 0) {
+          _scrollController?.scrollTo(
+            index: initialIndex,
+            alignment: initialAlignment,
+            duration: const Duration(milliseconds: 500),
+            curve: Curves.easeOut,
+            allowOutOfBounds: false,
+          );
+        }
+      });
 
       _messageNewListener =
           streamChannel!.channel.on(EventType.messageNew).listen((event) {
@@ -588,8 +594,12 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
                   keyboardDismissBehavior: widget.keyboardDismissBehavior,
                   onNotification: widget.onScrollNotification,
                   itemPositionsListener: _itemPositionListener,
-                  initialScrollIndex: initialIndex,
-                  initialAlignment: initialAlignment,
+                  initialScrollIndex: streamChannel?.initialMessageId != null
+                      ? initialIndex
+                      : 0,
+                  initialAlignment: streamChannel?.initialMessageId != null
+                      ? initialAlignment
+                      : 0,
                   physics: widget.scrollPhysics,
                   itemScrollController: _scrollController,
                   reverse: widget.reverse,

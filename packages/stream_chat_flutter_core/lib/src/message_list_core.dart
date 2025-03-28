@@ -127,6 +127,8 @@ class MessageListCoreState extends State<MessageListCore> {
 
   var _messages = <Message>[];
 
+  bool _isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     final messagesStream = _isThreadConversation
@@ -171,18 +173,24 @@ class MessageListCoreState extends State<MessageListCore> {
   /// Optionally pass a limit, defaults to 20
   Future<void> paginateData({
     QueryDirection direction = QueryDirection.top,
-  }) {
+  }) async {
+    if (_isLoading) {
+      return;
+    }
+
+    _isLoading = true;
     if (!_isThreadConversation) {
-      return _streamChannel!.queryMessages(
+      await _streamChannel!.queryMessages(
         direction: direction,
         limit: widget.paginationLimit,
       );
     } else {
-      return _streamChannel!.getReplies(
+      await _streamChannel!.getReplies(
         widget.parentMessage!.id,
         limit: widget.paginationLimit,
       );
     }
+    _isLoading = false;
   }
 
   @override

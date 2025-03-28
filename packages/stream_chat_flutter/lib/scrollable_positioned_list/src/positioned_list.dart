@@ -184,7 +184,8 @@ class _PositionedListState extends State<PositionedList> {
   }
 
   @override
-  Widget build(BuildContext context) => RegistryWidget(
+  Widget build(BuildContext context) {
+    return RegistryWidget(
         elementNotifier: registeredElements,
         child: UnboundedCustomScrollView(
           anchor: widget.alignment,
@@ -260,6 +261,7 @@ class _PositionedListState extends State<PositionedList> {
           ],
         ),
       );
+  }
 
   Widget _buildSeparatedListElement(int index) {
     if (index.isEven) {
