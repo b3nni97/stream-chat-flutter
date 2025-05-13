@@ -22,7 +22,7 @@ extension StringExtension on String {
     if (trimmedString.isEmpty) return false;
     if (trimmedString.characters.length > 3) return false;
     final emojiRegex = RegExp(
-      r'^(\u00a9|\u00ae|[\u2000-\u3300]|\ud83c[\ud000-\udfff]|\ud83d[\ud000-\udfff]|\ud83e[\ud000-\udfff])+$',
+      '((?:\u00a9|\u00ae|[\u2000-\u3300]|\ufe0f|[\ud83c-\ud83e][\udc00-\udfff]|\udb40[\udc61-\udc7f])+)',
       multiLine: true,
       caseSensitive: false,
     );

@@ -19,23 +19,33 @@ class UnreadMessagesSeparator extends StatelessWidget {
 
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
-      child: DecoratedBox(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: chatThemeData.colorTheme.overlayDark,
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(8),
-          child: Text(
-            context.translations.unreadMessagesSeparatorText(
-              unreadCount,
-            ),
-            textAlign: TextAlign.center,
-            style: chatThemeData.textTheme.footnote.copyWith(
-              color: chatThemeData.colorTheme.textDateDivider,
+      child: Row(
+        children: [
+          Flexible(
+            child: Container(
+              height: 1,
+              color: chatThemeData.ownMessageTheme.createdAtStyle?.color,
             ),
           ),
-        ),
+          Padding(
+            padding: const EdgeInsets.only(left: 12, right: 12),
+            child: Text(
+              context.translations.unreadMessagesSeparatorText(
+                unreadCount,
+              ),
+              textAlign: TextAlign.center,
+              style: chatThemeData.ownMessageTheme.createdAtStyle?.copyWith(
+                fontSize: 14,
+              ),
+            ),
+          ),
+          Flexible(
+            child: Container(
+              height: 1,
+              color: chatThemeData.ownMessageTheme.createdAtStyle?.color,
+            ),
+          ),
+        ],
       ),
     );
   }

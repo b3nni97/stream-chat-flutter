@@ -187,10 +187,9 @@ class _MessageCardState extends State<MessageCard> {
     }
 
     return RebuildOnce(
-      key: UniqueKey() ??
-          ValueKey(
-            '${widget.message.rebuildId}${NightVibesTheme.of(context).brightness}',
-          ),
+      key: ValueKey(
+        '${widget.message.rebuildId}${NightVibesTheme.of(context).brightness}',
+      ),
       child: Container(
         margin: EdgeInsets.symmetric(
           horizontal: (widget.isFailedState ? 15.0 : 0.0) +

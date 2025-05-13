@@ -41,7 +41,7 @@ class TextBubblePainter extends CustomPainter {
     required this.color,
     required this.alignment,
     this.borderColor,
-    this.radius = 15,
+    this.radius = 18,
     this.nipSize = 6,
   });
   final Color color;

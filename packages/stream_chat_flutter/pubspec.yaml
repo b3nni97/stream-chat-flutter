@@ -23,7 +23,8 @@ dependencies:
   file_selector: ^1.0.3
   flutter:
     sdk: flutter 
-  flutter_markdown: ^0.6.22
+  flutter_markdown_plus:
+    path: ../../../flutter_markdown_plus
   flutter_portal: ^1.0.0
   flutter_svg: ^2.0.3
  
@@ -46,6 +47,8 @@ dependencies:
   
 dependency_overrides:
   http: ^1.1.2
+  freezed: ^3.0.4
+  freezed_annotation: ^3.0.0
 
 flutter:
   assets:

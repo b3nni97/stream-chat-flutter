@@ -92,7 +92,7 @@ class StreamChannelListEventHandler {
     Event event,
     StreamChannelListController controller,
   ) {
-    controller.refresh();
+    controller.refresh(resetValue: false);
   }
 
   /// Function which gets called for the event [EventType.messageNew].

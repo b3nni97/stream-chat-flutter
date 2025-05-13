@@ -1,7 +1,4 @@
 import 'dart:async';
-
-import 'package:animated_size_and_fade/animated_size_and_fade.dart';
-import 'package:contextmenu/contextmenu.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart' hide ButtonStyle;
@@ -11,12 +8,9 @@ import 'package:night_vibes_context_menu/night_vibes_context_menu.dart';
 import 'package:night_vibes_context_menu/night_vibes_context_menu_action.dart';
 import 'package:night_vibes_context_menu/night_vibes_context_menu_controller.dart';
 import 'package:stages/generated/locale_keys.g.dart';
-import 'package:stages/widgets/animation/routes/context_menu.dart';
 import 'package:stages/widgets/layout/freeze_media_query_wrapper.dart';
 import 'package:stages/widgets/layout/rebuild_once.dart';
-import 'package:stages/widgets/misc/async_helper.dart';
 import 'package:stages/widgets/notification/local_notifications.dart';
-import 'package:stream_chat_flutter/conditional_parent_builder/conditional_parent_builder.dart';
 import 'package:stream_chat_flutter/platform_widget_builder/platform_widget_builder.dart';
 import 'package:stream_chat_flutter/src/context_menu_items/context_menu_reaction_picker.dart';
 import 'package:stream_chat_flutter/src/context_menu_items/stream_chat_context_menu_item.dart';
@@ -25,7 +19,6 @@ import 'package:stream_chat_flutter/src/message_actions_modal/message_actions_mo
 import 'package:stream_chat_flutter/src/message_widget/message_widget_content.dart';
 import 'package:stream_chat_flutter/src/message_widget/reactions/message_reactions_modal.dart';
 import 'package:stream_chat_flutter/stream_chat_flutter.dart';
-import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 
 /// The display behaviour of a widget
 enum DisplayWidget {
@@ -100,10 +93,8 @@ class StreamMessageWidget extends StatefulWidget {
     this.deletedBottomRowBuilder,
     this.customAttachmentBuilders,
     this.padding,
-    this.textPadding = const EdgeInsets.symmetric(
-      horizontal: 16,
-      vertical: 8,
-    ),
+    this.textPadding =
+        const EdgeInsets.only(left: 16, right: 16, top: 4, bottom: 8),
     this.attachmentPadding = EdgeInsets.zero,
     this.onQuotedMessageTap,
     this.customActions = const [],

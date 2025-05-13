@@ -954,16 +954,18 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       padding: const EdgeInsets.all(8),
       showSendingIndicator: false,
       borderRadiusGeometry: BorderRadius.only(
-        topLeft: const Radius.circular(16),
+        topLeft: const Radius.circular(18),
         bottomLeft:
-            isMyMessage ? const Radius.circular(16) : const Radius.circular(2),
-        topRight: const Radius.circular(16),
+            isMyMessage ? const Radius.circular(18) : const Radius.circular(2),
+        topRight: const Radius.circular(18),
         bottomRight:
-            isMyMessage ? const Radius.circular(2) : const Radius.circular(16),
+            isMyMessage ? const Radius.circular(2) : const Radius.circular(18),
       ),
-      textPadding: EdgeInsets.symmetric(
-        vertical: 8,
-        horizontal: isOnlyEmoji ? 0 : 16.0,
+      textPadding: EdgeInsets.only(
+        left: isOnlyEmoji ? 0 : 16,
+        right: isOnlyEmoji ? 0 : 16,
+        top: 6,
+        bottom: 8,
       ),
       borderSide: isMyMessage || isOnlyEmoji ? BorderSide.none : null,
       showUserAvatar: isMyMessage ? DisplayWidget.gone : DisplayWidget.show,
@@ -1246,28 +1248,30 @@ class _StreamMessageListViewState extends State<StreamMessageListView> {
       ),
       attachmentPadding: EdgeInsets.all(hasFileAttachment ? 4 : 2),
       borderRadiusGeometry: BorderRadius.only(
-        topLeft: const Radius.circular(16),
+        topLeft: const Radius.circular(20),
         bottomLeft: isMyMessage
-            ? const Radius.circular(16)
+            ? const Radius.circular(20)
             : Radius.circular(
                 (timeDiff >= 1 || !isNextUserSame) &&
                         !(hasReplies || isThreadMessage)
                     ? 0
-                    : 16,
+                    : 18,
               ),
-        topRight: const Radius.circular(16),
+        topRight: const Radius.circular(20),
         bottomRight: isMyMessage
             ? Radius.circular(
                 (timeDiff >= 1 || !isNextUserSame) &&
                         !(hasReplies || isThreadMessage)
                     ? 0
-                    : 16,
+                    : 20,
               )
-            : const Radius.circular(16),
+            : const Radius.circular(20),
       ),
-      textPadding: EdgeInsets.symmetric(
-        vertical: 8,
-        horizontal: isOnlyEmoji ? 0 : 16.0,
+      textPadding: EdgeInsets.only(
+        left: isOnlyEmoji ? 0 : 12,
+        right: isOnlyEmoji ? 0 : 12,
+        top: 7,
+        bottom: 9,
       ),
       messageTheme: isMyMessage
           ? _streamTheme.ownMessageTheme
